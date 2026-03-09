@@ -29,7 +29,7 @@
 
     <div class="main-card">
         <h2 id="monthTitle" style="color: var(--gold); margin: 15px 0 0 0; font-size: 22px;">ARISAN DIGITAL</h2>
-        <div id="statusBadge" style="font-size: 11px; color: #666; margin-bottom: 5px;">Siap untuk Diputar</div>
+        <div id="statusBadge" style="font-size: 11px; color: #666; margin-bottom: 5px;">Siap untuk diPutar</div>
 
         <div class="clock-outer">
             <div class="pointer"></div>
@@ -37,12 +37,12 @@
         </div>
 
         <div class="btn-container">
-            <button class="btn-admin" onclick="authAdmin()">🔒 SPIN RESMI (ADMIN/IDAM)</button>
+            <button class="btn-admin" onclick="authAdmin()">🔒 SPIN RESMI (KETUA)</button>
             <button class="btn-demo" onclick="executeDemo()">🎮 COBA PUTAR (DEMO)</button>
         </div>
 
         <div class="list-section">
-            <div class="list-header">RIWAYAT & DAFTAR PEMENANG</div>
+            <div class="list-header">RIWAYAT & DAFTAR PESERTA</div>
             <div id="memberContainer" class="member-list"></div>
         </div>
 
@@ -51,20 +51,15 @@
 
     <footer>
         by A. S Daeli &copy; 2026<br>
-        Digital Arisan System v2.1 (Chairman Edition)
+        Digital Arisan System v2.2 (Chairman First)
     </footer>
 
 <script>
     const KODE_ADMIN = "080522"; 
-    const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "medina", "Agus", "Elis", "Tri"];
-    
-    // Inisialisasi data: Jika kosong, otomatis set Daeli sebagai pemenang pertama
-    let winnerData = JSON.parse(localStorage.getItem('arisan_history'));
-    if (!winnerData) {
-        winnerData = { "Idam": "KETUA" };
-        localStorage.setItem('arisan_history', JSON.stringify(winnerData));
-    }
+    const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+    const BULAN_MULAI = "Maret"; // Set bulan pertama arisan
 
+    let winnerData = JSON.parse(localStorage.getItem('arisan_history')) || {};
     let currentRotation = 0;
     let isSpinning = false;
     const canvas = document.getElementById('canvas');
@@ -110,26 +105,44 @@
         ctx.clearRect(0, 0, 800, 800);
         activeNames.forEach((name, i) => {
             const angle = i * arc;
-            ctx.beginPath();
-            ctx.fillStyle = colors[i % colors.length];
-            ctx.moveTo(400, 400);
+            ctx.beginPath(); ctx.fillStyle = colors[i % colors.length]; ctx.moveTo(400, 400);
             ctx.arc(400, 400, 400, angle - Math.PI/2, (angle + arc) - Math.PI/2);
-            ctx.fill();
-            ctx.stroke();
-            ctx.save();
-            ctx.translate(400, 400);
-            ctx.rotate(angle + arc / 2 - Math.PI/2);
+            ctx.fill(); ctx.stroke();
+            ctx.save(); ctx.translate(400, 400); ctx.rotate(angle + arc / 2 - Math.PI/2);
             ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 45px Arial";
-            ctx.fillText(name, 350, 15);
-            ctx.restore();
+            ctx.fillText(name, 350, 15); ctx.restore();
         });
     }
 
     async function authAdmin() {
         if(isSpinning) return;
         const currentMonth = getMonthName();
-        const existingWinnerThisMonth = Object.keys(winnerData).find(key => winnerData[key] === currentMonth);
 
+        // LOGIKA KETUA: Jika ini bulan pertama (Maret) dan Idam belum menang
+        if (currentMonth === BULAN_MULAI && !winnerData["Idam"]) {
+            const { value: pass } = await Swal.fire({
+                title: 'Konfirmasi Ketua',
+                text: `Bulan Pertama (${BULAN_MULAI}): Pemenang adalah Ketua (Idam). Masukkan PIN untuk konfirmasi.`,
+                input: 'password',
+                confirmButtonColor: '#ffcc00'
+            });
+
+            if (pass === KODE_ADMIN) {
+                winnerData["Idam"] = BULAN_MULAI;
+                localStorage.setItem('arisan_history', JSON.stringify(winnerData));
+                Swal.fire({
+                    title: `🏆 PEMENANG BULAN PERTAMA 🏆`,
+                    html: `<h1 style="color:var(--gold)">Idam (Ketua)</h1>`,
+                    icon: 'success'
+                }).then(() => init());
+            } else if (pass) {
+                Swal.fire('Error', 'PIN Salah!', 'error');
+            }
+            return;
+        }
+
+        // Cek jika bulan ini sudah ada pemenang
+        const existingWinnerThisMonth = Object.keys(winnerData).find(key => winnerData[key] === currentMonth);
         if (existingWinnerThisMonth) {
             Swal.fire({
                 title: `Hasil ${currentMonth} Terkunci`,
@@ -140,14 +153,13 @@
         }
 
         const { value: pass } = await Swal.fire({
-            title: 'PIN Admin Diperlukan',
+            title: 'Verifikasi PIN Admin',
             input: 'password',
             confirmButtonColor: '#ffcc00'
         });
 
         if (pass === KODE_ADMIN) {
             document.getElementById('statusBadge').innerText = "MODE: RESMI";
-            document.getElementById('statusBadge').style.color = "var(--gold)";
             executeSpin(true);
         } else if (pass) {
             Swal.fire('Error', 'PIN Salah!', 'error');
@@ -157,7 +169,6 @@
     function executeDemo() {
         if(isSpinning) return;
         document.getElementById('statusBadge').innerText = "MODE: DEMO";
-        document.getElementById('statusBadge').style.color = "var(--blue)";
         executeSpin(false);
     }
 
@@ -165,7 +176,6 @@
         isSpinning = true;
         const winners = Object.keys(winnerData);
         const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
-        
         const putaranAcak = Math.floor(Math.random() * 360);
         const totalDerajat = (360 * 12) + putaranAcak; 
         currentRotation += totalDerajat;
@@ -180,41 +190,18 @@
             if (isAdmin) {
                 winnerData[pemenang] = getMonthName();
                 localStorage.setItem('arisan_history', JSON.stringify(winnerData));
-                Swal.fire({
-                    title: `SELAMAT! (${getMonthName()})`,
-                    html: `<h1 style="color:var(--gold)">${pemenang}</h1>`,
-                    icon: 'success'
-                }).then(() => {
-                    isSpinning = false;
-                    init();
-                });
+                Swal.fire({ title: `SELAMAT! (${getMonthName()})`, html: `<h1 style="color:var(--gold)">${pemenang}</h1>`, icon: 'success' }).then(() => { isSpinning = false; init(); });
             } else {
-                Swal.fire({
-                    title: `HASIL COBA (DEMO)`,
-                    html: `<h1 style="color:var(--blue)">${pemenang}</h1>`,
-                    icon: 'info'
-                }).then(() => {
-                    isSpinning = false;
-                    document.getElementById('statusBadge').innerText = "Ready to Spin";
-                    document.getElementById('statusBadge').style.color = "#666";
-                });
+                Swal.fire({ title: `HASIL COBA (DEMO)`, html: `<h1 style="color:var(--blue)">${pemenang}</h1>`, icon: 'info' }).then(() => { isSpinning = false; init(); });
             }
         }, 7000);
     }
 
     async function resetDataWithPin() {
-        const { value: pass } = await Swal.fire({
-            title: 'Hapus Riwayat?',
-            input: 'password',
-            inputLabel: 'Masukkan PIN Admin'
-        });
-
+        const { value: pass } = await Swal.fire({ title: 'Hapus Riwayat?', input: 'password' });
         if (pass === KODE_ADMIN) {
-            // Reset ke kondisi awal: Daeli sebagai Ketua
-            winnerData = { "Idam": "KETUA" };
-            localStorage.setItem('arisan_history', JSON.stringify(winnerData));
-            init();
-            Swal.fire('Bersih!', 'Sistem di-reset (Daeli tetap Ketua).', 'success');
+            localStorage.clear(); winnerData = {}; init();
+            Swal.fire('Bersih!', 'Sistem kembali ke awal.', 'success');
         }
     }
 

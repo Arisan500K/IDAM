@@ -1,1 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
 
+<meta charset="UTF-8">
+
+<title>Arisan 500K</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+button{
+padding:15px;
+font-size:18px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>SISTEM ARISAN 500K</h1>
+
+<p id="status">Memeriksa server...</p>
+
+<button onclick="cekServer()">Cek Server</button>
+
+<script>
+
+async function cekServer(){
+
+const res = await fetch("http://localhost:3000");
+const data = await res.json();
+
+document.getElementById("status").innerText =
+data.status + " | Versi " + data.versi;
+
+}
+
+cekServer();
+
+</script>
+
+</body>
+</html>

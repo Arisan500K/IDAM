@@ -3,73 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arisan Digital Pro</title>
+    <title>Spin Arisan 500K/Bulan</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; background: #f0f2f5; }
-        .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        h2 { color: #333; margin-bottom: 20px; }
-        textarea { width: 100%; height: 150px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #ddd; padding: 15px; box-sizing: border-box; font-size: 16px; resize: none; }
-        textarea:focus { border-color: #007bff; outline: none; }
-        button { background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: transform 0.2s; }
-        button:active { transform: scale(0.98); }
-        #display-box { margin-top: 25px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #fafafa; border: 2px dashed #ccc; }
-        #name-display { font-size: 32px; font-weight: 800; transition: color 0.1s; }
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #2c3e50; color: white; padding: 20px; }
+        .main-container { max-width: 600px; margin: auto; background: #34495e; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* Kontainer Roda */
+        .wheel-wrapper { position: relative; width: 300px; height: 300px; margin: 20px auto; }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #ecf0f1; box-shadow: 0 0 20px rgba(0,0,0,0.3); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); }
+        
+        /* Jarum Penunjuk */
+        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; 
+            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #e74c3c; z-index: 10; }
+
+        textarea { width: 100%; height: 100px; margin: 15px 0; border-radius: 10px; padding: 10px; border: none; font-size: 14px; box-sizing: border-box; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
+        button:disabled { background: #7f8c8d; cursor: not-allowed; }
+        h2 { margin-top: 0; color: #2ecc71; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>🎡 Arisan Digital</h2>
-    <textarea id="names" placeholder="Ketik nama peserta di sini...&#10;Contoh:&#10;Budi&#10;Ani&#10;Siti"></textarea>
-    <button onclick="mulaiKocok()">MULAI KOCOK!</button>
+<div class="main-container">
+    <h2>🎡 Spin Arisan</h2>
+    <textarea id="names" placeholder="Masukkan nama peserta (1 baris 1 nama)...">Budi&#10;Ani&#10;Siti&#10;Iwan&#10;Dewi</textarea>
     
-    <div id="display-box">
-        <div id="name-display">Siap?</div>
+    <div class="wheel-wrapper">
+        <div class="pointer"></div>
+        <canvas id="canvas" width="500" height="500"></canvas>
     </div>
+
+    <button id="spinBtn" onclick="putarRoda()">PUTAR SEKARANG (5 DETIK)</button>
 </div>
 
 <script>
-    const colors = ['#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#00bcd4', '#009688', '#4caf50', '#ff9800', '#ff5722'];
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const nameInput = document.getElementById('names');
+    const spinBtn = document.getElementById('spinBtn');
+    
+    let currentRotation = 0;
+    const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#1abc9c', '#2ecc71'];
 
-    function mulaiKocok() {
-        const input = document.getElementById('names').value;
-        const listNama = input.split('\n').map(n => n.trim()).filter(n => n !== "");
-        const display = document.getElementById('name-display');
+    function drawWheel() {
+        const names = nameInput.value.split('\n').filter(n => n.trim() !== "");
+        if (names.length === 0) return;
 
-        if (listNama.length === 0) {
-            Swal.fire('Waduh!', 'Masukkan minimal satu nama dulu ya.', 'warning');
+        const arc = (2 * Math.PI) / names.length;
+        ctx.clearRect(0, 0, 500, 500);
+
+        names.forEach((name, i) => {
+            const angle = i * arc;
+            ctx.fillStyle = colors[i % colors.length];
+            
+            // Gambar potongan kue
+            ctx.beginPath();
+            ctx.moveTo(250, 250);
+            ctx.arc(250, 250, 250, angle, angle + arc);
+            ctx.fill();
+            ctx.stroke();
+
+            // Teks Nama
+            ctx.save();
+            ctx.translate(250, 250);
+            ctx.rotate(angle + arc / 2);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 20px Arial";
+            ctx.fillText(name, 230, 10);
+            ctx.restore();
+        });
+    }
+
+    // Gambar ulang roda setiap kali teks diubah
+    nameInput.addEventListener('input', drawWheel);
+    drawWheel();
+
+    function putarRoda() {
+        const names = nameInput.value.split('\n').filter(n => n.trim() !== "");
+        if (names.length < 2) {
+            Swal.fire('Minimal 2 nama ya!');
             return;
         }
 
-        let counter = 0;
-        const totalPutaran = 20; // Durasi acak
+        spinBtn.disabled = true;
+        
+        // Tambahkan putaran besar (minimal 5 putaran penuh + random)
+        const tambahanPutaran = Math.floor(Math.random() * 360) + 1800; 
+        currentRotation += tambahanPutaran;
+        
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-        const interval = setInterval(() => {
-            // Pilih nama & warna acak
-            const namaAcak = listNama[Math.floor(Math.random() * listNama.length)];
-            const warnaAcak = colors[Math.floor(Math.random() * colors.length)];
+        // Tunggu animasi selesai (5 detik sesuai CSS)
+        setTimeout(() => {
+            spinBtn.disabled = false;
             
-            display.innerText = namaAcak;
-            display.style.color = warnaAcak;
-            counter++;
+            // Hitung siapa yang kena jarum (jarum ada di atas / 270 derajat)
+            const actualDeg = currentRotation % 360;
+            const arc = 360 / names.length;
+            const index = Math.floor((360 - (actualDeg % 360)) / arc) % names.length;
+            const pemenang = names[index];
 
-            if (counter >= totalPutaran) {
-                clearInterval(interval);
-                const pemenang = listNama[Math.floor(Math.random() * listNama.length)];
-                
-                // Pop-up Pemenang
-                Swal.fire({
-                    title: 'Selamat!',
-                    html: `Pemenangnya adalah:<br><b style="font-size: 40px; color: #e91e63;">${pemenang}</b>`,
-                    icon: 'success',
-                    confirmButtonText: 'Mantap!',
-                    backdrop: `rgba(0,0,123,0.4) url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXF6em80eXN6eXN6eXN6eXN6eXN6eXN6eXN6eXN6eXN6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/l41lI4bYI3pY7zZ2k/giphy.gif") left top no-repeat`
-                });
-                display.innerText = "Selesai!";
-                display.style.color = "#333";
-            }
-        }, 100);
+            Swal.fire({
+                title: '🎉 PEMENANGNYA 🎉',
+                html: `<h1 style="color:#e74c3c">${pemenang}</h1>`,
+                icon: 'success',
+                confirmButtonText: 'Selamat!'
+            });
+        }, 5000);
     }
 </script>
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ARISAN BULANAN 500K - Pro Version</title>
+    <title>ARISAN BULANAN 500K</title>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -11,388 +11,400 @@
     <style>
         :root {
             --bg: #0f172a;
-            --card: #1e293b;
+            --glass: rgba(30, 41, 59, 0.7);
             --accent: #facc15;
+            --secondary: #38bdf8;
             --success: #22c55e;
             --text-muted: #94a3b8;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
             color: white;
-            text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
+            min-height: 100vh;
         }
 
-        h1 { color: var(--accent); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 15px; }
+        .container { max-width: 500px; margin: auto; }
+
+        header { text-align: center; margin-bottom: 25px; }
+        h1 { color: var(--accent); margin: 0; font-size: 24px; letter-spacing: 2px; }
+        .subtitle { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
 
         .card {
-            background: var(--card);
-            border-radius: 16px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
             padding: 20px;
-            margin: 15px auto;
-            max-width: 450px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
         }
 
-        .wheelBox { position: relative; width: 320px; margin: auto; }
+        /* WHEEL STYLE */
+        .wheelBox { position: relative; width: 280px; margin: 20px auto; }
         canvas { 
-            width: 100%; 
-            border-radius: 50%; 
-            background: #111827; 
-            border: 5px solid #334155;
+            width: 100%; border-radius: 50%; 
+            border: 8px solid #334155;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
             transition: transform 6s cubic-bezier(0.15, 0, 0.15, 1);
         }
-
         .pointer {
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #ef4444;
-            z-index: 10;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 15px solid transparent;
+            border-right: 15px solid transparent; border-top: 30px solid #ef4444; 
+            z-index: 10; drop-shadow: 0 4px 5px black;
         }
 
-        .spinBtn {
-            margin-top: 20px;
-            padding: 16px 45px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            background: var(--success);
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s;
+        /* GLASS STYLE */
+        .glass-mode { display: none; padding: 30px 10px; text-align: center; }
+        .cup-container { font-size: 80px; display: inline-block; cursor: pointer; transition: 0.1s; }
+        .shaking { animation: shake 0.15s infinite; }
+        @keyframes shake {
+            0% { transform: rotate(0deg) translate(2px, 2px); }
+            50% { transform: rotate(-10deg) translate(-2px, -2px); }
+            100% { transform: rotate(10deg) translate(2px, -2px); }
         }
 
-        .spinBtn:active { transform: scale(0.95); }
-        .spinBtn:disabled { background: #475569; cursor: not-allowed; }
+        /* TABS */
+        .tab-container { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab { 
+            flex: 1; padding: 10px; border-radius: 12px; border: none; 
+            background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: pointer;
+            font-weight: bold; font-size: 12px; transition: 0.3s;
+        }
+        .tab.active { background: var(--secondary); color: white; }
 
-        .member {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #334155;
-            align-items: center;
+        .btn-main {
+            width: 100%; padding: 15px; border-radius: 15px; border: none;
+            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+            color: white; font-weight: bold; font-size: 16px; cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.3);
         }
 
-        .winner { color: var(--text-muted); text-decoration: line-through; opacity: 0.6; }
-        .tag { background: var(--accent); color: black; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: bold; }
+        /* STATS & LIST */
+        .stat-row { margin-bottom: 15px; text-align: left; }
+        .bar-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px; margin-top: 5px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--secondary); border-radius: 10px; transition: width 1s ease-out; }
         
-        .bar-container { background: #334155; border-radius: 10px; height: 8px; overflow: hidden; margin-top: 5px; }
-        .bar { background: #38bdf8; height: 100%; border-radius: 10px; transition: width 0.5s; }
+        .history-list { font-size: 12px; max-height: 150px; overflow-y: auto; padding-right: 5px; }
+        .history-item { 
+            display: flex; justify-content: space-between; padding: 8px 0; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+        }
 
-        .small { font-size: 12px; color: var(--text-muted); }
-        .history-item { font-size: 13px; padding: 5px 0; border-bottom: 1px dashed #334155; display: flex; justify-content: space-between; }
-        
-        .resetBtn { margin-top: 20px; font-size: 12px; background: none; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline; }
-        .rules { text-align: left; font-size: 13px; line-height: 1.6; }
-        hr { border: 0; border-top: 1px solid #334155; margin: 15px 0; }
+        .rules-list { text-align: left; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .rules-list b { color: var(--accent); }
+
+        .reset-link { margin-top: 30px; font-size: 11px; color: #334155; cursor: pointer; text-decoration: none; }
     </style>
 </head>
-
 <body>
 
-    <h1>ARISAN BULANAN 500K</h1>
-    <div class="subtitle">Ketua: Idam | <span id="bulanText"></span></div>
+<div class="container">
+    <header>
+        <h1>ARISAN ELITE</h1>
+        <div class="subtitle">Ketua: Idam • <span id="displayBulan"></span></div>
+    </header>
 
     <div class="card">
-        <div class="wheelBox">
-            <div class="pointer"></div>
-            <canvas id="wheel" width="500" height="500"></canvas>
+        <div class="tab-container">
+            <button class="tab active" onclick="switchMode('wheel', this)">🎡 RODA PUTAR</button>
+            <button class="tab" onclick="switchMode('glass', this)">🥤 KOCOK GELAS</button>
         </div>
-        <button id="btnSpin" class="spinBtn" onclick="startSpin()">PUTAR SEKARANG</button>
-        <div id="progressSpin" class="small" style="margin-top:10px"></div>
+
+        <div id="wheelSection">
+            <div class="wheelBox">
+                <div class="pointer"></div>
+                <canvas id="wheel" width="500" height="500"></canvas>
+            </div>
+            <button class="btn-main" onclick="initAction('wheel')">SPIN SEKARANG</button>
+        </div>
+
+        <div id="glassSection" class="glass-mode">
+            <div id="cupEmoji" class="cup-container">🥤</div>
+            <div id="glassStatus" style="margin: 20px 0; font-weight: bold; color: var(--accent); height: 24px;">Siap Mengocok?</div>
+            <button class="btn-main" onclick="initAction('glass')">KOCOK GELAS</button>
+        </div>
+        
+        <p id="progressInfo" style="font-size: 12px; color: var(--text-muted); margin-top: 15px;"></p>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0">Statistik & Histori</h3>
-        <div id="statList"></div>
+        <h3 style="margin-top:0; border-left: 4px solid var(--accent); padding-left: 10px;">Statistik Suara</h3>
+        <div id="statsUI"></div>
+        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:20px 0;">
+        <h4 style="margin:0 0 10px 0;">Histori Aktivitas</h4>
+        <div class="history-list" id="historyUI"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0">Daftar Peserta</h3>
-        <div id="memberList"></div>
+        <h3 style="margin-top:0; border-left: 4px solid var(--secondary); padding-left: 10px;">Daftar Peserta</h3>
+        <div id="membersUI"></div>
     </div>
 
     <div class="card">
-        <h3>Aturan Arisan</h3>
-        <div class="rules">
+        <h3 style="margin-top:0; border-left: 4px solid var(--success); padding-left: 10px;">Aturan Resmi</h3>
+        <div class="rules-list">
             <ol>
-                <li>Pilih nama Anda sebelum memutar (1x per bulan).</li>
-                <li>Pemenang bulan ini adalah pemilik <b>suara terbanyak</b> dari hasil spin semua anggota.</li>
-                <li>Ketua (Idam) menang otomatis di bulan pertama.</li>
-                <li>Peserta yang sudah menang tidak akan muncul di roda.</li>
+                <li><b>Nominal:</b> Iuran arisan sebesar Rp500.000 per bulan.</li>
+                <li><b>Mekanisme:</b> Pemenang ditentukan melalui <b>Voting System</b>. Setiap anggota melakukan spin dan mendapatkan 1 nama.</li>
+                <li><b>Pemenang:</b> Anggota yang mendapatkan total suara terbanyak di akhir bulan sah menjadi pemenang.</li>
+                <li><b>Seru-seruan:</b> Anggota boleh melakukan spin berkali-kali untuk hiburan, namun <b>hasil pilihan suara tetap mengacu pada spin pertama</b>.</li>
+                <li><b>Transparansi:</b> Semua aktivitas tercatat di riwayat untuk menghindari manipulasi.</li>
+                <li><b>Ketua:</b> Saudara <b>Idam</b> otomatis menang pada bulan Maret sebagai pembuka.</li>
             </ol>
         </div>
     </div>
 
-    <button class="resetBtn" onclick="resetSystem()">Reset Sistem (Admin)</button>
+    <center><a class="reset-link" onclick="handleReset()">Reset System Admin</a></center>
+</div>
 
-    <script>
-        const RESET_PIN = "080522";
-        const NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+<script>
+    const NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+    const RESET_PIN = "080522";
 
-        const canvas = document.getElementById("wheel");
-        const ctx = canvas.getContext("2d");
-        const btnSpin = document.getElementById("btnSpin");
+    let winnerData = JSON.parse(localStorage.getItem("winnerData")) || {};
+    let voteData = JSON.parse(localStorage.getItem("voteData")) || {};
+    let spinResults = JSON.parse(localStorage.getItem("spinResults")) || {};
+    
+    let isBusy = false;
+    let rotation = 0;
 
-        let currentRotation = 0;
-        let isSpinning = false;
-
-        // Load Data
-        let winnerData = JSON.parse(localStorage.getItem("winnerData")) || {};
-        let voteData = JSON.parse(localStorage.getItem("voteData")) || {};
-        let spinResults = JSON.parse(localStorage.getItem("spinResults")) || {};
-
-        function getMonthName() {
-            const m = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            return m[new Date().getMonth()];
-        }
-
-        document.getElementById("bulanText").innerText = "Bulan " + getMonthName();
-
-        // Inisialisasi Kemenangan Pertama (Ketua)
+    // -- INIT --
+    function init() {
+        const bln = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        document.getElementById("displayBulan").innerText = "Bulan " + bln[new Date().getMonth()];
+        
         if (!winnerData["Idam"]) {
             winnerData["Idam"] = "Maret";
-            localStorage.setItem("winnerData", JSON.stringify(winnerData));
+            save();
         }
-
-        function getActiveNames() {
-            return NAMES.filter(n => !winnerData[n]);
-        }
-
-        function drawWheel() {
-            const names = getActiveNames();
-            const total = names.length;
-            
-            ctx.clearRect(0, 0, 500, 500);
-            if (total === 0) {
-                ctx.fillStyle = "white";
-                ctx.font = "bold 24px Arial";
-                ctx.textAlign = "center";
-                ctx.fillText("SEMUA SUDAH MENANG", 250, 250);
-                return;
-            }
-
-            const arc = (2 * Math.PI) / total;
-
-            names.forEach((name, i) => {
-                const angle = i * arc;
-                // Draw Slices
-                ctx.beginPath();
-                ctx.fillStyle = `hsl(${(i * 360 / total)}, 70%, 45%)`;
-                ctx.moveTo(250, 250);
-                ctx.arc(250, 250, 245, angle - Math.PI/2, (angle + arc) - Math.PI/2);
-                ctx.fill();
-                ctx.strokeStyle = "#1e293b";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                // Draw Text
-                ctx.save();
-                ctx.translate(250, 250);
-                ctx.rotate(angle + arc/2 - Math.PI/2);
-                ctx.fillStyle = "white";
-                ctx.font = "bold 18px Arial";
-                ctx.textAlign = "right";
-                ctx.fillText(name, 220, 8);
-                ctx.restore();
-            });
-        }
-
-        async function startSpin() {
-            if (isSpinning) return;
-
-            // Filter siapa yang boleh spin: Belum menang & Belum spin bulan ini
-            const eligibleToSpin = NAMES.filter(n => !winnerData[n] && !spinResults[n]);
-            
-            if (eligibleToSpin.length === 0) {
-                Swal.fire("Info", "Semua peserta aktif sudah melakukan spin bulan ini.", "info");
-                return;
-            }
-
-            const options = {};
-            eligibleToSpin.forEach(n => options[n] = n);
-
-            const { value: user } = await Swal.fire({
-                title: "Siapa Anda?",
-                input: "select",
-                inputOptions: options,
-                inputPlaceholder: '-- Pilih Nama --',
-                showCancelButton: true,
-                confirmButtonText: 'Lanjut',
-                confirmButtonColor: '#22c55e'
-            });
-
-            if (user) {
-                performSpin(user);
-            }
-        }
-
-        function performSpin(userName) {
-            isSpinning = true;
-            btnSpin.disabled = true;
-
-            const names = getActiveNames();
-            const totalSlices = names.length;
-            const targetIndex = Math.floor(Math.random() * totalSlices);
-            const winnerName = names[targetIndex];
-
-            // Kalkulasi Rotasi: 
-            // 360/total = derajat per slice. 
-            // Kita ingin jarum berhenti di tengah slice target.
-            const sliceDeg = 360 / totalSlices;
-            const extraDeg = (360 * 8); // Putar 8 kali biar dramatis
-            const stopAt = 360 - (targetIndex * sliceDeg) - (sliceDeg / 2);
-            
-            currentRotation += extraDeg + (stopAt - (currentRotation % 360));
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                isSpinning = false;
-                btnSpin.disabled = false;
-
-                // Simpan Data
-                spinResults[userName] = winnerName;
-                voteData[winnerName] = (voteData[winnerName] || 0) + 1;
-
-                localStorage.setItem("spinResults", JSON.stringify(spinResults));
-                localStorage.setItem("voteData", JSON.stringify(voteData));
-
-                Swal.fire({
-                    title: "Hasil Spin " + userName,
-                    html: `Anda memilih suara untuk: <br><h2 style="color:#facc15">${winnerName}</h2>`,
-                    icon: "success"
-                });
-
-                refreshUI();
-                checkRoundWinner();
-            }, 6500);
-        }
-
-        function checkRoundWinner() {
-            const totalActive = getActiveNames().length;
-            const totalSpinDone = Object.keys(spinResults).length;
-
-            if (totalSpinDone >= totalActive) {
-                let maxVote = -1;
-                let potentialWinner = "";
-
-                for (let n in voteData) {
-                    if (voteData[n] > maxVote) {
-                        maxVote = voteData[n];
-                        potentialWinner = n;
-                    }
-                }
-
-                if (potentialWinner) {
-                    winnerData[potentialWinner] = getMonthName();
-                    localStorage.setItem("winnerData", JSON.stringify(winnerData));
-                    
-                    // Reset spin bulan ini untuk bulan depan, tapi statistik tetap tampil dulu
-                    // localStorage.removeItem("spinResults"); 
-                    // localStorage.removeItem("voteData");
-
-                    Swal.fire({
-                        title: "🎉 PEMENANG BULAN INI 🎉",
-                        html: `<h1 style="color:#facc15">${potentialWinner}</h1><p>Selamat kepada pemenang!</p>`,
-                        confirmButtonText: 'Mantap!'
-                    });
-
-                    confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
-                    refreshUI();
-                }
-            }
-        }
-
-        function refreshUI() {
-            drawWheel();
-            renderMembers();
-            renderStats();
-            
-            const totalActive = getActiveNames().length;
-            const done = Object.keys(spinResults).length;
-            document.getElementById("progressSpin").innerText = `${done} dari ${totalActive} peserta sudah spin`;
-        }
-
-        function renderMembers() {
-            let html = "";
-            NAMES.forEach(n => {
-                const isWinner = winnerData[n];
-                html += `
-                    <div class="member ${isWinner ? 'winner' : ''}">
-                        <span>${isWinner ? '✅' : '👤'} ${n}</span>
-                        ${isWinner ? `<span class="tag">${winnerData[n]}</span>` : ''}
-                    </div>`;
-            });
-            document.getElementById("memberList").innerHTML = html;
-        }
-
-        function renderStats() {
-            let html = "<h4>Akumulasi Suara:</h4>";
-            let max = 0;
-            const entries = Object.entries(voteData);
-
-            entries.forEach(([_, val]) => { if (val > max) max = val; });
-
-            if (entries.length === 0) {
-                html += "<div class='small'>Belum ada suara masuk.</div>";
-            } else {
-                entries.sort((a,b) => b[1] - a[1]).forEach(([name, count]) => {
-                    const width = (count / max) * 100;
-                    html += `
-                        <div style="margin-bottom:12px; text-align:left">
-                            <div style="display:flex; justify-content:space-between; font-size:13px">
-                                <span>${name}</span>
-                                <b>${count} Suara</b>
-                            </div>
-                            <div class="bar-container"><div class="bar" style="width:${width}%"></div></div>
-                        </div>`;
-                });
-            }
-
-            html += "<hr><h4>Histori Putaran:</h4>";
-            const history = Object.keys(spinResults);
-            if (history.length === 0) {
-                html += "<div class='small'>Belum ada histori.</div>";
-            } else {
-                history.forEach(pelihat => {
-                    html += `
-                        <div class="history-item">
-                            <span>👤 ${pelihat}</span>
-                            <span>➔ ${spinResults[pelihat]}</span>
-                        </div>`;
-                });
-            }
-            document.getElementById("statList").innerHTML = html;
-        }
-
-        async function resetSystem() {
-            const { value: pin } = await Swal.fire({
-                title: "PIN Admin",
-                input: "password",
-                inputAttributes: { autofocus: 'on' }
-            });
-
-            if (pin === RESET_PIN) {
-                localStorage.clear();
-                Swal.fire("Sistem Direset!", "Semua data telah dihapus.", "success").then(() => location.reload());
-            } else {
-                Swal.fire("Gagal", "PIN Salah!", "error");
-            }
-        }
-
-        // Initial Run
         refreshUI();
-    </script>
+    }
+
+    function save() {
+        localStorage.setItem("winnerData", JSON.stringify(winnerData));
+        localStorage.setItem("voteData", JSON.stringify(voteData));
+        localStorage.setItem("spinResults", JSON.stringify(spinResults));
+    }
+
+    function getActiveNames() {
+        return NAMES.filter(n => !winnerData[n]);
+    }
+
+    // -- UI LOGIC --
+    function switchMode(mode, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        if(mode === 'wheel') {
+            document.getElementById('wheelSection').style.display = 'block';
+            document.getElementById('glassSection').style.display = 'none';
+        } else {
+            document.getElementById('wheelSection').style.display = 'none';
+            document.getElementById('glassSection').style.display = 'block';
+        }
+    }
+
+    function drawWheel() {
+        const canvas = document.getElementById("wheel");
+        const ctx = canvas.getContext("2d");
+        const names = getActiveNames();
+        if (names.length === 0) return;
+
+        const arc = (2 * Math.PI) / names.length;
+        ctx.clearRect(0,0,500,500);
+
+        names.forEach((name, i) => {
+            const angle = i * arc;
+            ctx.beginPath();
+            ctx.fillStyle = i % 2 === 0 ? "#1e293b" : "#334155";
+            ctx.moveTo(250,250);
+            ctx.arc(250, 250, 245, angle - Math.PI/2, (angle + arc) - Math.PI/2);
+            ctx.fill();
+            
+            ctx.save();
+            ctx.translate(250,250);
+            ctx.rotate(angle + arc/2 - Math.PI/2);
+            ctx.fillStyle = i % 2 === 0 ? varToHex('--secondary') : 'white';
+            ctx.font = "bold 18px Inter";
+            ctx.textAlign = "right";
+            ctx.fillText(name, 220, 8);
+            ctx.restore();
+        });
+    }
+
+    function varToHex(v) { return v === '--secondary' ? '#38bdf8' : '#facc15'; }
+
+    async function initAction(mode) {
+        if (isBusy) return;
+        
+        const activeNames = getActiveNames();
+        const options = {};
+        NAMES.filter(n => !winnerData[n]).forEach(n => options[n] = n);
+
+        const { value: user } = await Swal.fire({
+            title: 'Konfirmasi Identitas',
+            text: 'Pilih nama Anda untuk memulai',
+            input: 'select',
+            inputOptions: options,
+            confirmButtonColor: '#22c55e',
+            background: '#1e293b',
+            color: '#fff'
+        });
+
+        if (user) {
+            let result;
+            const names = getActiveNames();
+            
+            // Jika sudah pernah spin, ambil hasil lama
+            if (spinResults[user]) {
+                result = spinResults[user];
+            } else {
+                result = names[Math.floor(Math.random() * names.length)];
+                spinResults[user] = result;
+                voteData[result] = (voteData[result] || 0) + 1;
+                save();
+            }
+
+            if (mode === 'wheel') runWheel(result);
+            else runGlass(result);
+        }
+    }
+
+    function runWheel(targetName) {
+        isBusy = true;
+        const names = getActiveNames();
+        const idx = names.indexOf(targetName);
+        const slice = 360 / names.length;
+        const stopAt = 360 - (idx * slice) - (slice / 2);
+        
+        rotation += (360 * 6) + (stopAt - (rotation % 360));
+        document.getElementById("wheel").style.transform = `rotate(${rotation}deg)`;
+
+        setTimeout(() => {
+            isBusy = false;
+            showResult(targetName);
+        }, 6500);
+    }
+
+    function runGlass(targetName) {
+        isBusy = true;
+        const cup = document.getElementById("cupEmoji");
+        const status = document.getElementById("glassStatus");
+        
+        cup.classList.add("shaking");
+        status.innerText = "Mengocok Gelas...";
+
+        setTimeout(() => {
+            cup.classList.remove("shaking");
+            status.innerText = "Dapat Kertas: " + targetName;
+            isBusy = false;
+            showResult(targetName);
+        }, 3000);
+    }
+
+    function showResult(name) {
+        Swal.fire({
+            title: 'Hasil Spin',
+            html: `Pilihan Anda jatuh kepada: <br><h1 style="color:#facc15">${name}</h1>`,
+            icon: 'success',
+            background: '#1e293b',
+            color: '#fff'
+        });
+        refreshUI();
+        checkWinnerFinal();
+    }
+
+    function checkWinnerFinal() {
+        const active = getActiveNames().length;
+        const done = Object.keys(spinResults).length;
+        
+        if (done >= active && active > 0) {
+            let max = -1; let win = "";
+            for (let n in voteData) {
+                if (voteData[n] > max) { max = voteData[n]; win = n; }
+            }
+            
+            const bln = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][new Date().getMonth()];
+            winnerData[win] = bln;
+            save();
+            
+            setTimeout(() => {
+                Swal.fire({
+                    title: '🎉 PEMENANG SAH 🎉',
+                    html: `<h1 style="color:#facc15">${win}</h1><p>Berhak mendapatkan uang arisan bulan ini!</p>`,
+                    confirmButtonText: 'Selamat!',
+                    background: '#1e293b',
+                    color: '#fff'
+                });
+                confetti({ particleCount: 300, spread: 70, origin: { y: 0.6 } });
+                refreshUI();
+            }, 1000);
+        }
+    }
+
+    function refreshUI() {
+        drawWheel();
+        
+        // Render Stats
+        let statsHtml = "";
+        const sortedVotes = Object.entries(voteData).sort((a,b) => b[1] - a[1]);
+        const maxV = sortedVotes.length > 0 ? sortedVotes[0][1] : 1;
+
+        sortedVotes.forEach(([name, count]) => {
+            const prc = (count / maxV) * 100;
+            statsHtml += `
+                <div class="stat-row">
+                    <div style="display:flex; justify-content:space-between; font-size:12px">
+                        <span>${name}</span><span><b>${count} Suara</b></span>
+                    </div>
+                    <div class="bar-bg"><div class="bar-fill" style="width:${prc}%"></div></div>
+                </div>`;
+        });
+        document.getElementById("statsUI").innerHTML = statsHtml || "<p class='small'>Belum ada suara.</p>";
+
+        // Render History
+        let histHtml = "";
+        Object.keys(spinResults).reverse().forEach(p => {
+            histHtml += `<div class="history-item"><span>👤 ${p}</span><span>memilih ➔ <b>${spinResults[p]}</b></span></div>`;
+        });
+        document.getElementById("historyUI").innerHTML = histHtml || "Belum ada aktivitas.";
+
+        // Render Members
+        let memHtml = "";
+        NAMES.forEach(n => {
+            const isW = winnerData[n];
+            memHtml += `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); ${isW ? 'opacity:0.5' : ''}">
+                    <span>${isW ? '👑' : '⚪'} ${n}</span>
+                    ${isW ? `<span style="background:var(--accent); color:black; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:bold">${winnerData[n]}</span>` : ''}
+                </div>`;
+        });
+        document.getElementById("membersUI").innerHTML = memHtml;
+
+        const active = getActiveNames().length;
+        const done = Object.keys(spinResults).length;
+        document.getElementById("progressInfo").innerText = `${done} dari ${active} suara terkumpul`;
+    }
+
+    async function handleReset() {
+        const { value: pin } = await Swal.fire({
+            title: 'Admin PIN',
+            input: 'password',
+            background: '#1e293b',
+            color: '#fff'
+        });
+        if (pin === RESET_PIN) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    init();
+</script>
+
 </body>
 </html>

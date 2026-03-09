@@ -23,13 +23,12 @@ padding:20px;
 
 h1{
 color:#facc15;
-margin-bottom:5px;
 }
 
 .subtitle{
 font-size:14px;
 color:#94a3b8;
-margin-bottom:15px;
+margin-bottom:10px;
 }
 
 .card{
@@ -37,13 +36,7 @@ background:#1e293b;
 border-radius:12px;
 padding:15px;
 margin:15px auto;
-max-width:420px;
-}
-
-.wheelBox{
-position:relative;
-width:320px;
-margin:auto;
+max-width:450px;
 }
 
 canvas{
@@ -64,8 +57,12 @@ height:0;
 border-left:14px solid transparent;
 border-right:14px solid transparent;
 border-top:24px solid red;
+}
 
-z-index:10;
+.wheelBox{
+position:relative;
+width:320px;
+margin:auto;
 }
 
 .spinBtn{
@@ -84,19 +81,6 @@ display:flex;
 justify-content:space-between;
 padding:8px;
 border-bottom:1px solid #334155;
-}
-
-.winner{
-color:#64748b;
-text-decoration:line-through;
-}
-
-.tag{
-background:#facc15;
-color:black;
-font-size:11px;
-padding:2px 6px;
-border-radius:4px;
 }
 
 .bar{
@@ -120,10 +104,25 @@ color:#94a3b8;
 cursor:pointer;
 }
 
-.rules{
-text-align:left;
-font-size:13px;
-line-height:1.6;
+.payCheck{
+cursor:pointer;
+}
+
+.winnerBox{
+
+font-size:30px;
+font-weight:bold;
+margin:10px;
+
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{color:red}
+25%{color:yellow}
+50%{color:lime}
+75%{color:cyan}
+100%{color:magenta}
 }
 
 </style>
@@ -136,14 +135,18 @@ line-height:1.6;
 
 <div id="bulanText"></div>
 
+<div id="winnerBox" class="winnerBox"></div>
+
 <div class="card">
 
 <div class="wheelBox">
+
 <div class="pointer"></div>
 <canvas id="wheel" width="500" height="500"></canvas>
+
 </div>
 
-<button class="spinBtn" onclick="startSpin()">SPIN/PUTAR PESERTA</button>
+<button class="spinBtn" onclick="startSpin()">SPIN / PUTAR</button>
 
 <div id="progressSpin" class="small"></div>
 
@@ -151,7 +154,18 @@ line-height:1.6;
 
 <div class="card">
 
+<h3>Daftar Pembayaran Bulan Ini</h3>
+
+<div id="payList"></div>
+
+<button onclick="adminMode()">Edit Pembayaran (Admin)</button>
+
+</div>
+
+<div class="card">
+
 <h3>Daftar Peserta</h3>
+
 <div id="memberList"></div>
 
 </div>
@@ -159,39 +173,16 @@ line-height:1.6;
 <div class="card">
 
 <h3>Statistik Voting</h3>
+
 <div id="statList"></div>
 
 </div>
 
 <div class="card">
 
-<h3>Aturan Arisan</h3>
+<h3>Riwayat Spin</h3>
 
-<div class="rules">
-
-<ol>
-
-<li>Setiap peserta memilih namanya sendiri sebelum melakukan SPIN/PUTAR.</li>
-
-<li>Setiap peserta hanya boleh melakukan <b>1 kali SPIN/PUTAR dalam satu bulan</b>.</li>
-
-<li>Jika peserta mencoba SPIN/PUTAR lagi, sistem hanya akan menampilkan hasil SPIN/PUTAR sebelumnya.</li>
-
-<li>Setiap SPIN/PUTAR dihitung sebagai <b>1 suara</b>.</li>
-
-<li>Pemenang bulan ini adalah peserta dengan <b>jumlah suara terbanyak</b>.</li>
-
-<li>Peserta yang sudah pernah menang tidak akan muncul lagi di wheel.</li>
-
-<li>Ketua arisan <b>Idam</b> otomatis menjadi pemenang pada bulan pertama sesuai kesepakatan bersama.</li>
-
-<li>Setelah semua peserta melakukan SPIN/PUTAR, sistem otomatis menentukan pemenang bulan tersebut.</li>
-
-<li>Reset sistem hanya dapat dilakukan menggunakan <b>kode khusus</b> oleh Ketua.</li>
-
-</ol>
-
-</div>
+<div id="spinHistory"></div>
 
 </div>
 
@@ -200,6 +191,7 @@ line-height:1.6;
 <script>
 
 const RESET_PIN="080522"
+const ADMIN_PIN="080522"
 
 const NAMES=[
 "Idam","Aki","Daeli","Ros","Dewi",
@@ -211,10 +203,12 @@ const ctx=canvas.getContext("2d")
 
 let rotation=0
 let spinning=false
+let admin=false
 
 let winnerData=JSON.parse(localStorage.getItem("winnerData"))||{}
 let voteData=JSON.parse(localStorage.getItem("voteData"))||{}
 let spinResults=JSON.parse(localStorage.getItem("spinResults"))||{}
+let payData=JSON.parse(localStorage.getItem("payData"))||{}
 
 function getMonth(){
 
@@ -230,10 +224,9 @@ return m[new Date().getMonth()]
 
 document.getElementById("bulanText").innerText="Bulan "+getMonth()
 
-if(!winnerData["Idam"]){
+if(getMonth()=="Maret" && !winnerData["Idam"]){
 
 winnerData["Idam"]="Maret"
-
 localStorage.setItem("winnerData",JSON.stringify(winnerData))
 
 }
@@ -251,11 +244,9 @@ const names=getActiveNames()
 if(names.length===0){
 
 ctx.clearRect(0,0,500,500)
-
 ctx.fillStyle="white"
 ctx.font="28px Arial"
 ctx.textAlign="center"
-
 ctx.fillText("SEMUA SUDAH MENANG",250,250)
 
 return
@@ -277,6 +268,7 @@ ctx.arc(250,250,250,angle-Math.PI/2,(angle+arc)-Math.PI/2)
 ctx.fill()
 
 ctx.save()
+
 ctx.translate(250,250)
 ctx.rotate(angle+arc/2-Math.PI/2)
 
@@ -296,6 +288,13 @@ async function startSpin(){
 
 if(spinning)return
 
+if(getWinnerMonth()){
+
+Swal.fire("Bulan ini sudah ada pemenang!")
+return
+
+}
+
 const {value:name}=await Swal.fire({
 title:"Pilih Nama Anda",
 input:"select",
@@ -304,7 +303,7 @@ inputOptions:NAMES
 
 if(spinResults[name]){
 
-Swal.fire("Hasil SPIN/PUTAR Anda Bulan Ini",spinResults[name])
+Swal.fire("Anda sudah spin",spinResults[name])
 return
 
 }
@@ -321,7 +320,7 @@ const names=getActiveNames()
 
 let random=Math.floor(Math.random()*360)
 
-rotation+=360*12+random
+rotation+=360*10+random
 
 canvas.style.transform=`rotate(${rotation}deg)`
 
@@ -329,26 +328,23 @@ setTimeout(()=>{
 
 const slice=360/names.length
 const stop=rotation%360
-
 const index=Math.floor((360-stop)/slice)%names.length
 
 const winner=names[index]
 
 spinResults[name]=winner
-
 voteData[winner]=(voteData[winner]||0)+1
 
 localStorage.setItem("spinResults",JSON.stringify(spinResults))
 localStorage.setItem("voteData",JSON.stringify(voteData))
 
-Swal.fire("Hasil SPIN/PUTAR Anda",winner)
+Swal.fire("Hasil Spin Anda",winner)
 
 spinning=false
 
 drawWheel()
-renderStats()
-renderMembers()
-renderProgress()
+
+renderAll()
 
 checkWinner()
 
@@ -361,7 +357,7 @@ function checkWinner(){
 const total=NAMES.length-1
 const done=Object.keys(spinResults).length
 
-if(done===total){
+if(done===total && !getWinnerMonth()){
 
 let max=0
 let winner=""
@@ -369,8 +365,10 @@ let winner=""
 for(let n in voteData){
 
 if(voteData[n]>max){
+
 max=voteData[n]
 winner=n
+
 }
 
 }
@@ -379,15 +377,36 @@ winnerData[winner]=getMonth()
 
 localStorage.setItem("winnerData",JSON.stringify(winnerData))
 
-Swal.fire({
-title:"PEMENANG BULAN "+getMonth(),
-html:`<h1 style="color:#facc15">${winner}</h1>`
-})
-
 confetti({
 particleCount:200,
 spread:100
 })
+
+renderWinner()
+
+}
+
+}
+
+function getWinnerMonth(){
+
+for(let n in winnerData){
+
+if(winnerData[n]==getMonth()) return n
+
+}
+
+return null
+
+}
+
+function renderWinner(){
+
+const w=getWinnerMonth()
+
+if(w){
+
+document.getElementById("winnerBox").innerHTML="PEMENANG BULAN INI<br>"+w
 
 }
 
@@ -401,20 +420,11 @@ NAMES.forEach(n=>{
 
 if(winnerData[n]){
 
-html+=`
-<div class="member winner">
-<span>✔ ${n}</span>
-<span class="tag">${winnerData[n]}</span>
-</div>
-`
+html+=`<div class="member">${n} ✔ (${winnerData[n]})</div>`
 
 }else{
 
-html+=`
-<div class="member">
-<span>⭕ ${n}</span>
-</div>
-`
+html+=`<div class="member">${n}</div>`
 
 }
 
@@ -431,7 +441,9 @@ let html=""
 let max=0
 
 for(let n in voteData){
+
 if(voteData[n]>max)max=voteData[n]
+
 }
 
 for(let n in voteData){
@@ -441,15 +453,91 @@ let v=voteData[n]
 let w=(v/max)*100
 
 html+=`
+
 <div>
+
 ${n} (${v})
+
 <div class="bar" style="width:${w}%"></div>
+
 </div>
+
 `
 
 }
 
 document.getElementById("statList").innerHTML=html
+
+}
+
+function renderHistory(){
+
+let html=""
+
+for(let n in spinResults){
+
+html+=`<div>${n} → ${spinResults[n]}</div>`
+
+}
+
+document.getElementById("spinHistory").innerHTML=html
+
+}
+
+function renderPay(){
+
+let html=""
+
+NAMES.forEach(n=>{
+
+let checked=payData[n]?"✔":"❌"
+
+html+=`<div class="member">
+
+<span>${n}</span>
+
+<span class="payCheck" onclick="togglePay('${n}')">${checked}</span>
+
+</div>`
+
+})
+
+document.getElementById("payList").innerHTML=html
+
+}
+
+function togglePay(n){
+
+if(!admin)return
+
+payData[n]=!payData[n]
+
+localStorage.setItem("payData",JSON.stringify(payData))
+
+renderPay()
+
+}
+
+async function adminMode(){
+
+const {value:pin}=await Swal.fire({
+
+title:"PIN Admin",
+input:"password"
+
+})
+
+if(pin===ADMIN_PIN){
+
+admin=true
+
+Swal.fire("Mode Admin Aktif")
+
+}else{
+
+Swal.fire("PIN Salah")
+
+}
 
 }
 
@@ -459,6 +547,7 @@ const total=NAMES.length-1
 const done=Object.keys(spinResults).length
 
 document.getElementById("progressSpin").innerText=
+
 done+" / "+total+" peserta sudah spin"
 
 }
@@ -466,29 +555,36 @@ done+" / "+total+" peserta sudah spin"
 async function resetSystem(){
 
 const {value:pin}=await Swal.fire({
-title:"Masukkan Kode Reset",
+title:"Masukkan PIN Reset",
 input:"password"
 })
 
 if(pin!==RESET_PIN){
 
-Swal.fire("Kode Salah")
+Swal.fire("PIN Salah")
 return
 
 }
 
 localStorage.clear()
 
-Swal.fire("Sistem Direset")
-
 location.reload()
 
 }
 
-drawWheel()
+function renderAll(){
+
 renderMembers()
 renderStats()
+renderHistory()
 renderProgress()
+renderPay()
+renderWinner()
+
+}
+
+drawWheel()
+renderAll()
 
 </script>
 

@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arisan Digital Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: #333; margin-bottom: 20px; }
+        textarea { width: 100%; height: 150px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #ddd; padding: 15px; box-sizing: border-box; font-size: 16px; resize: none; }
+        textarea:focus { border-color: #007bff; outline: none; }
+        button { background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: transform 0.2s; }
+        button:active { transform: scale(0.98); }
+        #display-box { margin-top: 25px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: #fafafa; border: 2px dashed #ccc; }
+        #name-display { font-size: 32px; font-weight: 800; transition: color 0.1s; }
+    </style>
+</head>
+<body>
 
+<div class="container">
+    <h2>🎡 Arisan Digital</h2>
+    <textarea id="names" placeholder="Ketik nama peserta di sini...&#10;Contoh:&#10;Budi&#10;Ani&#10;Siti"></textarea>
+    <button onclick="mulaiKocok()">MULAI KOCOK!</button>
+    
+    <div id="display-box">
+        <div id="name-display">Siap?</div>
+    </div>
+</div>
+
+<script>
+    const colors = ['#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#00bcd4', '#009688', '#4caf50', '#ff9800', '#ff5722'];
+
+    function mulaiKocok() {
+        const input = document.getElementById('names').value;
+        const listNama = input.split('\n').map(n => n.trim()).filter(n => n !== "");
+        const display = document.getElementById('name-display');
+
+        if (listNama.length === 0) {
+            Swal.fire('Waduh!', 'Masukkan minimal satu nama dulu ya.', 'warning');
+            return;
+        }
+
+        let counter = 0;
+        const totalPutaran = 20; // Durasi acak
+
+        const interval = setInterval(() => {
+            // Pilih nama & warna acak
+            const namaAcak = listNama[Math.floor(Math.random() * listNama.length)];
+            const warnaAcak = colors[Math.floor(Math.random() * colors.length)];
+            
+            display.innerText = namaAcak;
+            display.style.color = warnaAcak;
+            counter++;
+
+            if (counter >= totalPutaran) {
+                clearInterval(interval);
+                const pemenang = listNama[Math.floor(Math.random() * listNama.length)];
+                
+                // Pop-up Pemenang
+                Swal.fire({
+                    title: 'Selamat!',
+                    html: `Pemenangnya adalah:<br><b style="font-size: 40px; color: #e91e63;">${pemenang}</b>`,
+                    icon: 'success',
+                    confirmButtonText: 'Mantap!',
+                    backdrop: `rgba(0,0,123,0.4) url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueXF6em80eXN6eXN6eXN6eXN6eXN6eXN6eXN6eXN6eXN6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/l41lI4bYI3pY7zZ2k/giphy.gif") left top no-repeat`
+                });
+                display.innerText = "Selesai!";
+                display.style.color = "#333";
+            }
+        }, 100);
+    }
+</script>
+
+</body>
+</html>

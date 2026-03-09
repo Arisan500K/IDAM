@@ -6,25 +6,7 @@
 
 <title>Spin Arisan</title>
 
-<style>
-
-body{
-font-family:Arial;
-background:#020617;
-color:white;
-text-align:center;
-padding:40px;
-}
-
-button{
-padding:20px;
-font-size:20px;
-background:#fbbf24;
-border:none;
-cursor:pointer;
-}
-
-</style>
+<link rel="stylesheet" href="css/wheel.css">
 
 </head>
 
@@ -32,14 +14,26 @@ cursor:pointer;
 
 <h1>SPIN ARISAN</h1>
 
-<button onclick="startSpin()">
-PUTAR RODA
-</button>
+<p id="timer"></p>
+
+<div class="wheel-container">
+
+<canvas id="wheelCanvas" width="500" height="500"></canvas>
+
+</div>
+
+<button onclick="startSpin()">PUTAR RODA</button>
 
 <h2 id="winner"></h2>
 
+<h3>Riwayat Undian</h3>
+
+<div id="logs"></div>
+
 <script src="js/api.js"></script>
+<script src="js/wheel.js"></script>
 <script src="js/spin.js"></script>
+<script src="js/timer.js"></script>
 
 </body>
 </html>

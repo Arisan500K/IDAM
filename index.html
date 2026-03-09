@@ -23,12 +23,13 @@ padding:20px;
 
 h1{
 color:#facc15;
+margin-bottom:5px;
 }
 
 .subtitle{
-color:#94a3b8;
 font-size:14px;
-margin-bottom:10px;
+color:#94a3b8;
+margin-bottom:15px;
 }
 
 .card{
@@ -39,6 +40,12 @@ margin:15px auto;
 max-width:420px;
 }
 
+.wheelBox{
+position:relative;
+width:320px;
+margin:auto;
+}
+
 canvas{
 width:100%;
 border-radius:50%;
@@ -46,28 +53,27 @@ background:#111827;
 transition:transform 7s cubic-bezier(.17,.67,.32,.99);
 }
 
-.wheelBox{
-position:relative;
-width:320px;
-margin:auto;
-}
-
 .pointer{
 position:absolute;
 top:-10px;
 left:50%;
 transform:translateX(-50%);
+width:0;
+height:0;
+
 border-left:14px solid transparent;
 border-right:14px solid transparent;
 border-top:24px solid red;
+
+z-index:10;
 }
 
 .spinBtn{
 margin-top:15px;
-padding:12px 35px;
-font-size:16px;
+padding:14px 40px;
+font-size:18px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:#22c55e;
 color:white;
 cursor:pointer;
@@ -120,47 +126,25 @@ font-size:13px;
 line-height:1.6;
 }
 
-/* GELAS */
-
-.glass{
-width:120px;
-height:150px;
-margin:auto;
-background:#334155;
-border-radius:0 0 50px 50px;
-position:relative;
-}
-
-.hole{
-width:20px;
-height:20px;
-background:black;
-border-radius:50%;
-position:absolute;
-bottom:5px;
-left:50%;
-transform:translateX(-50%);
-}
-
-.glassName{
+.modeButtons{
+display:flex;
+justify-content:center;
+gap:10px;
 margin-top:10px;
-font-size:20px;
-color:#facc15;
-height:30px;
 }
 
-.shake{
-animation:shake 0.4s infinite;
+.modeBtn{
+padding:10px 15px;
+border:none;
+border-radius:8px;
+background:#334155;
+color:white;
+cursor:pointer;
 }
 
-@keyframes shake{
-
-0%{transform:rotate(-6deg)}
-50%{transform:rotate(6deg)}
-100%{transform:rotate(-6deg)}
-
+.modeBtn:hover{
+background:#475569;
 }
-
 </style>
 </head>
 
@@ -171,40 +155,38 @@ animation:shake 0.4s infinite;
 
 <div id="bulanText"></div>
 
-<!-- WHEEL -->
-
 <div class="card">
 
-<h3>Mode Wheel</h3>
+<h3>Pilih Mode Spin</h3>
+
+<div class="modeButtons">
+
+<button class="modeBtn" onclick="setMode('wheel')">🎡 Wheel</button>
+
+<button class="modeBtn" onclick="setMode('glass')">🥤 Gelas</button>
+
+<button class="modeBtn" onclick="setMode('slot')">🎰 Slot</button>
+
+</div>
+
+<div id="modeText" class="small">
+Mode saat ini: Wheel
+</div>
+
+</div>
+
+<div class="card">
 
 <div class="wheelBox">
 <div class="pointer"></div>
 <canvas id="wheel" width="500" height="500"></canvas>
 </div>
 
-<button class="spinBtn" onclick="startWheel()">SPIN WHEEL</button>
+<button class="spinBtn" onclick="startSpin()">SPIN/PUTAR PESERTA</button>
 
 <div id="progressSpin" class="small"></div>
 
 </div>
-
-<!-- GELAS -->
-
-<div class="card">
-
-<h3>Mode Gelas Kocok</h3>
-
-<div class="glass" id="glass">
-<div class="hole"></div>
-</div>
-
-<div id="glassResult" class="glassName"></div>
-
-<button class="spinBtn" onclick="startGlass()">SPIN GELAS</button>
-
-</div>
-
-<!-- PESERTA -->
 
 <div class="card">
 
@@ -213,12 +195,42 @@ animation:shake 0.4s infinite;
 
 </div>
 
-<!-- STATISTIK -->
-
 <div class="card">
 
 <h3>Statistik Voting</h3>
 <div id="statList"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Aturan Arisan</h3>
+
+<div class="rules">
+
+<ol>
+
+<li>Setiap peserta memilih namanya sendiri sebelum melakukan SPIN/PUTAR.</li>
+
+<li>Setiap peserta hanya boleh melakukan <b>1 kali SPIN/PUTAR dalam satu bulan</b>.</li>
+
+<li>Jika peserta mencoba SPIN/PUTAR lagi, sistem hanya akan menampilkan hasil SPIN/PUTAR sebelumnya.</li>
+
+<li>Setiap SPIN/PUTAR dihitung sebagai <b>1 suara</b>.</li>
+
+<li>Pemenang bulan ini adalah peserta dengan <b>jumlah suara terbanyak</b>.</li>
+
+<li>Peserta yang sudah pernah menang tidak akan muncul lagi di wheel.</li>
+
+<li>Ketua arisan <b>Idam</b> otomatis menjadi pemenang pada bulan pertama sesuai kesepakatan bersama.</li>
+
+<li>Setelah semua peserta melakukan SPIN/PUTAR, sistem otomatis menentukan pemenang bulan tersebut.</li>
+
+<li>Reset sistem hanya dapat dilakukan menggunakan <b>kode khusus</b> oleh Ketua.</li>
+
+</ol>
+
+</div>
 
 </div>
 
@@ -258,12 +270,17 @@ return m[new Date().getMonth()]
 document.getElementById("bulanText").innerText="Bulan "+getMonth()
 
 if(!winnerData["Idam"]){
+
 winnerData["Idam"]="Maret"
+
 localStorage.setItem("winnerData",JSON.stringify(winnerData))
+
 }
 
 function getActiveNames(){
+
 return NAMES.filter(n=>!winnerData[n])
+
 }
 
 function drawWheel(){
@@ -271,12 +288,17 @@ function drawWheel(){
 const names=getActiveNames()
 
 if(names.length===0){
+
 ctx.clearRect(0,0,500,500)
+
 ctx.fillStyle="white"
 ctx.font="28px Arial"
 ctx.textAlign="center"
+
 ctx.fillText("SEMUA SUDAH MENANG",250,250)
+
 return
+
 }
 
 const arc=(2*Math.PI)/names.length
@@ -309,7 +331,9 @@ ctx.restore()
 
 }
 
-async function chooseName(){
+async function startSpin(){
+
+if(spinning)return
 
 const {value:name}=await Swal.fire({
 title:"Pilih Nama Anda",
@@ -317,19 +341,48 @@ input:"select",
 inputOptions:NAMES
 })
 
-return name
+if(spinResults[name]){
+
+Swal.fire("Hasil SPIN/PUTAR Anda Bulan Ini",spinResults[name])
+return
 
 }
 
-function processVote(player,winner){
+spinWheel(name)
 
-spinResults[player]=winner
+}
+
+function spinWheel(name){
+
+spinning=true
+
+const names=getActiveNames()
+
+let random=Math.floor(Math.random()*360)
+
+rotation+=360*12+random
+
+canvas.style.transform=`rotate(${rotation}deg)`
+
+setTimeout(()=>{
+
+const slice=360/names.length
+const stop=rotation%360
+
+const index=Math.floor((360-stop)/slice)%names.length
+
+const winner=names[index]
+
+spinResults[name]=winner
+
 voteData[winner]=(voteData[winner]||0)+1
 
 localStorage.setItem("spinResults",JSON.stringify(spinResults))
 localStorage.setItem("voteData",JSON.stringify(voteData))
 
 Swal.fire("Hasil SPIN/PUTAR Anda",winner)
+
+spinning=false
 
 drawWheel()
 renderStats()
@@ -338,79 +391,7 @@ renderProgress()
 
 checkWinner()
 
-}
-
-async function startWheel(){
-
-if(spinning)return
-
-let name=await chooseName()
-
-if(spinResults[name]){
-Swal.fire("Hasil Anda",spinResults[name])
-return
-}
-
-spinning=true
-
-const names=getActiveNames()
-
-let random=Math.floor(Math.random()*360)
-
-rotation+=360*10+random
-
-canvas.style.transform=`rotate(${rotation}deg)`
-
-setTimeout(()=>{
-
-const slice=360/names.length
-const stop=rotation%360
-const index=Math.floor((360-stop)/slice)%names.length
-const winner=names[index]
-
-processVote(name,winner)
-
-spinning=false
-
 },7000)
-
-}
-
-async function startGlass(){
-
-if(spinning)return
-
-let name=await chooseName()
-
-if(spinResults[name]){
-Swal.fire("Hasil Anda",spinResults[name])
-return
-}
-
-spinning=true
-
-const glass=document.getElementById("glass")
-const result=document.getElementById("glassResult")
-
-const names=getActiveNames()
-
-glass.classList.add("shake")
-result.innerText=""
-
-setTimeout(()=>{
-
-glass.classList.remove("shake")
-
-let index=Math.floor(Math.random()*names.length)
-let winner=names[index]
-
-result.innerText=winner
-
-processVote(name,winner)
-
-spinning=false
-
-},3000)
 
 }
 
@@ -425,10 +406,12 @@ let max=0
 let winner=""
 
 for(let n in voteData){
+
 if(voteData[n]>max){
 max=voteData[n]
 winner=n
 }
+
 }
 
 winnerData[winner]=getMonth()
@@ -483,6 +466,7 @@ document.getElementById("memberList").innerHTML=html
 function renderStats(){
 
 let html=""
+
 let max=0
 
 for(let n in voteData){
@@ -492,6 +476,7 @@ if(voteData[n]>max)max=voteData[n]
 for(let n in voteData){
 
 let v=voteData[n]
+
 let w=(v/max)*100
 
 html+=`
@@ -544,6 +529,56 @@ renderMembers()
 renderStats()
 renderProgress()
 
+let spinMode="wheel"
+  function setMode(mode){
+
+spinMode=mode
+
+let text="Wheel"
+
+if(mode==="glass") text="Gelas"
+if(mode==="slot") text="Slot Machine"
+
+document.getElementById("modeText").innerText=
+"Mode saat ini: "+text
+
+}
+async function startSpin(){
+
+if(spinning)return
+
+const {value:name}=await Swal.fire({
+title:"Pilih Nama Anda",
+input:"select",
+inputOptions:NAMES
+})
+
+if(spinResults[name]){
+
+Swal.fire("Hasil SPIN/PUTAR Anda Bulan Ini",spinResults[name])
+return
+
+}
+
+if(spinMode==="wheel"){
+
+spinWheel(name)
+
+}
+
+if(spinMode==="glass"){
+
+spinGlass(name)
+
+}
+
+if(spinMode==="slot"){
+
+spinSlot(name)
+
+}
+
+}
 </script>
 
 </body>

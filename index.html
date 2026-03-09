@@ -126,25 +126,6 @@ font-size:13px;
 line-height:1.6;
 }
 
-.modeButtons{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-top:10px;
-}
-
-.modeBtn{
-padding:10px 15px;
-border:none;
-border-radius:8px;
-background:#334155;
-color:white;
-cursor:pointer;
-}
-
-.modeBtn:hover{
-background:#475569;
-}
 </style>
 </head>
 
@@ -154,26 +135,6 @@ background:#475569;
 <div class="subtitle">Ketua: Idam</div>
 
 <div id="bulanText"></div>
-
-<div class="card">
-
-<h3>Pilih Mode Spin</h3>
-
-<div class="modeButtons">
-
-<button class="modeBtn" onclick="setMode('wheel')">🎡 Wheel</button>
-
-<button class="modeBtn" onclick="setMode('glass')">🥤 Gelas</button>
-
-<button class="modeBtn" onclick="setMode('slot')">🎰 Slot</button>
-
-</div>
-
-<div id="modeText" class="small">
-Mode saat ini: Wheel
-</div>
-
-</div>
 
 <div class="card">
 
@@ -529,56 +490,6 @@ renderMembers()
 renderStats()
 renderProgress()
 
-let spinMode="wheel"
-  function setMode(mode){
-
-spinMode=mode
-
-let text="Wheel"
-
-if(mode==="glass") text="Gelas"
-if(mode==="slot") text="Slot Machine"
-
-document.getElementById("modeText").innerText=
-"Mode saat ini: "+text
-
-}
-async function startSpin(){
-
-if(spinning)return
-
-const {value:name}=await Swal.fire({
-title:"Pilih Nama Anda",
-input:"select",
-inputOptions:NAMES
-})
-
-if(spinResults[name]){
-
-Swal.fire("Hasil SPIN/PUTAR Anda Bulan Ini",spinResults[name])
-return
-
-}
-
-if(spinMode==="wheel"){
-
-spinWheel(name)
-
-}
-
-if(spinMode==="glass"){
-
-spinGlass(name)
-
-}
-
-if(spinMode==="slot"){
-
-spinSlot(name)
-
-}
-
-}
 </script>
 
 </body>

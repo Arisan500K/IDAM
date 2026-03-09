@@ -3,48 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spin Arisan 500K/Bulan</title>
+    <title>Arisan Jam Raksasa - Admin Only</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #2c3e50; color: white; padding: 20px; }
-        .main-container { max-width: 600px; margin: auto; background: #34495e; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        :root { --primary-color: #2c3e50; --gold: #f1c40f; }
+        body { font-family: 'Courier New', Courier, monospace; background: #1a1a1a; color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         
-        /* Kontainer Roda */
-        .wheel-wrapper { position: relative; width: 300px; height: 300px; margin: 20px auto; }
-        #canvas { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #ecf0f1; box-shadow: 0 0 20px rgba(0,0,0,0.3); transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1); }
+        /* Desain Jam Dinding Raksasa */
+        .clock-container { position: relative; width: 350px; height: 350px; border: 15px solid #333; border-radius: 50%; background: #fff; box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.2); margin-bottom: 30px; }
         
-        /* Jarum Penunjuk */
-        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; 
-            border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #e74c3c; z-index: 10; }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; transition: transform 7s cubic-bezier(0.15, 0, 0.15, 1); }
 
-        textarea { width: 100%; height: 100px; margin: 15px 0; border-radius: 10px; padding: 10px; border: none; font-size: 14px; box-sizing: border-box; }
-        button { background: #27ae60; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
-        button:disabled { background: #7f8c8d; cursor: not-allowed; }
-        h2 { margin-top: 0; color: #2ecc71; }
+        /* Jarum Jam Penunjuk (Pointer) */
+        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 40px; height: 50px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #e74c3c; z-index: 100; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); }
+
+        .admin-box { background: #333; padding: 20px; border-radius: 15px; width: 100%; max-width: 400px; }
+        textarea { width: 100%; height: 80px; margin-bottom: 10px; border-radius: 8px; padding: 10px; box-sizing: border-box; }
+        button { background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; box-shadow: 0 4px 0 #b7950b; }
+        button:active { transform: translateY(4px); box-shadow: none; }
     </style>
 </head>
 <body>
 
-<div class="main-container">
-    <h2>🎡 Spin Arisan</h2>
-    <textarea id="names" placeholder="Masukkan nama peserta (1 baris 1 nama)...">Budi&#10;Ani&#10;Siti&#10;Iwan&#10;Dewi</textarea>
-    
-    <div class="wheel-wrapper">
-        <div class="pointer"></div>
+    <h1 style="color: var(--gold); text-shadow: 2px 2px #000;">🕒 JAM ARISAN RAKSASA</h1>
+
+    <div class="clock-container">
+        <div class="pointer" id="pointer"></div>
         <canvas id="canvas" width="500" height="500"></canvas>
     </div>
 
-    <button id="spinBtn" onclick="putarRoda()">PUTAR SEKARANG (5 DETIK)</button>
-</div>
+    <div class="admin-box">
+        <p style="margin: 0 0 10px 0; font-size: 14px; color: #aaa;">Daftar Peserta (Pisahkan Baris):</p>
+        <textarea id="names" oninput="drawWheel()">Budi&#10;Ani&#10;Siti&#10;Iwan&#10;Dewi&#10;Rudi&#10;Lina</textarea>
+        <button onclick="validasiAdmin()">PUTAR RODA (KODE ADMIN)</button>
+    </div>
 
 <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const nameInput = document.getElementById('names');
-    const spinBtn = document.getElementById('spinBtn');
-    
+    const KODE_RAHASIA = "1234"; // GANTI KODE ANDA DI SINI
+
     let currentRotation = 0;
-    const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#1abc9c', '#2ecc71'];
+    const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#1abc9c', '#2ecc71', '#34495e'];
 
     function drawWheel() {
         const names = nameInput.value.split('\n').filter(n => n.trim() !== "");
@@ -57,62 +58,67 @@
             const angle = i * arc;
             ctx.fillStyle = colors[i % colors.length];
             
-            // Gambar potongan kue
             ctx.beginPath();
             ctx.moveTo(250, 250);
-            ctx.arc(250, 250, 250, angle, angle + arc);
+            ctx.arc(250, 250, 245, angle, angle + arc);
             ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Teks Nama
             ctx.save();
             ctx.translate(250, 250);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = "right";
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 20px Arial";
+            ctx.fillStyle = (colors[i % colors.length] === '#f1c40f') ? "#000" : "#fff";
+            ctx.font = "bold 22px Arial";
             ctx.fillText(name, 230, 10);
             ctx.restore();
         });
     }
 
-    // Gambar ulang roda setiap kali teks diubah
-    nameInput.addEventListener('input', drawWheel);
-    drawWheel();
+    async function validasiAdmin() {
+        const { value: password } = await Swal.fire({
+            title: 'Otoritas Admin',
+            input: 'password',
+            inputLabel: 'Masukkan Kode Akses untuk Mengocok',
+            inputPlaceholder: 'Kode Rahasia...',
+            inputAttributes: { autocapitalize: 'off', autocorrect: 'off' }
+        });
+
+        if (password === KODE_RAHASIA) {
+            putarRoda();
+        } else if (password) {
+            Swal.fire('Salah!', 'Kode salah, anda bukan admin!', 'error');
+        }
+    }
 
     function putarRoda() {
         const names = nameInput.value.split('\n').filter(n => n.trim() !== "");
-        if (names.length < 2) {
-            Swal.fire('Minimal 2 nama ya!');
-            return;
-        }
+        if (names.length < 2) return;
 
-        spinBtn.disabled = true;
-        
-        // Tambahkan putaran besar (minimal 5 putaran penuh + random)
-        const tambahanPutaran = Math.floor(Math.random() * 360) + 1800; 
-        currentRotation += tambahanPutaran;
+        // Tambah putaran (7 detik putaran)
+        const putaranEkstra = Math.floor(Math.random() * 360) + (360 * 10); 
+        currentRotation += putaranEkstra;
         
         canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-        // Tunggu animasi selesai (5 detik sesuai CSS)
         setTimeout(() => {
-            spinBtn.disabled = false;
-            
-            // Hitung siapa yang kena jarum (jarum ada di atas / 270 derajat)
             const actualDeg = currentRotation % 360;
             const arc = 360 / names.length;
             const index = Math.floor((360 - (actualDeg % 360)) / arc) % names.length;
             const pemenang = names[index];
 
             Swal.fire({
-                title: '🎉 PEMENANGNYA 🎉',
-                html: `<h1 style="color:#e74c3c">${pemenang}</h1>`,
+                title: '🎉 HASIL KOCOKAN 🎉',
+                html: `<p style="font-size:20px">Selamat kepada:</p><h1 style="color:#e74c3c; font-size:45px">${pemenang}</h1>`,
                 icon: 'success',
-                confirmButtonText: 'Selamat!'
+                confirmButtonText: 'Alhamdulillah'
             });
-        }, 5000);
+        }, 7000); // 7 Detik sesuai CSS
     }
+
+    drawWheel();
 </script>
 
 </body>

@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arisan Bulanan 500K</title>
+    <title>ARISAN BULANAN 500K</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --gold: #ffcc00; --dark: #121212; --glass: rgba(255, 255, 255, 0.1); }
+        :root { --gold: #ffcc00; --dark: #121212; --glass: rgba(255, 255, 255, 0.08); }
         body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
         
-        .clock-outer { position: relative; width: 340px; height: 340px; border: 12px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 40px rgba(0,0,0,0.8); margin: 20px 0; }
-        #canvas { width: 100%; height: 100%; border-radius: 50%; transition: transform 8s cubic-bezier(0.15, 0, 0.1, 1); }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 40px; height: 50px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; }
+        .clock-outer { position: relative; width: 320px; height: 320px; border: 12px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 40px rgba(0,0,0,0.8); margin: 20px 0; }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; transition: transform 7s cubic-bezier(0.15, 0, 0.1, 1); }
+        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 35px; height: 45px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; }
 
-        .panel { background: #1e1e1e; padding: 20px; border-radius: 20px; width: 100%; max-width: 450px; border: 1px solid #333; }
-        .member-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; text-align: left; }
-        .member-item { padding: 8px; background: var(--glass); border-radius: 8px; font-size: 14px; display: flex; align-items: center; }
-        .member-item.winner { text-decoration: line-through; color: #666; background: rgba(255,0,0,0.1); }
-        .member-item input { margin-right: 10px; }
+        .panel { background: #1e1e1e; padding: 20px; border-radius: 20px; width: 100%; max-width: 480px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .member-list { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; text-align: left; }
+        .member-item { padding: 10px 15px; background: var(--glass); border-radius: 8px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
+        .member-item.winner { border-color: var(--gold); background: rgba(255, 204, 0, 0.05); }
+        .win-tag { font-size: 11px; background: var(--gold); color: black; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
 
-        button { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
-        .btn-reset { background: #444; color: #ccc; margin-top: 10px; padding: 8px; font-size: 12px; }
+        button { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-reset { background: none; border: 1px solid #444; color: #666; margin-top: 15px; padding: 8px; font-size: 11px; text-transform: uppercase; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <h2 id="monthTitle" style="color: var(--gold); margin-bottom: 5px;">Arisan Bulan ...</h2>
+    <h2 id="monthTitle" style="color: var(--gold); margin-bottom: 5px; letter-spacing: 1px;">ARISAN DIGITAL</h2>
     
     <div class="clock-outer">
         <div class="pointer"></div>
@@ -34,15 +35,16 @@
 
     <div class="panel">
         <div id="memberContainer" class="member-list"></div>
-        <button onclick="authAdmin()">KOCOK PEMENANG</button>
-        <button class="btn-reset" onclick="resetData()">Reset Semua Data Pemenang</button>
+        <button onclick="authAdmin()">KOCOK SEKARANG</button>
+        <button class="btn-reset" onclick="resetDataWithPin()">Reset Data (Butuh PIN)</button>
     </div>
 
 <script>
-    const KODE_ADMIN = "1234"; 
+    const KODE_ADMIN = "080522"; // PIN UNTUK SPIN & RESET
     const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "medina", "Agus", "Elis", "Tri"];
     
-    let winners = JSON.parse(localStorage.getItem('arisan_winners')) || [];
+    // Format data: { "Nama": "Bulan Menang" }
+    let winnerData = JSON.parse(localStorage.getItem('arisan_history')) || {};
     let currentRotation = 0;
 
     const canvas = document.getElementById('canvas');
@@ -51,12 +53,11 @@
 
     function getMonthName() {
         const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-        const d = new Date();
-        return months[d.getMonth()];
+        return months[new Date().getMonth()];
     }
 
     function init() {
-        document.getElementById('monthTitle').innerText = "Arisan Bulan " + getMonthName();
+        document.getElementById('monthTitle').innerText = "ARISAN BULAN " + getMonthName().toUpperCase();
         renderMembers();
         drawWheel();
     }
@@ -65,28 +66,28 @@
         const container = document.getElementById('memberContainer');
         container.innerHTML = "";
         MASTER_NAMES.forEach(name => {
-            const isWinner = winners.includes(name);
+            const monthWon = winnerData[name];
             container.innerHTML += `
-                <div class="member-item ${isWinner ? 'winner' : ''}">
-                    <input type="checkbox" ${isWinner ? 'checked' : ''} disabled> ${name}
+                <div class="member-item ${monthWon ? 'winner' : ''}">
+                    <span>${monthWon ? '✅' : '⚪'} ${name}</span>
+                    ${monthWon ? `<span class="win-tag">MENANG: ${monthWon}</span>` : ''}
                 </div>`;
         });
     }
 
     function drawWheel() {
+        const winners = Object.keys(winnerData);
         const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
+        
         if (activeNames.length === 0) {
             ctx.clearRect(0, 0, 800, 800);
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.font = "30px Arial";
+            ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.font = "30px Arial";
             ctx.fillText("Semua Sudah Menang!", 400, 400);
             return;
         }
 
         const arc = (2 * Math.PI) / activeNames.length;
         ctx.clearRect(0, 0, 800, 800);
-
         activeNames.forEach((name, i) => {
             const angle = i * arc;
             ctx.beginPath();
@@ -95,36 +96,46 @@
             ctx.arc(400, 400, 400, angle - Math.PI/2, (angle + arc) - Math.PI/2);
             ctx.fill();
             ctx.stroke();
-
             ctx.save();
             ctx.translate(400, 400);
             ctx.rotate(angle + arc / 2 - Math.PI/2);
-            ctx.textAlign = "right";
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 40px Arial";
+            ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 42px Arial";
             ctx.fillText(name, 350, 15);
             ctx.restore();
         });
     }
 
     async function authAdmin() {
-        const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
-        if (activeNames.length === 0) return Swal.fire("Habis!", "Semua peserta sudah menang.", "info");
+        const currentMonth = getMonthName();
+        const existingWinnerThisMonth = Object.keys(winnerData).find(key => winnerData[key] === currentMonth);
+
+        // FITUR KUNCI: Jika sudah ada pemenang di bulan ini, tampilkan langsung
+        if (existingWinnerThisMonth) {
+            Swal.fire({
+                title: `Hasil Bulan ${currentMonth}`,
+                html: `Pemenang bulan ini adalah:<br><h1 style="color:#ffcc00">${existingWinnerThisMonth}</h1><p style="font-size:12px; color:#aaa;">Hasil sudah terkunci hingga bulan depan.</p>`,
+                icon: 'info'
+            });
+            return;
+        }
 
         const { value: pass } = await Swal.fire({
-            title: 'Admin Only',
+            title: 'Verifikasi PIN Admin',
             input: 'password',
-            inputPlaceholder: 'Kode Admin'
+            inputPlaceholder: 'Masukkan PIN'
         });
 
         if (pass === KODE_ADMIN) {
-            putarRoda(activeNames);
+            executeSpin();
         } else if (pass) {
-            Swal.fire('Salah!', '', 'error');
+            Swal.fire('Salah!', 'PIN Salah!', 'error');
         }
     }
 
-    function putarRoda(activeNames) {
+    function executeSpin() {
+        const winners = Object.keys(winnerData);
+        const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
+        
         const putaranAcak = Math.floor(Math.random() * 360);
         const totalDerajat = (360 * 10) + putaranAcak; 
         currentRotation += totalDerajat;
@@ -137,34 +148,36 @@
             const winningIndex = Math.floor((360 - stopAngle) / sliceSize) % activeNames.length;
             const pemenang = activeNames[winningIndex];
 
-            // Simpan pemenang
-            winners.push(pemenang);
-            localStorage.setItem('arisan_winners', JSON.stringify(winners));
+            // Simpan ke data permanen
+            winnerData[pemenang] = getMonthName();
+            localStorage.setItem('arisan_history', JSON.stringify(winnerData));
 
             Swal.fire({
-                title: `Pemenang Arisan Bulan ${getMonthName()}`,
-                html: `<h1 style="color:#ffcc00">${pemenang}</h1>`,
+                title: `Pemenang Arisan ${getMonthName()}`,
+                html: `<h1 style="color:#ffcc00; font-size: 50px;">${pemenang}</h1>`,
                 icon: 'success'
             }).then(() => {
-                init(); // Refresh tampilan
+                init();
             });
-        }, 8000);
+        }, 7000);
     }
 
-    function resetData() {
-        Swal.fire({
-            title: 'Reset Data?',
-            text: "Semua riwayat pemenang akan dihapus!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Reset!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                localStorage.clear();
-                winners = [];
-                init();
-            }
+    async function resetDataWithPin() {
+        const { value: pass } = await Swal.fire({
+            title: 'Reset Seluruh Data?',
+            input: 'password',
+            inputLabel: 'Masukkan PIN Admin untuk konfirmasi reset',
+            showCancelButton: true
         });
+
+        if (pass === KODE_ADMIN) {
+            localStorage.clear();
+            winnerData = {};
+            init();
+            Swal.fire('Data Dihapus!', 'Sistem kembali ke awal.', 'success');
+        } else if (pass) {
+            Swal.fire('Gagal!', 'PIN Salah.', 'error');
+        }
     }
 
     init();

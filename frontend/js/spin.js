@@ -1,29 +1,38 @@
 async function startSpin(){
 
-const user =
-JSON.parse(localStorage.getItem("user"));
+const user = JSON.parse(localStorage.getItem("user"));
 
-const result =
-await spinAPI(user.nama);
+const result = await spinAPI(user.nama);
 
 const winner = result.winner;
 
-animateWheel(winner);
+animateSpin(winner);
 
 }
 
-function animateWheel(winner){
+function animateSpin(winner){
 
-const display =
-document.getElementById("winner");
+const index = members.indexOf(winner);
 
-display.innerText = "Memutar roda...";
+const slice = 360 / members.length;
+
+const stopAngle = 360 - (index * slice) - slice/2;
+
+rotation += 360*5 + stopAngle;
+
+canvas.style.transition =
+"transform 6s cubic-bezier(0.1,0,0.1,1)";
+
+canvas.style.transform =
+"rotate("+rotation+"deg)";
 
 setTimeout(()=>{
 
-display.innerText =
-"Pemenang bulan ini: "+winner;
+document.getElementById("winner").innerText =
+"Pemenang: "+winner;
 
-},3000);
+loadLogs();
+
+},6000);
 
 }

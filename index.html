@@ -3,49 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISAN BULANAN 500K</title>
+    <title>Arisan Digital - A. S Daeli</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --gold: #ffcc00; --dark: #121212; --glass: rgba(255, 255, 255, 0.08); }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
+        :root { --gold: #ffcc00; --dark: #121212; --glass: rgba(255, 255, 255, 0.05); --blue: #3498db; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; margin: 0; }
         
-        .clock-outer { position: relative; width: 320px; height: 320px; border: 12px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 40px rgba(0,0,0,0.8); margin: 20px 0; }
+        /* Kontainer Utama */
+        .main-card { width: 95%; max-width: 450px; display: flex; flex-direction: column; align-items: center; }
+
+        /* Jam Raksasa */
+        .clock-outer { position: relative; width: 300px; height: 300px; border: 10px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 30px rgba(0,0,0,0.5); margin: 15px 0; }
         #canvas { width: 100%; height: 100%; border-radius: 50%; transition: transform 7s cubic-bezier(0.15, 0, 0.1, 1); }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 35px; height: 45px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; }
+        .pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); width: 35px; height: 45px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; }
 
-        .panel { background: #1e1e1e; padding: 20px; border-radius: 20px; width: 100%; max-width: 480px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .member-list { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 15px 0; text-align: left; }
-        .member-item { padding: 10px 15px; background: var(--glass); border-radius: 8px; font-size: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
-        .member-item.winner { border-color: var(--gold); background: rgba(255, 204, 0, 0.05); }
-        .win-tag { font-size: 11px; background: var(--gold); color: black; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
+        /* Tombol-Tombol */
+        .btn-container { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
+        .btn-admin { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
+        .btn-demo { background: transparent; color: var(--blue); border: 1px solid var(--blue); padding: 10px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; }
+        
+        /* Daftar Pemenang (Di Bawah Tombol) */
+        .list-section { width: 100%; background: #1a1a1a; border-radius: 15px; border: 1px solid #333; padding: 15px; box-sizing: border-box; }
+        .list-header { font-size: 14px; color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; text-align: center; }
+        .member-list { display: flex; flex-direction: column; gap: 6px; }
+        .member-item { padding: 10px; background: var(--glass); border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
+        .member-item.winner { border-color: rgba(255, 204, 0, 0.3); background: rgba(255, 204, 0, 0.03); color: #888; text-decoration: line-through; }
+        .win-tag { font-size: 10px; background: var(--gold); color: black; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-decoration: none !important; }
 
-        button { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: 0.3s; }
-        button:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .btn-reset { background: none; border: 1px solid #444; color: #666; margin-top: 15px; padding: 8px; font-size: 11px; text-transform: uppercase; cursor: pointer; border-radius: 5px; }
+        /* Footer */
+        footer { margin-top: 30px; padding: 15px; color: #555; font-size: 12px; text-align: center; border-top: 1px solid #222; width: 100%; }
+        .btn-reset { background: none; border: none; color: #333; font-size: 10px; cursor: pointer; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-    <h2 id="monthTitle" style="color: var(--gold); margin-bottom: 5px; letter-spacing: 1px;">ARISAN DIGITAL</h2>
-    
-    <div class="clock-outer">
-        <div class="pointer"></div>
-        <canvas id="canvas" width="800" height="800"></canvas>
+    <div class="main-card">
+        <h2 id="monthTitle" style="color: var(--gold); margin: 15px 0 0 0; font-size: 22px;">ARISAN DIGITAL</h2>
+        <div id="statusBadge" style="font-size: 11px; color: #666; margin-bottom: 5px;">Ready to Spin</div>
+
+        <div class="clock-outer">
+            <div class="pointer"></div>
+            <canvas id="canvas" width="800" height="800"></canvas>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn-admin" onclick="authAdmin()">🔒 SPIN RESMI (ADMIN)</button>
+            <button class="btn-demo" onclick="executeDemo()">🎮 COBA PUTAR (DEMO)</button>
+        </div>
+
+        <div class="list-section">
+            <div class="list-header">RIWAYAT & DAFTAR PESERTA</div>
+            <div id="memberContainer" class="member-list"></div>
+        </div>
+
+        <button class="btn-reset" onclick="resetDataWithPin()">Reset System</button>
     </div>
 
-    <div class="panel">
-        <div id="memberContainer" class="member-list"></div>
-        <button onclick="authAdmin()">KOCOK SEKARANG</button>
-        <button class="btn-reset" onclick="resetDataWithPin()">Reset Data (Butuh PIN)</button>
-    </div>
+    <footer>
+        by A. S Daeli &copy; 2026<br>
+        Digital Arisan System v2.0
+    </footer>
 
 <script>
-    const KODE_ADMIN = "080522"; // PIN UNTUK SPIN & RESET
+    const KODE_ADMIN = "1234"; 
     const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "medina", "Agus", "Elis", "Tri"];
     
-    // Format data: { "Nama": "Bulan Menang" }
     let winnerData = JSON.parse(localStorage.getItem('arisan_history')) || {};
     let currentRotation = 0;
+    let isSpinning = false;
 
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -69,8 +94,8 @@
             const monthWon = winnerData[name];
             container.innerHTML += `
                 <div class="member-item ${monthWon ? 'winner' : ''}">
-                    <span>${monthWon ? '✅' : '⚪'} ${name}</span>
-                    ${monthWon ? `<span class="win-tag">MENANG: ${monthWon}</span>` : ''}
+                    <span>${monthWon ? '✔️' : '⭕'} ${name}</span>
+                    ${monthWon ? `<span class="win-tag">${monthWon.toUpperCase()}</span>` : ''}
                 </div>`;
         });
     }
@@ -81,8 +106,8 @@
         
         if (activeNames.length === 0) {
             ctx.clearRect(0, 0, 800, 800);
-            ctx.fillStyle = "white"; ctx.textAlign = "center"; ctx.font = "30px Arial";
-            ctx.fillText("Semua Sudah Menang!", 400, 400);
+            ctx.fillStyle = "gray"; ctx.textAlign = "center"; ctx.font = "bold 35px Arial";
+            ctx.fillText("SEMUA SUDAH MENANG", 400, 400);
             return;
         }
 
@@ -99,22 +124,23 @@
             ctx.save();
             ctx.translate(400, 400);
             ctx.rotate(angle + arc / 2 - Math.PI/2);
-            ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 42px Arial";
+            ctx.textAlign = "right"; ctx.fillStyle = "#fff"; ctx.font = "bold 45px Arial";
             ctx.fillText(name, 350, 15);
             ctx.restore();
         });
     }
 
     async function authAdmin() {
+        if(isSpinning) return;
         const currentMonth = getMonthName();
         const existingWinnerThisMonth = Object.keys(winnerData).find(key => winnerData[key] === currentMonth);
 
-        // FITUR KUNCI: Jika sudah ada pemenang di bulan ini, tampilkan langsung
         if (existingWinnerThisMonth) {
             Swal.fire({
-                title: `Hasil Bulan ${currentMonth}`,
-                html: `Pemenang bulan ini adalah:<br><h1 style="color:#ffcc00">${existingWinnerThisMonth}</h1><p style="font-size:12px; color:#aaa;">Hasil sudah terkunci hingga bulan depan.</p>`,
-                icon: 'info'
+                title: `Hasil ${currentMonth} Terkunci`,
+                html: `Pemenang: <b style="color:var(--gold)">${existingWinnerThisMonth}</b>`,
+                icon: 'info',
+                confirmButtonColor: '#ffcc00'
             });
             return;
         }
@@ -122,22 +148,32 @@
         const { value: pass } = await Swal.fire({
             title: 'Verifikasi PIN Admin',
             input: 'password',
-            inputPlaceholder: 'Masukkan PIN'
+            confirmButtonColor: '#ffcc00'
         });
 
         if (pass === KODE_ADMIN) {
-            executeSpin();
+            document.getElementById('statusBadge').innerText = "MODE: RESMI";
+            document.getElementById('statusBadge').style.color = "var(--gold)";
+            executeSpin(true);
         } else if (pass) {
-            Swal.fire('Salah!', 'PIN Salah!', 'error');
+            Swal.fire('Error', 'PIN Salah!', 'error');
         }
     }
 
-    function executeSpin() {
+    function executeDemo() {
+        if(isSpinning) return;
+        document.getElementById('statusBadge').innerText = "MODE: DEMO";
+        document.getElementById('statusBadge').style.color = "var(--blue)";
+        executeSpin(false);
+    }
+
+    function executeSpin(isAdmin) {
+        isSpinning = true;
         const winners = Object.keys(winnerData);
         const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
         
         const putaranAcak = Math.floor(Math.random() * 360);
-        const totalDerajat = (360 * 10) + putaranAcak; 
+        const totalDerajat = (360 * 12) + putaranAcak; 
         currentRotation += totalDerajat;
 
         canvas.style.transform = `rotate(${currentRotation}deg)`;
@@ -148,35 +184,43 @@
             const winningIndex = Math.floor((360 - stopAngle) / sliceSize) % activeNames.length;
             const pemenang = activeNames[winningIndex];
 
-            // Simpan ke data permanen
-            winnerData[pemenang] = getMonthName();
-            localStorage.setItem('arisan_history', JSON.stringify(winnerData));
-
-            Swal.fire({
-                title: `Pemenang Arisan ${getMonthName()}`,
-                html: `<h1 style="color:#ffcc00; font-size: 50px;">${pemenang}</h1>`,
-                icon: 'success'
-            }).then(() => {
-                init();
-            });
+            if (isAdmin) {
+                winnerData[pemenang] = getMonthName();
+                localStorage.setItem('arisan_history', JSON.stringify(winnerData));
+                Swal.fire({
+                    title: `SELAMAT! (${getMonthName()})`,
+                    html: `<h1 style="color:var(--gold)">${pemenang}</h1>`,
+                    icon: 'success'
+                }).then(() => {
+                    isSpinning = false;
+                    init();
+                });
+            } else {
+                Swal.fire({
+                    title: `HASIL COBA (DEMO)`,
+                    html: `<h1 style="color:var(--blue)">${pemenang}</h1>`,
+                    icon: 'info'
+                }).then(() => {
+                    isSpinning = false;
+                    document.getElementById('statusBadge').innerText = "Ready to Spin";
+                    document.getElementById('statusBadge').style.color = "#666";
+                });
+            }
         }, 7000);
     }
 
     async function resetDataWithPin() {
         const { value: pass } = await Swal.fire({
-            title: 'Reset Seluruh Data?',
+            title: 'Hapus Riwayat?',
             input: 'password',
-            inputLabel: 'Masukkan PIN Admin untuk konfirmasi reset',
-            showCancelButton: true
+            inputLabel: 'Masukkan PIN Admin'
         });
 
         if (pass === KODE_ADMIN) {
             localStorage.clear();
             winnerData = {};
             init();
-            Swal.fire('Data Dihapus!', 'Sistem kembali ke awal.', 'success');
-        } else if (pass) {
-            Swal.fire('Gagal!', 'PIN Salah.', 'error');
+            Swal.fire('Bersih!', 'Data telah di-reset.', 'success');
         }
     }
 

@@ -4,6 +4,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const memberRoutes = require("./routes/members");
 const spinRoutes = require("./routes/spin");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 const PORT = 3000;
@@ -29,4 +30,4 @@ app.listen(PORT,()=>{
 console.log("Server berjalan di http://localhost:"+PORT);
 });
 
-const adminRoutes = require("./routes/admin");
+

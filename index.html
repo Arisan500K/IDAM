@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ARISAN APEX ULTIMATE</title>
+    <title>ARISAN DIGITAL PREMIUM</title>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -12,358 +12,343 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
         :root {
-            --bg: #020617; --card: rgba(15, 23, 42, 0.95);
-            --accent: #fbbf24; --secondary: #38bdf8;
-            --neon: #22c55e; --danger: #f43f5e;
-            --glass-border: rgba(255, 255, 255, 0.15);
+            --bg: #0f172a; 
+            --card: rgba(30, 41, 59, 0.7);
+            --aksen-emas: #fbbf24; 
+            --biru-muda: #38bdf8;
+            --hijau-cerah: #4ade80; 
+            --merah-jambu: #f43f5e;
+            --border-glass: rgba(255, 255, 255, 0.1);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #020617 100%);
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
             color: #f1f5f9; margin: 0; padding: 15px; min-height: 100vh;
         }
 
         .container { max-width: 500px; margin: auto; }
 
         header { text-align: center; margin-bottom: 25px; padding-top: 10px; }
-        .logo-text { font-size: 30px; font-weight: 800; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+        .logo-text { font-size: 28px; font-weight: 800; color: var(--aksen-emas); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
 
         .card {
-            background: var(--card); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 28px;
-            padding: 22px; margin-bottom: 22px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.6);
+            background: var(--card); backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass); border-radius: 24px;
+            padding: 22px; margin-bottom: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
 
-        /* TIMER BOX */
-        .timer-box { border-left: 5px solid var(--danger); background: rgba(244, 63, 94, 0.05); padding: 15px; border-radius: 15px; margin-bottom: 20px; }
-        .timer-val { font-weight: 800; color: var(--danger); font-size: 20px; letter-spacing: 1px; }
+        /* WAKTU MUNDUR */
+        .kotak-waktu { border-left: 4px solid var(--merah-jambu); background: rgba(244, 63, 94, 0.1); padding: 15px; border-radius: 15px; }
+        .teks-waktu { font-weight: 800; color: var(--merah-jambu); font-size: 22px; }
 
-        /* TABS */
-        .tab-group { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 18px; }
-        .tab-btn { 
-            flex: 1; padding: 12px 5px; border-radius: 14px; border: none;
+        /* TAB MENU */
+        .grup-tab { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 16px; }
+        .btn-tab { 
+            flex: 1; padding: 12px 5px; border-radius: 12px; border: none;
             background: transparent; color: #94a3b8; cursor: pointer; font-weight: 700; font-size: 11px; transition: 0.3s;
         }
-        .tab-btn.active { background: var(--secondary); color: white; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4); }
+        .btn-tab.aktif { background: linear-gradient(135deg, var(--biru-muda), #818cf8); color: white; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3); }
 
-        /* WHEEL STYLE (UPGRADED) */
-        .wheelBox { position: relative; width: 300px; margin: 25px auto; }
+        /* RODA KEBERUNTUNGAN */
+        .box-roda { position: relative; width: 280px; margin: 20px auto; }
         canvas { 
-            width: 100%; border-radius: 50%; border: 12px solid #1e293b;
-            transition: transform 7s cubic-bezier(0.1, 0, 0.1, 1);
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            width: 100%; border-radius: 50%; border: 8px solid #334155;
+            transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
-        .pointer {
-            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 35px; height: 45px; z-index: 30;
-            background: linear-gradient(to bottom, var(--danger), #9f1239);
-            clip-path: polygon(50% 100%, 0 0, 100% 0);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
-            border-bottom: 2px solid rgba(255,255,255,0.3);
+        .jarum {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            width: 30px; height: 40px; z-index: 10;
+            background: var(--merah-jambu); clip-path: polygon(50% 100%, 0 0, 100% 0);
         }
 
-        /* GLASS & SCRATCH VIEWS */
-        .mode-view { display: none; text-align: center; padding: 40px 0; }
-        .cup-anim { font-size: 90px; transition: 0.1s; display: inline-block; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
-        .shaking { animation: ultraShake 0.1s infinite; }
-        @keyframes ultraShake { 0% { transform: scale(1.1) rotate(0); } 50% { transform: scale(1.1) rotate(7deg); } 100% { transform: scale(1.1) rotate(-7deg); } }
-
-        .scratch-card {
-            width: 220px; height: 120px; margin: auto; background: #334155;
-            border-radius: 15px; display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 24px; color: var(--accent); position: relative;
-            border: 4px dashed var(--glass-border); cursor: pointer;
+        /* MODE SLOT */
+        .slot-container {
+            display: flex; justify-content: center; gap: 10px; margin: 30px 0;
         }
+        .slot-box {
+            width: 100%; height: 100px; background: #020617; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800; color: var(--aksen-emas);
+            border: 2px solid var(--border-glass); overflow: hidden;
+            position: relative;
+        }
+        .animasi-rolling { animation: roll 0.1s infinite; }
+        @keyframes roll { 0% { transform: translateY(-10px); } 50% { transform: translateY(10px); } 100% { transform: translateY(-10px); } }
 
-        /* BUTTONS */
-        .btn-main {
-            width: 100%; padding: 20px; border-radius: 20px; border: none;
-            background: linear-gradient(135deg, var(--neon) 0%, #15803d 100%);
+        /* TOMBOL UTAMA */
+        .btn-utama {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            background: linear-gradient(135deg, var(--hijau-cerah) 0%, #166534 100%);
             color: white; font-weight: 800; font-size: 16px; cursor: pointer;
-            box-shadow: 0 12px 24px -6px rgba(34, 197, 94, 0.5); transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(74, 222, 128, 0.3); transition: 0.3s;
         }
-        .btn-main:active { transform: scale(0.96); }
-        .btn-main:disabled { background: #1e293b !important; opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+        .btn-utama:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-utama:active { transform: scale(0.98); }
 
-        /* NAME SELECTOR GRID */
-        .name-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
-        .name-btn { 
-            background: #1e293b; padding: 18px; border-radius: 16px; cursor: pointer; 
-            border: 1px solid var(--glass-border); color: #fff; font-weight: 700; text-align: center;
-        }
-        .name-btn:hover { background: var(--secondary); border-color: var(--secondary); }
+        /* STATISTIK & DAFTAR */
+        .bar-wadah { background: rgba(0,0,0,0.3); height: 10px; border-radius: 10px; margin: 8px 0 15px 0; }
+        .bar-isi { height: 100%; background: linear-gradient(90deg, var(--biru-muda), var(--hijau-cerah)); border-radius: 10px; transition: 1s; }
+        .baris-anggota { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .tag-pemenang { background: var(--aksen-emas); color: #000; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
 
-        /* LISTS */
-        .bar-wrap { background: rgba(0,0,0,0.3); height: 12px; border-radius: 20px; margin: 8px 0 18px 0; overflow: hidden; }
-        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--secondary), #a855f7); transition: width 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
-        
-        .member-row { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-weight: 600; }
-        .won-tag { background: var(--accent); color: #000; padding: 2px 10px; border-radius: 10px; font-size: 10px; font-weight: 800; }
-
-        .rules-box { font-size: 13px; color: #94a3b8; line-height: 1.8; padding-left: 20px; }
-        .rules-box b { color: var(--accent); }
+        /* PEMILIH NAMA */
+        .grid-nama { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .kartu-nama { background: #1e293b; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; border: 1px solid var(--border-glass); }
+        .kartu-nama:hover { background: var(--biru-muda); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div class="logo-text">ARISAN PRO</div>
-        <div id="dateHeader" style="font-weight: 700; color: #64748b; margin-top: 5px;"></div>
+        <div class="logo-text">🌟 ARISAN KELUARGA</div>
+        <div id="labelBulan" style="font-weight: 700; color: #94a3b8; margin-top: 5px;">BULAN - TAHUN</div>
     </header>
 
-    <div class="card timer-box">
-        <div style="font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Sisa Waktu Voting Bulan Ini:</div>
-        <div class="timer-val" id="timer">00 Hari 00:00:00</div>
-        <div id="deadlineTxt" style="font-size: 12px; margin-top: 3px; font-weight: 600;"></div>
+    <div class="card kotak-waktu">
+        <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Batas Waktu Pemilihan:</div>
+        <div class="teks-waktu" id="timer">00H 00:00:00</div>
     </div>
 
     <div class="card" style="text-align:center;">
-        <div class="tab-group">
-            <button id="t1" class="tab-btn active" onclick="setMode('wheel')">🎡 WHEEL</button>
-            <button id="t2" class="tab-btn" onclick="setMode('glass')">🥤 SHAKE</button>
-            <button id="t3" class="tab-btn" onclick="setMode('scratch')">🎫 SCRATCH</button>
+        <div class="grup-tab">
+            <button id="b1" class="btn-tab aktif" onclick="gantiMode('roda')">🎡 RODA SELEKSI</button>
+            <button id="b2" class="btn-tab" onclick="gantiMode('kocok')">🏺 KOCOK BOTOL</button>
+            <button id="b3" class="btn-tab" onclick="gantiMode('slot')">🎰 MESIN SLOT</button>
         </div>
 
-        <div id="v-wheel" class="mode-view" style="display:block;">
-            <div class="wheelBox">
-                <div class="pointer"></div>
-                <canvas id="wheelCanvas" width="600" height="600"></canvas>
+        <div id="m-roda" class="tampilan-mode" style="display:block;">
+            <div class="box-roda">
+                <div class="jarum"></div>
+                <canvas id="canvasRoda" width="500" height="500"></canvas>
             </div>
         </div>
 
-        <div id="v-glass" class="mode-view">
-            <div id="cup" class="cup-anim">🥤</div>
-            <div id="glassStatus" style="margin-top:25px; font-weight:800; color:var(--accent); font-size: 20px;">Siap Mengocok?</div>
+        <div id="m-kocok" class="tampilan-mode" style="display:none; padding: 40px 0;">
+            <div id="botol" style="font-size: 80px;">🏺</div>
+            <div id="statusKocok" style="margin-top:20px; font-weight:800; color:var(--aksen-emas);">Siap mengguncang?</div>
         </div>
 
-        <div id="v-scratch" class="mode-view">
-            <div id="scratchBox" class="scratch-card">? ? ?</div>
-            <div style="margin-top:20px; color:#64748b; font-size:12px;">Klik tombol di bawah untuk menggosok</div>
+        <div id="m-slot" class="tampilan-mode" style="display:none;">
+            <div class="slot-container">
+                <div id="slotBox" class="slot-box">JACKPOT</div>
+            </div>
+            <div style="color:#64748b; font-size:11px; margin-bottom: 15px;">Tekan tombol di bawah untuk putar slot</div>
         </div>
 
-        <button id="mainBtn" class="btn-main" onclick="openUserMenu()">MULAI SEKARANG</button>
-        <div id="closedMsg" style="color:var(--danger); font-size: 13px; margin-top: 15px; font-weight: 800; display:none;">🔒 PERIODE VOTING BERAKHIR</div>
+        <button id="btnMain" class="btn-utama" onclick="pilihIdentitas()">IKUTI PEMILIHAN</button>
+        <div id="pesanTutup" style="color:var(--merah-jambu); font-size: 13px; margin-top: 15px; font-weight: 800; display:none;">🔒 PERIODE INI TELAH BERAKHIR</div>
     </div>
 
     <div class="card">
-        <h3 style="margin:0 0 20px 0; color:var(--secondary); border-left: 5px solid var(--secondary); padding-left: 12px;">📊 Live Polling</h3>
-        <div id="statsArea"></div>
+        <h3 style="margin:0 0 15px 0; color:var(--biru-muda); font-size: 16px;">📊 Perolehan Suara Terkini</h3>
+        <div id="areaStatistik"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin:0 0 20px 0; color:var(--accent); border-left: 5px solid var(--accent); padding-left: 12px;">🏆 Leaderboard Pemenang</h3>
-        <div id="winnerArea"></div>
+        <h3 style="margin:0 0 15px 0; color:var(--aksen-emas); font-size: 16px;">🏆 Daftar Penerima Arisan</h3>
+        <div id="areaPemenang"></div>
     </div>
 
-    <div class="card">
-        <h3 style="margin:0 0 15px 0;">📜 Ketentuan & Aturan</h3>
-        <div class="rules-box">
-            <li><b>Jadwal:</b> Voting buka Tgl 1 & Tutup <b>10 Hari sebelum akhir bulan</b> (H-10).</li>
-            <li><b>Iuran:</b> Wajib setor <b>Rp500.000</b> per periode.</li>
-            <li><b>Validasi:</b> Suara sah diambil dari <b>Spin Pertama</b> setiap anggota.</li>
-            <li><b>Ketua:</b> Saudara <b>Idam</b> pemenang sah bulan Maret.</li>
-            <li><b>Fair Play:</b> Hasil voting terbanyak otomatis menjadi pemenang di akhir periode.</li>
-        </div>
+    <div class="card" style="font-size: 13px; line-height: 1.6;">
+        <h3 style="margin:0 0 10px 0;">📝 Peraturan Resmi</h3>
+        <ul style="padding-left: 18px; color: #94a3b8; margin: 0;">
+            <li>Iuran wajib <b style="color:white">Rp 500.000</b> per bulan.</li>
+            <li>Pemilihan ditutup otomatis <b>10 hari</b> sebelum akhir bulan.</li>
+            <li>Hasil suara terbanyak akan disahkan sebagai pemenang bulan ini.</li>
+            <li>Satu orang hanya memiliki <b>1 kali kesempatan</b> pilih per periode.</li>
+        </ul>
     </div>
 
-    <center><div style="color:#1e293b; font-size:10px; cursor:pointer; margin-bottom: 30px;" onclick="doAdminReset()">Admin Reset</div></center>
+    <center><div style="color:#334155; font-size:10px; cursor:pointer; margin: 20px 0;" onclick="resetSistem()">Pengaturan Admin</div></center>
 </div>
 
-
-
 <script>
-    const MEMBERS = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
-    const RESET_PIN = "080522";
+    const ANGGOTA = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+    const PIN_ADMIN = "080522";
 
-    let winners = JSON.parse(localStorage.getItem("arisan_winners")) || {};
-    let votes = JSON.parse(localStorage.getItem("arisan_votes")) || {};
-    let logs = JSON.parse(localStorage.getItem("arisan_logs")) || {};
+    let dataPemenang = JSON.parse(localStorage.getItem("arisan_pemenang")) || {"Idam": "Maret"};
+    let dataSuara = JSON.parse(localStorage.getItem("arisan_suara")) || {};
+    let dataLogUser = JSON.parse(localStorage.getItem("arisan_log_user")) || {};
     
-    let isBusy = false;
-    let wheelRotation = 0;
-    let activeMode = 'wheel';
+    let sedangProses = false;
+    let rotasiRoda = 0;
+    let modeAktif = 'roda';
 
-    function getBulan() {
+    function dapatkanBulanIni() {
         return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][new Date().getMonth()];
     }
 
-    function getDeadline() {
-        const d = new Date();
-        const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0);
-        lastDay.setDate(lastDay.getDate() - 10);
-        lastDay.setHours(23, 59, 59);
-        return lastDay;
+    function dapatkanDeadline() {
+        const tgl = new Date();
+        const hariTerakhir = new Date(tgl.getFullYear(), tgl.getMonth() + 1, 0);
+        hariTerakhir.setDate(hariTerakhir.getDate() - 10);
+        hariTerakhir.setHours(23, 59, 59);
+        return hariTerakhir;
     }
 
-    function isLocked() {
-        if (new Date() > getDeadline()) return true;
-        if (Object.values(winners).includes(getBulan())) return true;
-        return false;
+    function cekTerkunci() {
+        return (new Date() > dapatkanDeadline()) || Object.values(dataPemenang).includes(dapatkanBulanIni());
     }
 
-    function init() {
-        document.getElementById("dateHeader").innerText = getBulan().toUpperCase() + " " + new Date().getFullYear();
-        if (!winners["Idam"]) { winners["Idam"] = "Maret"; save(); }
-        
-        setInterval(refreshTimer, 1000);
-        refreshTimer();
-        render();
+    function mulai() {
+        document.getElementById("labelBulan").innerText = dapatkanBulanIni().toUpperCase() + " " + new Date().getFullYear();
+        setInterval(updateTimer, 1000);
+        updateTimer();
+        gambarRoda();
+        renderData();
     }
 
-    function save() {
-        localStorage.setItem("arisan_winners", JSON.stringify(winners));
-        localStorage.setItem("arisan_votes", JSON.stringify(votes));
-        localStorage.setItem("arisan_logs", JSON.stringify(logs));
-    }
-
-    function refreshTimer() {
-        const diff = getDeadline() - new Date();
+    function updateTimer() {
+        const selisih = dapatkanDeadline() - new Date();
         const el = document.getElementById("timer");
-        const deadEl = document.getElementById("deadlineTxt");
-        deadEl.innerText = "Hingga: " + getDeadline().toLocaleDateString('id-ID', {day:'numeric', month:'long'});
-
-        if (diff <= 0) {
-            el.innerText = "VOTING DITUTUP";
-            document.getElementById("mainBtn").disabled = true;
-            document.getElementById("closedMsg").style.display = "block";
+        if (selisih <= 0) {
+            el.innerText = "DITUTUP";
+            document.getElementById("btnMain").disabled = true;
+            document.getElementById("pesanTutup").style.display = "block";
         } else {
-            const d = Math.floor(diff / 86400000);
-            const h = Math.floor((diff % 86400000) / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
+            const d = Math.floor(selisih / 86400000);
+            const h = Math.floor((selisih % 86400000) / 3600000);
+            const m = Math.floor((selisih % 3600000) / 60000);
+            const s = Math.floor((selisih % 60000) / 1000);
             el.innerText = `${d}H ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
     }
 
-    function setMode(m) {
-        if (isBusy) return;
-        activeMode = m;
-        ['wheel','glass','scratch'].forEach(v => document.getElementById('v-'+v).style.display = (v === m ? 'block' : 'none'));
-        ['t1','t2','t3'].forEach((t, i) => document.getElementById(t).classList.toggle('active', ['wheel','glass','scratch'][i] === m));
-        drawWheel();
+    function gantiMode(m) {
+        if (sedangProses) return;
+        modeAktif = m;
+        ['roda','kocok','slot'].forEach(v => document.getElementById('m-'+v).style.display = (v === m ? 'block' : 'none'));
+        ['b1','b2','b3'].forEach((t, i) => document.getElementById(t).classList.toggle('aktif', ['roda','kocok','slot'][i] === m));
+        if (m === 'roda') gambarRoda();
     }
 
-    function drawWheel() {
-        const canvas = document.getElementById("wheelCanvas");
+    function gambarRoda() {
+        const canvas = document.getElementById("canvasRoda");
         const ctx = canvas.getContext("2d");
-        const list = MEMBERS.filter(n => !winners[n]);
-        const arc = (Math.PI * 2) / list.length;
-        ctx.clearRect(0,0,600,600);
+        const sisa = ANGGOTA.filter(n => !dataPemenang[n]);
+        const arc = (Math.PI * 2) / sisa.length;
+        ctx.clearRect(0,0,500,500);
 
-        list.forEach((name, i) => {
+        sisa.forEach((nama, i) => {
             ctx.beginPath();
-            ctx.fillStyle = `hsl(${(i * 360 / list.length)}, 75%, 45%)`;
-            ctx.moveTo(300, 300);
-            ctx.arc(300, 300, 285, i*arc - Math.PI/2, (i+1)*arc - Math.PI/2);
+            ctx.fillStyle = `hsl(${(i * 360 / sisa.length)}, 70%, 50%)`;
+            ctx.moveTo(250, 250);
+            ctx.arc(250, 250, 240, i*arc - Math.PI/2, (i+1)*arc - Math.PI/2);
             ctx.fill();
-            ctx.strokeStyle = "rgba(255,255,255,0.2)";
-            ctx.lineWidth = 2;
             ctx.stroke();
 
             ctx.save();
-            ctx.translate(300,300);
+            ctx.translate(250,250);
             ctx.rotate(i*arc + arc/2 - Math.PI/2);
             ctx.fillStyle = "#fff";
-            ctx.font = "bold 22px 'Plus Jakarta Sans'";
-            ctx.shadowColor = "rgba(0,0,0,0.5)";
-            ctx.shadowBlur = 5;
+            ctx.font = "bold 18px sans-serif";
             ctx.textAlign = "right";
-            ctx.fillText(name, 260, 10);
+            ctx.fillText(nama, 220, 10);
             ctx.restore();
         });
     }
 
-    function openUserMenu() {
-        if (isBusy) return;
-        const list = MEMBERS.filter(n => !winners[n]);
-        let h = `<div class="name-grid">`;
-        list.forEach(n => h += `<div class="name-btn" onclick="execute('${n}')">${n}</div>`);
-        h += `</div>`;
-        Swal.fire({ title: 'Siapa Anda?', html: h, showConfirmButton: false, background: '#0f172a', color: '#fff' });
+    function pilihIdentitas() {
+        if (sedangProses) return;
+        const sisa = ANGGOTA.filter(n => !dataPemenang[n]);
+        let html = `<div class="grid-nama">`;
+        sisa.forEach(n => html += `<div class="kartu-nama" onclick="eksekusiPilih('${n}')">${n}</div>`);
+        html += `</div>`;
+        Swal.fire({ title: 'Konfirmasi Nama Anda', html: html, showConfirmButton: false, background: '#1e293b', color: '#fff' });
     }
 
-    function execute(user) {
+    function eksekusiPilih(user) {
         Swal.close();
-        isBusy = true;
-        const list = MEMBERS.filter(n => !winners[n]);
+        sedangProses = true;
+        const sisa = ANGGOTA.filter(n => !dataPemenang[n]);
         
-        let result = logs[user] || list[Math.floor(Math.random() * list.length)];
-        if (!logs[user] && !isLocked()) {
-            logs[user] = result;
-            votes[result] = (votes[result] || 0) + 1;
-            save();
+        // Adil: Hasil ditentukan di awal, animasi hanya visual
+        let hasil = dataLogUser[user] || sisa[Math.floor(Math.random() * sisa.length)];
+        
+        if (!dataLogUser[user] && !cekTerkunci()) {
+            dataLogUser[user] = hasil;
+            dataSuara[hasil] = (dataSuara[hasil] || 0) + 1;
+            localStorage.setItem("arisan_suara", JSON.stringify(dataSuara));
+            localStorage.setItem("arisan_log_user", JSON.stringify(dataLogUser));
         }
 
-        if (activeMode === 'wheel') {
-            const idx = list.indexOf(result);
-            const slice = 360 / list.length;
-            const stop = 360 - (idx * slice) - (slice / 2);
-            wheelRotation += (360 * 8) + (stop - (wheelRotation % 360));
-            document.getElementById("wheelCanvas").style.transform = `rotate(${wheelRotation}deg)`;
-            setTimeout(() => done(result), 7200);
-        } else if (activeMode === 'glass') {
-            document.getElementById("cup").classList.add("shaking");
+        if (modeAktif === 'roda') {
+            const idx = sisa.indexOf(hasil);
+            const slice = 360 / sisa.length;
+            const stopAt = 360 - (idx * slice) - (slice / 2);
+            rotasiRoda += (360 * 5) + (stopAt - (rotasiRoda % 360));
+            document.getElementById("canvasRoda").style.transform = `rotate(${rotasiRoda}deg)`;
+            setTimeout(() => selesai(hasil), 6000);
+        } else if (modeAktif === 'kocok') {
+            document.getElementById("botol").style.animation = "roll 0.1s infinite";
             setTimeout(() => {
-                document.getElementById("cup").classList.remove("shaking");
-                document.getElementById("glassStatus").innerText = "Hasil: " + result;
-                done(result);
+                document.getElementById("botol").style.animation = "none";
+                selesai(hasil);
             }, 3000);
         } else {
-            const box = document.getElementById("scratchBox");
-            box.innerText = "Menggosok...";
+            const slot = document.getElementById("slotBox");
+            slot.classList.add("animasi-rolling");
             setTimeout(() => {
-                box.innerText = result;
-                done(result);
-            }, 2500);
+                slot.classList.remove("animasi-rolling");
+                slot.innerText = hasil;
+                selesai(hasil);
+            }, 3000);
         }
     }
 
-    function done(res) {
-        isBusy = false;
-        Swal.fire({ title: 'Berhasil!', html: `Pilihan Anda: <b style="color:var(--accent)">${res}</b>`, icon: 'success', background: '#0f172a', color: '#fff' });
-        render();
-        checkWinner();
+    function selesai(res) {
+        sedangProses = false;
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        Swal.fire({ title: 'Berhasil!', html: `Anda memilih: <b style="color:var(--aksen-emas)">${res}</b>`, icon: 'success', background: '#1e293b', color: '#fff' });
+        renderData();
+        cekPemenangAkhir();
     }
 
-    function checkWinner() {
-        const active = MEMBERS.filter(n => !winners[n]);
-        if (Object.keys(logs).length >= active.length && !Object.values(winners).includes(getBulan())) {
-            let max = -1; let win = "";
-            for (let n in votes) { if (votes[n] > max) { max = votes[n]; win = n; } }
-            winners[win] = getBulan();
-            save();
-            confetti({ particleCount: 300, spread: 90, origin: { y: 0.6 } });
-            Swal.fire({ title: '🏆 PEMENANG ' + getBulan().toUpperCase(), html: `<h1 style="color:var(--accent)">${win}</h1>`, background: '#0f172a', color: '#fff' });
-            render();
+    function cekPemenangAkhir() {
+        const sisaAnggota = ANGGOTA.filter(n => !dataPemenang[n]);
+        // Jika semua sudah vote
+        if (Object.keys(dataLogUser).length >= sisaAnggota.length && !Object.values(dataPemenang).includes(dapatkanBulanIni())) {
+            let suaraTerbanyak = -1; let pemenangBulanIni = "";
+            for (let n in dataSuara) { if (dataSuara[n] > suaraTerbanyak) { suaraTerbanyak = dataSuara[n]; pemenangBulanIni = n; } }
+            
+            dataPemenang[pemenangBulanIni] = dapatkanBulanIni();
+            localStorage.setItem("arisan_pemenang", JSON.stringify(dataPemenang));
+            
+            Swal.fire({ 
+                title: '🏆 PEMENANG ' + dapatkanBulanIni().toUpperCase(), 
+                html: `<h1 style="color:var(--aksen-emas)">${pemenangBulanIni}</h1><p>Dengan total ${suaraTerbanyak} suara!</p>`, 
+                background: '#1e293b', color: '#fff' 
+            });
+            renderData();
         }
     }
 
-    function render() {
-        drawWheel();
-        let sH = "";
-        const sorted = Object.entries(votes).sort((a,b) => b[1] - a[1]);
-        const max = sorted.length > 0 ? sorted[0][1] : 1;
-        sorted.forEach(([n, c]) => {
-            sH += `<div style="display:flex; justify-content:space-between; font-size:12px"><span>${n}</span><b>${c} Suara</b></div>
-                   <div class="bar-wrap"><div class="bar-fill" style="width:${(c/max)*100}%"></div></div>`;
+    function renderData() {
+        let hStat = "";
+        const urut = Object.entries(dataSuara).sort((a,b) => b[1] - a[1]);
+        const max = urut.length > 0 ? urut[0][1] : 1;
+        urut.forEach(([n, c]) => {
+            hStat += `<div style="display:flex; justify-content:space-between; font-size:12px"><span>${n}</span><b>${c} Suara</b></div>
+                      <div class="bar-wadah"><div class="bar-isi" style="width:${(c/max)*100}%"></div></div>`;
         });
-        document.getElementById("statsArea").innerHTML = sH || "Belum ada data.";
+        document.getElementById("areaStatistik").innerHTML = hStat || "Menunggu suara masuk...";
 
-        let wH = "";
-        MEMBERS.forEach(n => {
-            wH += `<div class="member-row"><span>${winners[n] ? '👑' : '👤'} ${n}</span> ${winners[n] ? `<span class="won-tag">${winners[n]}</span>` : '<span>Aktif</span>'}</div>`;
+        let hWin = "";
+        ANGGOTA.forEach(n => {
+            hWin += `<div class="baris-anggota"><span>${dataPemenang[n] ? '👑' : '👤'} ${n}</span> ${dataPemenang[n] ? `<span class="tag-pemenang">${dataPemenang[n]}</span>` : '<span style="color:#475569">Belum</span>'}</div>`;
         });
-        document.getElementById("winnerArea").innerHTML = wH;
+        document.getElementById("areaPemenang").innerHTML = hWin;
     }
 
-    async function doAdminReset() {
-        const { value: pin } = await Swal.fire({ title: 'PIN Admin', input: 'password', background: '#0f172a', color: '#fff' });
-        if (pin === RESET_PIN) { localStorage.clear(); location.reload(); }
+    async function resetSistem() {
+        const { value: pin } = await Swal.fire({ title: 'PIN Admin', input: 'password', background: '#1e293b', color: '#fff' });
+        if (pin === PIN_ADMIN) { localStorage.clear(); location.reload(); }
     }
 
-    init();
+    mulai();
 </script>
 </body>
 </html>

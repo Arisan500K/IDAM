@@ -13,3 +13,24 @@ body:JSON.stringify({nama,pin})
 return res.json();
 
 }
+
+async function getMembers(){
+
+const res = await fetch(API_URL+"/members");
+return res.json();
+
+}
+
+async function updatePayment(nama,jumlah){
+
+const res = await fetch(API_URL+"/payment",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({nama,jumlah})
+});
+
+return res.json();
+
+}

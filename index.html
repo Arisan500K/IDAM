@@ -143,7 +143,7 @@ line-height:1.6;
 <canvas id="wheel" width="500" height="500"></canvas>
 </div>
 
-<button class="spinBtn" onclick="startSpin()">SPIN PESERTA</button>
+<button class="spinBtn" onclick="startSpin()">SPIN/PUTAR PESERTA</button>
 
 <div id="progressSpin" class="small"></div>
 
@@ -171,13 +171,13 @@ line-height:1.6;
 
 <ol>
 
-<li>Setiap peserta memilih namanya sendiri sebelum melakukan spin.</li>
+<li>Setiap peserta memilih namanya sendiri sebelum melakukan SPIN/PUTAR.</li>
 
-<li>Setiap peserta hanya boleh melakukan <b>1 kali spin dalam satu bulan</b>.</li>
+<li>Setiap peserta hanya boleh melakukan <b>1 kali SPIN/PUTAR dalam satu bulan</b>.</li>
 
-<li>Jika peserta mencoba spin lagi, sistem hanya akan menampilkan hasil spin sebelumnya.</li>
+<li>Jika peserta mencoba SPIN/PUTAR lagi, sistem hanya akan menampilkan hasil SPIN/PUTAR sebelumnya.</li>
 
-<li>Setiap spin dihitung sebagai <b>1 suara</b>.</li>
+<li>Setiap SPIN/PUTAR dihitung sebagai <b>1 suara</b>.</li>
 
 <li>Pemenang bulan ini adalah peserta dengan <b>jumlah suara terbanyak</b>.</li>
 
@@ -185,7 +185,7 @@ line-height:1.6;
 
 <li>Ketua arisan <b>Idam</b> otomatis menjadi pemenang pada bulan pertama sesuai kesepakatan bersama.</li>
 
-<li>Setelah semua peserta melakukan spin, sistem otomatis menentukan pemenang bulan tersebut.</li>
+<li>Setelah semua peserta melakukan SPIN/PUTAR, sistem otomatis menentukan pemenang bulan tersebut.</li>
 
 <li>Reset sistem hanya dapat dilakukan menggunakan <b>kode khusus</b> oleh Ketua.</li>
 
@@ -304,7 +304,7 @@ inputOptions:NAMES
 
 if(spinResults[name]){
 
-Swal.fire("Hasil Spin Anda Bulan Ini",spinResults[name])
+Swal.fire("Hasil SPIN/PUTAR Anda Bulan Ini",spinResults[name])
 return
 
 }
@@ -341,7 +341,7 @@ voteData[winner]=(voteData[winner]||0)+1
 localStorage.setItem("spinResults",JSON.stringify(spinResults))
 localStorage.setItem("voteData",JSON.stringify(voteData))
 
-Swal.fire("Hasil Spin Anda",winner)
+Swal.fire("Hasil SPIN/PUTAR Anda",winner)
 
 spinning=false
 

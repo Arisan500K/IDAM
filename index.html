@@ -3,398 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ARISAN BULANAN 500K</title>
+    <title>ARISAN EXCLUSIVE 500K - ULTRA PRO</title>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
         :root {
-            --bg: #0f172a;
-            --glass: rgba(30, 41, 59, 0.7);
-            --accent: #facc15;
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.8);
+            --accent: #fbbf24;
             --secondary: #38bdf8;
-            --success: #22c55e;
-            --text-muted: #94a3b8;
+            --neon: #22c55e;
+            --danger: #ef4444;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
-            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #020617 100%);
+            color: #f1f5f9;
             margin: 0;
-            padding: 15px;
+            padding: 20px;
             min-height: 100vh;
         }
 
-        .container { max-width: 500px; margin: auto; }
+        .container { max-width: 550px; margin: auto; }
 
-        header { text-align: center; margin-bottom: 25px; }
-        h1 { color: var(--accent); margin: 0; font-size: 24px; letter-spacing: 2px; }
-        .subtitle { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+        header { text-align: center; margin-bottom: 30px; }
+        .logo-text { 
+            font-size: 28px; font-weight: 800; color: var(--accent); 
+            text-transform: uppercase; letter-spacing: 4px;
+            filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));
+        }
+        .subtitle { font-size: 14px; color: #94a3b8; margin-top: 8px; font-weight: 600; }
 
         .card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
         }
 
-        /* WHEEL STYLE */
-        .wheelBox { position: relative; width: 280px; margin: 20px auto; }
+        /* WHEEL CUSTOMIZATION */
+        .wheelBox { position: relative; width: 320px; margin: 20px auto; }
         canvas { 
             width: 100%; border-radius: 50%; 
-            border: 8px solid #334155;
-            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-            transition: transform 6s cubic-bezier(0.15, 0, 0.15, 1);
+            border: 10px solid #1e293b;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.05);
+            transition: transform 7s cubic-bezier(0.1, 0, 0.1, 1);
         }
         .pointer {
             position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 15px solid transparent;
-            border-right: 15px solid transparent; border-top: 30px solid #ef4444; 
-            z-index: 10; drop-shadow: 0 4px 5px black;
+            width: 0; height: 0; border-left: 18px solid transparent;
+            border-right: 18px solid transparent; border-top: 35px solid var(--danger); 
+            z-index: 20; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+        }
+        .center-pin {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 20px; height: 20px; background: white; border-radius: 50%;
+            z-index: 15; box-shadow: 0 0 15px rgba(255,255,255,0.8);
         }
 
-        /* GLASS STYLE */
-        .glass-mode { display: none; padding: 30px 10px; text-align: center; }
-        .cup-container { font-size: 80px; display: inline-block; cursor: pointer; transition: 0.1s; }
-        .shaking { animation: shake 0.15s infinite; }
-        @keyframes shake {
-            0% { transform: rotate(0deg) translate(2px, 2px); }
-            50% { transform: rotate(-10deg) translate(-2px, -2px); }
-            100% { transform: rotate(10deg) translate(2px, -2px); }
+        /* GLASS MODE AREA */
+        .glass-mode { display: none; padding: 40px 10px; text-align: center; }
+        .cup-emoji { font-size: 90px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); }
+        .shaking { animation: ultraShake 0.1s infinite; }
+        @keyframes ultraShake {
+            0% { transform: scale(1.1) rotate(0); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+            100% { transform: scale(1.1) rotate(0); }
         }
 
         /* TABS */
-        .tab-container { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab { 
-            flex: 1; padding: 10px; border-radius: 12px; border: none; 
-            background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: pointer;
-            font-weight: bold; font-size: 12px; transition: 0.3s;
+        .tab-btn-group { display: flex; gap: 12px; margin-bottom: 25px; }
+        .tab-btn { 
+            flex: 1; padding: 14px; border-radius: 16px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.03); color: #64748b; cursor: pointer;
+            font-weight: 700; font-size: 13px; transition: 0.4s;
         }
-        .tab.active { background: var(--secondary); color: white; }
+        .tab-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: 0 0 20px rgba(56, 189, 248, 0.3); }
 
-        .btn-main {
-            width: 100%; padding: 15px; border-radius: 15px; border: none;
-            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
-            color: white; font-weight: bold; font-size: 16px; cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.3);
+        .btn-action {
+            width: 100%; padding: 18px; border-radius: 18px; border: none;
+            background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
+            color: white; font-weight: 800; font-size: 16px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4);
+            transition: 0.3s;
         }
+        .btn-action:active { transform: scale(0.97); }
 
-        /* STATS & LIST */
-        .stat-row { margin-bottom: 15px; text-align: left; }
-        .bar-bg { background: rgba(255,255,255,0.1); height: 8px; border-radius: 10px; margin-top: 5px; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--secondary); border-radius: 10px; transition: width 1s ease-out; }
-        
-        .history-list { font-size: 12px; max-height: 150px; overflow-y: auto; padding-right: 5px; }
-        .history-item { 
-            display: flex; justify-content: space-between; padding: 8px 0; 
-            border-bottom: 1px solid rgba(255,255,255,0.05); 
+        /* LISTS & STATS */
+        .stat-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+        .bar-outer { background: rgba(255,255,255,0.05); height: 10px; border-radius: 20px; overflow: hidden; margin-bottom: 18px; }
+        .bar-inner { height: 100%; background: linear-gradient(90deg, var(--secondary), #818cf8); border-radius: 20px; transition: width 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+
+        .history-box { background: rgba(0,0,0,0.2); border-radius: 15px; padding: 10px; max-height: 180px; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .history-item b { color: var(--accent); }
+
+        .rules-box { font-size: 13px; color: #cbd5e1; line-height: 1.8; }
+        .rules-box li { margin-bottom: 10px; }
+        .rules-box b { color: var(--accent); }
+
+        .member-pill { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 18px; background: rgba(255,255,255,0.03); 
+            border-radius: 15px; margin-bottom: 10px; border: 1px solid transparent;
         }
+        .member-pill.won { border-color: var(--accent); background: rgba(251, 191, 36, 0.05); opacity: 0.7; }
 
-        .rules-list { text-align: left; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-        .rules-list b { color: var(--accent); }
-
-        .reset-link { margin-top: 30px; font-size: 11px; color: #334155; cursor: pointer; text-decoration: none; }
+        .reset-trigger { margin-top: 40px; color: #1e293b; font-size: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>ARISAN ELITE</h1>
-        <div class="subtitle">Ketua: Idam • <span id="displayBulan"></span></div>
+        <div class="logo-text">Premium Arisan</div>
+        <div class="subtitle">Manager: Idam • <span id="currentDate"></span></div>
     </header>
 
     <div class="card">
-        <div class="tab-container">
-            <button class="tab active" onclick="switchMode('wheel', this)">🎡 RODA PUTAR</button>
-            <button class="tab" onclick="switchMode('glass', this)">🥤 KOCOK GELAS</button>
+        <div class="tab-btn-group">
+            <button class="tab-btn active" onclick="setMode('wheel', this)">🎡 SPIN WHEEL</button>
+            <button class="tab-btn" onclick="setMode('glass', this)">🥤 KOCOK GELAS</button>
         </div>
 
-        <div id="wheelSection">
+        <div id="wheelArea">
             <div class="wheelBox">
                 <div class="pointer"></div>
-                <canvas id="wheel" width="500" height="500"></canvas>
+                <div class="center-pin"></div>
+                <canvas id="wheelCanvas" width="600" height="600"></canvas>
             </div>
-            <button class="btn-main" onclick="initAction('wheel')">SPIN SEKARANG</button>
+            <button class="btn-action" onclick="handleSpin('wheel')">Putar Sekarang</button>
         </div>
 
-        <div id="glassSection" class="glass-mode">
-            <div id="cupEmoji" class="cup-container">🥤</div>
-            <div id="glassStatus" style="margin: 20px 0; font-weight: bold; color: var(--accent); height: 24px;">Siap Mengocok?</div>
-            <button class="btn-main" onclick="initAction('glass')">KOCOK GELAS</button>
+        <div id="glassArea" class="glass-mode">
+            <div id="cup" class="cup-emoji">🥤</div>
+            <div id="glassLabel" style="margin: 25px 0; font-size: 18px; font-weight: 800; color: var(--accent);">Gelas siap dikocok!</div>
+            <button class="btn-action" onclick="handleSpin('glass')">Kocok Gelas</button>
         </div>
         
-        <p id="progressInfo" style="font-size: 12px; color: var(--text-muted); margin-top: 15px;"></p>
+        <div id="spinProgress" style="text-align:center; font-size: 12px; color: #64748b; margin-top: 20px; font-weight: 600;"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; border-left: 4px solid var(--accent); padding-left: 10px;">Statistik Suara</h3>
-        <div id="statsUI"></div>
-        <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:20px 0;">
-        <h4 style="margin:0 0 10px 0;">Histori Aktivitas</h4>
-        <div class="history-list" id="historyUI"></div>
+        <h3 style="margin:0 0 20px 0; color: var(--secondary)">🔥 Statistik Suara</h3>
+        <div id="statsList"></div>
+        <hr style="border:0; border-top: 1px solid var(--glass-border); margin: 25px 0;">
+        <h4 style="margin:0 0 15px 0; font-size:14px; color: #94a3b8;">Riwayat Aktivitas</h4>
+        <div class="history-box" id="historyList"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; border-left: 4px solid var(--secondary); padding-left: 10px;">Daftar Peserta</h3>
-        <div id="membersUI"></div>
+        <h3 style="margin:0 0 20px 0; color: var(--neon)">👥 Daftar Peserta</h3>
+        <div id="memberList"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; border-left: 4px solid var(--success); padding-left: 10px;">Aturan Resmi</h3>
-        <div class="rules-list">
-            <ol>
-                <li><b>Nominal:</b> Iuran arisan sebesar Rp500.000 per bulan.</li>
-                <li><b>Mekanisme:</b> Pemenang ditentukan melalui <b>Voting System</b>. Setiap anggota melakukan spin dan mendapatkan 1 nama.</li>
-                <li><b>Pemenang:</b> Anggota yang mendapatkan total suara terbanyak di akhir bulan sah menjadi pemenang.</li>
-                <li><b>Seru-seruan:</b> Anggota boleh melakukan spin berkali-kali untuk hiburan, namun <b>hasil pilihan suara tetap mengacu pada spin pertama</b>.</li>
-                <li><b>Transparansi:</b> Semua aktivitas tercatat di riwayat untuk menghindari manipulasi.</li>
-                <li><b>Ketua:</b> Saudara <b>Idam</b> otomatis menang pada bulan Maret sebagai pembuka.</li>
-            </ol>
+        <h3 style="margin:0 0 20px 0; color: var(--accent)">📄 Aturan Arisan 500K</h3>
+        <div class="rules-box">
+            <ul style="padding-left: 20px;">
+                <li>Setiap anggota wajib menyetor <b>Rp500.000</b> paling lambat tanggal 10.</li>
+                <li>Pemenang dipilih berdasarkan <b>Sistem Vote</b> terbanyak dari hasil spin kolektif.</li>
+                <li>Anggota bebas melakukan spin berkali-kali untuk <b>seru-seruan</b>, namun sistem hanya merekam hasil spin <b>pertama</b> sebagai suara sah.</li>
+                <li>Nama yang sudah menang secara otomatis dihilangkan dari Roda Putar bulan berikutnya.</li>
+                <li><b>Ketua Arisan (Idam)</b> memenangkan putaran pertama (Maret) sesuai kesepakatan.</li>
+                <li>Hasil arisan bersifat mutlak dan tidak dapat diganggu gugat.</li>
+            </ul>
         </div>
     </div>
 
-    <center><a class="reset-link" onclick="handleReset()">Reset System Admin</a></center>
+    <center><div class="reset-trigger" onclick="adminReset()">Admin Control</div></center>
 </div>
 
 <script>
+    // Config & Colors
     const NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+    const SEGMENT_COLORS = [
+        "#1e1b4b", "#312e81", "#3730a3", "#4338ca", 
+        "#4f46e5", "#6366f1", "#818cf8", "#a5b4fc",
+        "#1e293b", "#334155"
+    ];
     const RESET_PIN = "080522";
 
     let winnerData = JSON.parse(localStorage.getItem("winnerData")) || {};
     let voteData = JSON.parse(localStorage.getItem("voteData")) || {};
     let spinResults = JSON.parse(localStorage.getItem("spinResults")) || {};
     
-    let isBusy = false;
-    let rotation = 0;
+    let isLocked = false;
+    let rotationAngle = 0;
 
-    // -- INIT --
     function init() {
-        const bln = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-        document.getElementById("displayBulan").innerText = "Bulan " + bln[new Date().getMonth()];
+        const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        document.getElementById("currentDate").innerText = months[new Date().getMonth()] + " " + new Date().getFullYear();
         
+        // Auto-win for Idam in March
         if (!winnerData["Idam"]) {
             winnerData["Idam"] = "Maret";
-            save();
+            saveData();
         }
-        refreshUI();
+        renderAll();
     }
 
-    function save() {
+    function saveData() {
         localStorage.setItem("winnerData", JSON.stringify(winnerData));
         localStorage.setItem("voteData", JSON.stringify(voteData));
         localStorage.setItem("spinResults", JSON.stringify(spinResults));
     }
 
-    function getActiveNames() {
+    function getEligibleNames() {
         return NAMES.filter(n => !winnerData[n]);
     }
 
-    // -- UI LOGIC --
-    function switchMode(mode, el) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        el.classList.add('active');
-        if(mode === 'wheel') {
-            document.getElementById('wheelSection').style.display = 'block';
-            document.getElementById('glassSection').style.display = 'none';
-        } else {
-            document.getElementById('wheelSection').style.display = 'none';
-            document.getElementById('glassSection').style.display = 'block';
-        }
-    }
+    // -- RENDERING LOGIC --
 
     function drawWheel() {
-        const canvas = document.getElementById("wheel");
+        const canvas = document.getElementById("wheelCanvas");
         const ctx = canvas.getContext("2d");
-        const names = getActiveNames();
-        if (names.length === 0) return;
+        const names = getEligibleNames();
+        const total = names.length;
+        
+        ctx.clearRect(0, 0, 600, 600);
+        if (total === 0) return;
 
-        const arc = (2 * Math.PI) / names.length;
-        ctx.clearRect(0,0,500,500);
+        const arc = (2 * Math.PI) / total;
 
         names.forEach((name, i) => {
             const angle = i * arc;
+            // Draw Segment with Varied Colors
             ctx.beginPath();
-            ctx.fillStyle = i % 2 === 0 ? "#1e293b" : "#334155";
-            ctx.moveTo(250,250);
-            ctx.arc(250, 250, 245, angle - Math.PI/2, (angle + arc) - Math.PI/2);
+            ctx.fillStyle = `hsl(${(i * 360 / total) + 200}, 60%, 30%)`; // Dynamic Vibrant Colors
+            ctx.moveTo(300, 300);
+            ctx.arc(300, 300, 290, angle - Math.PI/2, (angle + arc) - Math.PI/2);
             ctx.fill();
-            
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.stroke();
+
+            // Draw Text
             ctx.save();
-            ctx.translate(250,250);
+            ctx.translate(300, 300);
             ctx.rotate(angle + arc/2 - Math.PI/2);
-            ctx.fillStyle = i % 2 === 0 ? varToHex('--secondary') : 'white';
-            ctx.font = "bold 18px Inter";
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 20px 'Plus Jakarta Sans'";
             ctx.textAlign = "right";
-            ctx.fillText(name, 220, 8);
+            ctx.shadowColor = "black";
+            ctx.shadowBlur = 5;
+            ctx.fillText(name, 260, 10);
             ctx.restore();
         });
     }
 
-    function varToHex(v) { return v === '--secondary' ? '#38bdf8' : '#facc15'; }
+    function setMode(mode, btn) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('wheelArea').style.display = mode === 'wheel' ? 'block' : 'none';
+        document.getElementById('glassArea').style.display = mode === 'glass' ? 'block' : 'none';
+    }
 
-    async function initAction(mode) {
-        if (isBusy) return;
-        
-        const activeNames = getActiveNames();
-        const options = {};
-        NAMES.filter(n => !winnerData[n]).forEach(n => options[n] = n);
+    async function handleSpin(mode) {
+        if (isLocked) return;
 
-        const { value: user } = await Swal.fire({
-            title: 'Konfirmasi Identitas',
-            text: 'Pilih nama Anda untuk memulai',
+        // User Picker (Only those who haven't won)
+        const activeUsers = NAMES.filter(n => !winnerData[n]);
+        const userOptions = {};
+        activeUsers.forEach(u => userOptions[u] = u);
+
+        const { value: selectedUser } = await Swal.fire({
+            title: 'Siapa yang memutar?',
             input: 'select',
-            inputOptions: options,
-            confirmButtonColor: '#22c55e',
-            background: '#1e293b',
+            inputOptions: userOptions,
+            confirmButtonText: 'Mulai!',
+            confirmButtonColor: '#38bdf8',
+            background: '#0f172a',
             color: '#fff'
         });
 
-        if (user) {
-            let result;
-            const names = getActiveNames();
+        if (selectedUser) {
+            let resultName;
+            const pool = getEligibleNames();
             
-            // Jika sudah pernah spin, ambil hasil lama
-            if (spinResults[user]) {
-                result = spinResults[user];
+            // LOGIC: Same user = same result
+            if (spinResults[selectedUser]) {
+                resultName = spinResults[selectedUser];
             } else {
-                result = names[Math.floor(Math.random() * names.length)];
-                spinResults[user] = result;
-                voteData[result] = (voteData[result] || 0) + 1;
-                save();
+                resultName = pool[Math.floor(Math.random() * pool.length)];
+                spinResults[selectedUser] = resultName;
+                voteData[resultName] = (voteData[resultName] || 0) + 1;
+                saveData();
             }
 
-            if (mode === 'wheel') runWheel(result);
-            else runGlass(result);
+            if (mode === 'wheel') animateWheel(resultName);
+            else animateGlass(resultName);
         }
     }
 
-    function runWheel(targetName) {
-        isBusy = true;
-        const names = getActiveNames();
-        const idx = names.indexOf(targetName);
-        const slice = 360 / names.length;
-        const stopAt = 360 - (idx * slice) - (slice / 2);
+    function animateWheel(target) {
+        isLocked = true;
+        const pool = getEligibleNames();
+        const targetIdx = pool.indexOf(target);
+        const slice = 360 / pool.length;
+        const stopAt = 360 - (targetIdx * slice) - (slice / 2);
         
-        rotation += (360 * 6) + (stopAt - (rotation % 360));
-        document.getElementById("wheel").style.transform = `rotate(${rotation}deg)`;
+        rotationAngle += (360 * 8) + (stopAt - (rotationAngle % 360));
+        document.getElementById("wheelCanvas").style.transform = `rotate(${rotationAngle}deg)`;
 
         setTimeout(() => {
-            isBusy = false;
-            showResult(targetName);
-        }, 6500);
+            isLocked = false;
+            celebrate(target);
+        }, 7200);
     }
 
-    function runGlass(targetName) {
-        isBusy = true;
-        const cup = document.getElementById("cupEmoji");
-        const status = document.getElementById("glassStatus");
+    function animateGlass(target) {
+        isLocked = true;
+        const cup = document.getElementById("cup");
+        const label = document.getElementById("glassLabel");
         
         cup.classList.add("shaking");
-        status.innerText = "Mengocok Gelas...";
+        label.innerText = "Srek srek srek...";
 
         setTimeout(() => {
             cup.classList.remove("shaking");
-            status.innerText = "Dapat Kertas: " + targetName;
-            isBusy = false;
-            showResult(targetName);
-        }, 3000);
+            label.innerText = "📄 Dapet Nama: " + target;
+            isLocked = false;
+            celebrate(target);
+        }, 3500);
     }
 
-    function showResult(name) {
+    function celebrate(name) {
         Swal.fire({
-            title: 'Hasil Spin',
-            html: `Pilihan Anda jatuh kepada: <br><h1 style="color:#facc15">${name}</h1>`,
+            title: 'Hasil Spin!',
+            html: `Pilihan suara jatuh kepada: <br><h1 style="color:var(--accent); margin-top:10px">${name}</h1>`,
             icon: 'success',
-            background: '#1e293b',
+            background: '#0f172a',
             color: '#fff'
         });
-        refreshUI();
-        checkWinnerFinal();
+        renderAll();
+        checkFinalWinner();
     }
 
-    function checkWinnerFinal() {
-        const active = getActiveNames().length;
-        const done = Object.keys(spinResults).length;
+    function checkFinalWinner() {
+        const activeCount = getEligibleNames().length;
+        const spinsDone = Object.keys(spinResults).length;
         
-        if (done >= active && active > 0) {
-            let max = -1; let win = "";
+        if (spinsDone >= activeCount && activeCount > 0) {
+            let max = -1; let winner = "";
             for (let n in voteData) {
-                if (voteData[n] > max) { max = voteData[n]; win = n; }
+                if (voteData[n] > max) { max = voteData[n]; winner = n; }
             }
             
-            const bln = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][new Date().getMonth()];
-            winnerData[win] = bln;
-            save();
+            const mNames = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+            winnerData[winner] = mNames[new Date().getMonth()];
+            saveData();
             
             setTimeout(() => {
                 Swal.fire({
-                    title: '🎉 PEMENANG SAH 🎉',
-                    html: `<h1 style="color:#facc15">${win}</h1><p>Berhak mendapatkan uang arisan bulan ini!</p>`,
-                    confirmButtonText: 'Selamat!',
-                    background: '#1e293b',
+                    title: '🎉 PEMENANG SAH!',
+                    html: `<h1 style="color:var(--accent)">${winner}</h1><p>Selamat! Uang arisan milikmu bulan ini.</p>`,
+                    background: '#0f172a',
                     color: '#fff'
                 });
-                confetti({ particleCount: 300, spread: 70, origin: { y: 0.6 } });
-                refreshUI();
+                confetti({ particleCount: 300, spread: 100, origin: { y: 0.7 } });
+                renderAll();
             }, 1000);
         }
     }
 
-    function refreshUI() {
+    function renderAll() {
         drawWheel();
         
-        // Render Stats
+        // Stats
         let statsHtml = "";
-        const sortedVotes = Object.entries(voteData).sort((a,b) => b[1] - a[1]);
-        const maxV = sortedVotes.length > 0 ? sortedVotes[0][1] : 1;
+        const sorted = Object.entries(voteData).sort((a,b) => b[1] - a[1]);
+        const topValue = sorted.length > 0 ? sorted[0][1] : 1;
 
-        sortedVotes.forEach(([name, count]) => {
-            const prc = (count / maxV) * 100;
+        sorted.forEach(([name, count]) => {
+            const width = (count / topValue) * 100;
             statsHtml += `
-                <div class="stat-row">
-                    <div style="display:flex; justify-content:space-between; font-size:12px">
-                        <span>${name}</span><span><b>${count} Suara</b></span>
-                    </div>
-                    <div class="bar-bg"><div class="bar-fill" style="width:${prc}%"></div></div>
-                </div>`;
+                <div class="stat-label"><span>${name}</span><span>${count} Suara</span></div>
+                <div class="bar-outer"><div class="bar-inner" style="width:${width}%"></div></div>`;
         });
-        document.getElementById("statsUI").innerHTML = statsHtml || "<p class='small'>Belum ada suara.</p>";
+        document.getElementById("statsList").innerHTML = statsHtml || "<p style='font-size:12px; color:#475569'>Belum ada suara masuk.</p>";
 
-        // Render History
+        // History
         let histHtml = "";
         Object.keys(spinResults).reverse().forEach(p => {
-            histHtml += `<div class="history-item"><span>👤 ${p}</span><span>memilih ➔ <b>${spinResults[p]}</b></span></div>`;
+            histHtml += `<div class="history-item"><span>👤 ${p}</span><span>Memilih ➔ <b>${spinResults[p]}</b></span></div>`;
         });
-        document.getElementById("historyUI").innerHTML = histHtml || "Belum ada aktivitas.";
+        document.getElementById("historyList").innerHTML = histHtml || "Menunggu putaran pertama...";
 
-        // Render Members
+        // Members
         let memHtml = "";
         NAMES.forEach(n => {
-            const isW = winnerData[n];
+            const hasWon = winnerData[n];
             memHtml += `
-                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05); ${isW ? 'opacity:0.5' : ''}">
-                    <span>${isW ? '👑' : '⚪'} ${n}</span>
-                    ${isW ? `<span style="background:var(--accent); color:black; font-size:10px; padding:2px 8px; border-radius:10px; font-weight:bold">${winnerData[n]}</span>` : ''}
+                <div class="member-pill ${hasWon ? 'won' : ''}">
+                    <span>${hasWon ? '🏆' : '👤'} <b>${n}</b></span>
+                    ${hasWon ? `<span style="font-size:10px; font-weight:800; color:var(--accent)">${winnerData[n]}</span>` : '<span style="color:var(--neon); font-size:10px">AKTIF</span>'}
                 </div>`;
         });
-        document.getElementById("membersUI").innerHTML = memHtml;
+        document.getElementById("memberList").innerHTML = memHtml;
 
-        const active = getActiveNames().length;
-        const done = Object.keys(spinResults).length;
-        document.getElementById("progressInfo").innerText = `${done} dari ${active} suara terkumpul`;
+        const activeCount = getEligibleNames().length;
+        const spinsDone = Object.keys(spinResults).length;
+        document.getElementById("spinProgress").innerText = `Progress Suara: ${spinsDone} dari ${activeCount} Peserta`;
     }
 
-    async function handleReset() {
+    async function adminReset() {
         const { value: pin } = await Swal.fire({
-            title: 'Admin PIN',
+            title: 'Admin Authorization',
             input: 'password',
-            background: '#1e293b',
+            inputPlaceholder: 'Masukkan PIN Reset',
+            background: '#0f172a',
             color: '#fff'
         });
         if (pin === RESET_PIN) {

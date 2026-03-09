@@ -61,3 +61,41 @@ document.getElementById("logs").innerHTML =
 html;
 
 }
+
+let mode = "wheel";
+
+function setMode(m){
+
+mode = m;
+
+}
+
+async function startSpin(){
+
+const user =
+JSON.parse(localStorage.getItem("user"));
+
+const result =
+await spinAPI(user.nama);
+
+const winner = result.winner;
+
+if(mode==="wheel"){
+
+animateSpin(winner);
+
+}
+
+if(mode==="bottle"){
+
+spinBottle(winner);
+
+}
+
+if(mode==="dice"){
+
+rollDice(winner);
+
+}
+
+}

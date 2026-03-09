@@ -1,12 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>ARISAN BULANAN 500K</title>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 
@@ -14,21 +16,25 @@ body{
 font-family:Segoe UI;
 background:#121212;
 color:white;
-display:flex;
-flex-direction:column;
-align-items:center;
-padding:10px;
+text-align:center;
+margin:0;
+padding:20px;
 }
 
 h1{
 color:#ffcc00;
+margin-bottom:5px;
+}
+
+.modeBox{
+margin-bottom:10px;
 }
 
 .modeBtn{
 padding:10px 15px;
-margin:5px;
 border:none;
-border-radius:10px;
+border-radius:8px;
+margin:5px;
 cursor:pointer;
 font-weight:bold;
 }
@@ -36,11 +42,36 @@ font-weight:bold;
 .admin{background:#ffcc00;color:black;}
 .peserta{background:#3498db;color:white;}
 
+.wheelBox{
+position:relative;
+width:350px;
+margin:auto;
+}
+
+canvas{
+width:100%;
+border-radius:50%;
+background:#222;
+transition:transform 7s cubic-bezier(.17,.67,.32,.99);
+}
+
+.pointer{
+position:absolute;
+top:-10px;
+left:50%;
+transform:translateX(-50%);
+width:0;
+height:0;
+border-left:15px solid transparent;
+border-right:15px solid transparent;
+border-bottom:25px solid red;
+z-index:10;
+}
+
 .spinBtn{
-margin-top:15px;
-padding:15px;
-width:200px;
-font-size:16px;
+margin-top:20px;
+padding:15px 40px;
+font-size:18px;
 border:none;
 border-radius:12px;
 background:#27ae60;
@@ -48,34 +79,55 @@ color:white;
 cursor:pointer;
 }
 
-canvas{
-margin-top:20px;
-border-radius:50%;
-background:#222;
-transition:transform 6s cubic-bezier(.17,.67,.32,.99);
-}
-
-.list{
-margin-top:20px;
-width:300px;
+.listBox{
+max-width:350px;
+margin:auto;
+margin-top:25px;
+background:#1e1e1e;
+border-radius:10px;
+padding:10px;
 }
 
 .member{
-padding:8px;
-border-bottom:1px solid #333;
 display:flex;
 justify-content:space-between;
+padding:8px;
+border-bottom:1px solid #333;
+}
+
+.winner{
+color:#777;
+text-decoration:line-through;
+}
+
+.tag{
+background:#ffcc00;
+color:black;
+font-size:11px;
+padding:2px 6px;
+border-radius:4px;
 }
 
 .stat{
+max-width:350px;
+margin:auto;
 margin-top:20px;
-width:300px;
 }
 
 .bar{
 background:#3498db;
 height:10px;
 margin-top:3px;
+border-radius:3px;
+}
+
+.resetBtn{
+margin-top:20px;
+font-size:12px;
+background:none;
+border:none;
+color:#666;
+cursor:pointer;
 }
 
 </style>
@@ -84,19 +136,23 @@ margin-top:3px;
 <body>
 
 <h1>ARISAN DIGITAL</h1>
+<div id="bulanText"></div>
 
-<div>
+<div class="modeBox">
 <button class="modeBtn admin" onclick="setMode('admin')">MODE ADMIN</button>
 <button class="modeBtn peserta" onclick="setMode('peserta')">MODE PESERTA</button>
 </div>
 
 <div id="modeText">Mode: ADMIN</div>
 
-<canvas id="wheel" width="400" height="400"></canvas>
+<div class="wheelBox">
+<div class="pointer"></div>
+<canvas id="wheel" width="500" height="500"></canvas>
+</div>
 
 <button class="spinBtn" onclick="startSpin()">SPIN</button>
 
-<div class="list">
+<div class="listBox">
 <h3>Peserta</h3>
 <div id="memberList"></div>
 </div>
@@ -106,7 +162,7 @@ margin-top:3px;
 <div id="statList"></div>
 </div>
 
-<button onclick="resetSystem()">Reset System</button>
+<button class="resetBtn" onclick="resetSystem()">Reset System</button>
 
 <script>
 
@@ -119,9 +175,9 @@ const NAMES=[
 
 let mode="admin"
 
+let winnerData=JSON.parse(localStorage.getItem("winnerData"))||{}
 let voteData=JSON.parse(localStorage.getItem("voteData"))||{}
 let spinLock=JSON.parse(localStorage.getItem("spinLock"))||{}
-let winnerHistory=JSON.parse(localStorage.getItem("winnerHistory"))||{}
 
 const canvas=document.getElementById("wheel")
 const ctx=canvas.getContext("2d")
@@ -129,63 +185,67 @@ const ctx=canvas.getContext("2d")
 let rotation=0
 let spinning=false
 
+function getMonth(){
+const m=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"]
+return m[new Date().getMonth()]
+}
+
+document.getElementById("bulanText").innerText="Bulan "+getMonth()
+
 function setMode(m){
-
 mode=m
-
 document.getElementById("modeText").innerText="Mode: "+m.toUpperCase()
+}
 
-renderStats()
-
+function getActiveNames(){
+return NAMES.filter(n=>!winnerData[n])
 }
 
 function drawWheel(){
 
-let arc=(2*Math.PI)/NAMES.length
+const names=getActiveNames()
 
-ctx.clearRect(0,0,400,400)
+if(names.length===0){
+ctx.clearRect(0,0,500,500)
+ctx.fillStyle="white"
+ctx.font="30px Arial"
+ctx.textAlign="center"
+ctx.fillText("SEMUA SUDAH MENANG",250,250)
+return
+}
 
-NAMES.forEach((name,i)=>{
+const arc=(2*Math.PI)/names.length
+
+ctx.clearRect(0,0,500,500)
+
+names.forEach((name,i)=>{
 
 let angle=i*arc
 
 ctx.beginPath()
-ctx.fillStyle=`hsl(${i*36},70%,50%)`
-
-ctx.moveTo(200,200)
-
-ctx.arc(200,200,200,angle-Math.PI/2,(angle+arc)-Math.PI/2)
-
+ctx.fillStyle=`hsl(${i*40},70%,50%)`
+ctx.moveTo(250,250)
+ctx.arc(250,250,250,angle-Math.PI/2,(angle+arc)-Math.PI/2)
 ctx.fill()
 
 ctx.save()
-
-ctx.translate(200,200)
-
+ctx.translate(250,250)
 ctx.rotate(angle+arc/2-Math.PI/2)
-
 ctx.fillStyle="white"
-ctx.font="16px Arial"
+ctx.font="18px Arial"
 ctx.textAlign="right"
-
-ctx.fillText(name,170,5)
-
+ctx.fillText(name,210,5)
 ctx.restore()
 
 })
 
 }
 
-function startSpin(){
+async function startSpin(){
 
 if(spinning)return
 
-if(mode==="admin")spinAdmin()
-if(mode==="peserta")spinPeserta()
-
-}
-
-async function spinAdmin(){
+if(mode==="admin"){
 
 const {value:pin}=await Swal.fire({
 title:"PIN ADMIN",
@@ -193,18 +253,18 @@ input:"password"
 })
 
 if(pin!==ADMIN_PIN){
-Swal.fire("PIN SALAH")
+Swal.fire("PIN Salah")
 return
 }
 
-executeSpin(true)
+spinWheel(true)
 
 }
 
-async function spinPeserta(){
+if(mode==="peserta"){
 
 const {value:name}=await Swal.fire({
-title:"Masukkan Nama Anda",
+title:"Pilih Nama Anda",
 input:"select",
 inputOptions:NAMES
 })
@@ -214,37 +274,39 @@ Swal.fire("Anda sudah spin bulan ini")
 return
 }
 
-executeSpin(false,name)
+spinWheel(false,name)
 
 }
 
-function executeSpin(admin,name){
+}
+
+function spinWheel(admin,name){
 
 spinning=true
 
+const names=getActiveNames()
+
 let random=Math.floor(Math.random()*360)
 
-rotation+=360*10+random
+rotation+=360*12+random
 
 canvas.style.transform=`rotate(${rotation}deg)`
 
 setTimeout(()=>{
 
-let slice=360/NAMES.length
+const slice=360/names.length
+const stop=rotation%360
 
-let stop=rotation%360
+const index=Math.floor((360-stop)/slice)%names.length
 
-let index=Math.floor((360-stop)/slice)%NAMES.length
-
-let winner=NAMES[index]
+const winner=names[index]
 
 if(admin){
 
-winnerHistory[getMonth()]=winner
+winnerData[winner]=getMonth()
+localStorage.setItem("winnerData",JSON.stringify(winnerData))
 
-localStorage.setItem("winnerHistory",JSON.stringify(winnerHistory))
-
-Swal.fire("PEMENANG BULAN INI",winner)
+showWinner(winner)
 
 }
 
@@ -255,18 +317,35 @@ spinLock[name]=true
 voteData[winner]=(voteData[winner]||0)+1
 
 localStorage.setItem("spinLock",JSON.stringify(spinLock))
-
 localStorage.setItem("voteData",JSON.stringify(voteData))
 
-Swal.fire("HASIL SPIN ANDA",winner)
+Swal.fire("Hasil Spin Anda",winner)
+
+renderStats()
 
 }
 
 spinning=false
 
-renderStats()
+drawWheel()
+renderMembers()
 
-},6000)
+},7000)
+
+}
+
+function showWinner(name){
+
+Swal.fire({
+title:"PEMENANG BULAN "+getMonth(),
+html:`<h1 style="color:#ffcc00">${name}</h1>`,
+icon:"success"
+})
+
+confetti({
+particleCount:200,
+spread:90
+})
 
 }
 
@@ -276,7 +355,26 @@ let html=""
 
 NAMES.forEach(n=>{
 
-html+=`<div class='member'>${n}</div>`
+if(winnerData[n]){
+
+html+=`
+<div class="member winner">
+<span>✔ ${n}</span>
+<span class="tag">${winnerData[n]}</span>
+</div>
+`
+
+}
+
+else{
+
+html+=`
+<div class="member">
+<span>⭕ ${n}</span>
+</div>
+`
+
+}
 
 })
 
@@ -291,24 +389,19 @@ let html=""
 let max=0
 
 for(let n in voteData){
-
 if(voteData[n]>max)max=voteData[n]
-
 }
 
 for(let n in voteData){
 
 let v=voteData[n]
 
-let width=(v/max)*100
+let w=(v/max)*100
 
 html+=`
 <div>
-
 ${n} (${v})
-
-<div class="bar" style="width:${width}%"></div>
-
+<div class="bar" style="width:${w}%"></div>
 </div>
 `
 
@@ -318,29 +411,19 @@ document.getElementById("statList").innerHTML=html
 
 }
 
-function getMonth(){
-
-const m=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"]
-
-return m[new Date().getMonth()]
-
-}
-
 function resetSystem(){
 
 localStorage.clear()
-
 location.reload()
 
 }
 
 drawWheel()
-
 renderMembers()
-
 renderStats()
 
 </script>
 
 </body>
 </html>
+```

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ARISAN BULANAN 500K</title>
+    <title>ARISAN BULANAN Rp500.000</title>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -12,12 +12,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
         :root {
-            --bg: #020617;
-            --card: rgba(15, 23, 42, 0.9);
-            --accent: #fbbf24;
-            --secondary: #38bdf8;
-            --neon: #22c55e;
-            --danger: #f87171;
+            --bg: #020617; --card: rgba(15, 23, 42, 0.9);
+            --accent: #fbbf24; --secondary: #38bdf8;
+            --neon: #22c55e; --danger: #f87171;
             --glass-border: rgba(255, 255, 255, 0.1);
         }
 
@@ -30,8 +27,8 @@
         .container { max-width: 500px; margin: auto; }
 
         header { text-align: center; margin-bottom: 25px; }
-        .logo-text { font-size: 28px; font-weight: 800; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; }
-        .subtitle { font-size: 14px; color: #94a3b8; font-weight: 600; }
+        .logo-text { font-size: 28px; font-weight: 800; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin: 0; }
+        .status-header { font-size: 12px; margin-top: 5px; font-weight: 600; display: flex; justify-content: center; gap: 10px; }
 
         .card {
             background: var(--card); backdrop-filter: blur(20px);
@@ -39,61 +36,58 @@
             padding: 20px; margin-bottom: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
         }
 
+        /* TIMER STYLE */
+        .timer-box { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px; margin-bottom: 15px; border-left: 4px solid var(--accent); }
+        .timer-val { font-weight: 800; color: var(--accent); font-size: 18px; }
+
         /* TABS */
-        .tab-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-group { display: flex; gap: 8px; margin-bottom: 20px; }
         .tab-btn { 
             flex: 1; padding: 12px; border-radius: 14px; border: 1px solid var(--glass-border);
-            background: rgba(255,255,255,0.03); color: #64748b; cursor: pointer; font-weight: 700;
+            background: rgba(255,255,255,0.03); color: #64748b; cursor: pointer; font-weight: 700; transition: 0.3s;
         }
         .tab-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
 
-        /* WHEEL AREA */
+        /* WHEEL & GLASS */
         .wheelBox { position: relative; width: 280px; margin: 20px auto; }
-        canvas { width: 100%; border-radius: 50%; border: 8px solid #1e293b; transition: transform 7s cubic-bezier(0.1, 0, 0.1, 1); }
+        canvas { width: 100%; border-radius: 50%; border: 8px solid #1e293b; transition: transform 7s cubic-bezier(0.1, 0, 0.1, 1); box-shadow: 0 0 30px rgba(0,0,0,0.5); }
         .pointer {
             position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
             width: 0; height: 0; border-left: 15px solid transparent;
             border-right: 15px solid transparent; border-top: 30px solid var(--danger); z-index: 20;
         }
-
-        /* GLASS AREA */
         .glass-view { display: none; text-align: center; padding: 30px 0; }
-        .cup { font-size: 80px; transition: 0.1s; display: inline-block; }
+        .cup { font-size: 80px; transition: 0.1s; display: inline-block; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
         .shaking { animation: shake 0.1s infinite; }
-        @keyframes shake { 
-            0% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } 100% { transform: rotate(0); }
-        }
+        @keyframes shake { 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
 
         /* ACTIONS */
         .btn-main {
             width: 100%; padding: 18px; border-radius: 18px; border: none;
             background: linear-gradient(135deg, var(--neon) 0%, #15803d 100%);
             color: white; font-weight: 800; font-size: 16px; cursor: pointer;
-            box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4); transition: 0.2s;
         }
-        .btn-main:disabled { background: #334155; opacity: 0.5; box-shadow: none; }
+        .btn-main:active { transform: scale(0.98); }
+        .btn-main:disabled { background: #334155 !important; opacity: 0.6; cursor: not-allowed; box-shadow: none; }
 
-        /* MODAL GRID */
-        .name-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+        /* GRID SELECTION */
+        .name-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 10px; }
         .name-card { 
-            background: #1e293b; padding: 15px; border-radius: 12px; cursor: pointer; 
-            border: 1px solid var(--glass-border); font-weight: 600; 
+            background: #1e293b; padding: 15px; border-radius: 14px; cursor: pointer; 
+            border: 1px solid var(--glass-border); font-weight: 700; color: #fff; transition: 0.2s;
         }
-        .name-card:hover { background: var(--secondary); border-color: var(--secondary); }
+        .name-card:hover { background: var(--secondary); transform: translateY(-3px); }
 
         /* STATS & LISTS */
-        .badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; margin-bottom: 10px; }
-        .badge-locked { background: rgba(248, 113, 113, 0.2); color: var(--danger); }
-        .badge-open { background: rgba(34, 197, 94, 0.2); color: var(--neon); }
-
-        .bar-wrap { background: rgba(255,255,255,0.05); height: 8px; border-radius: 10px; margin: 5px 0 15px 0; overflow: hidden; }
-        .bar-fill { height: 100%; background: var(--secondary); transition: width 1s; }
+        .bar-wrap { background: rgba(255,255,255,0.05); height: 10px; border-radius: 10px; margin: 5px 0 15px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); }
+        .bar-fill { height: 100%; background: linear-gradient(90deg, var(--secondary), #818cf8); border-radius: 10px; transition: width 1s ease-out; }
         
-        .row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
-        .row.won { color: var(--accent); font-weight: bold; background: rgba(251, 191, 36, 0.05); }
+        .row { display: flex; justify-content: space-between; padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; font-weight: 600; }
+        .row.won { color: var(--accent); background: rgba(251, 191, 36, 0.05); border-left: 3px solid var(--accent); }
 
-        .rules-text { font-size: 13px; color: #94a3b8; line-height: 1.6; }
-        .rules-text b { color: var(--accent); }
+        .rules-list { font-size: 13px; color: #94a3b8; line-height: 1.8; padding-left: 18px; }
+        .rules-list b { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -101,15 +95,23 @@
 <div class="container">
     <header>
         <div class="logo-text">ARISAN ELITE</div>
-        <div class="subtitle" id="labelBulan">Maret 2026</div>
+        <div class="status-header">
+            <span id="currentBulan" style="color:var(--secondary)"></span>
+            <span style="color:#334155">|</span>
+            <span id="periodStatus"></span>
+        </div>
     </header>
 
-    <div class="card" style="text-align:center;">
-        <div id="statusBadge"></div>
+    <div class="card timer-box">
+        <div style="font-size: 11px; color: #94a3b8; font-weight: 800; text-transform: uppercase;">Batas Akhir Voting Bulan Ini:</div>
+        <div id="deadlineDate" style="font-size: 14px; font-weight: 600; margin-bottom: 5px;"></div>
+        <div class="timer-val" id="countdownTimer">00 Hari 00:00:00</div>
+    </div>
 
+    <div class="card" style="text-align:center;">
         <div class="tab-group">
-            <button id="tabW" class="tab-btn active" onclick="switchMode('wheel')">WHEEL</button>
-            <button id="tabG" class="tab-btn" onclick="switchMode('glass')">GLASS</button>
+            <button id="tabW" class="tab-btn active" onclick="switchMode('wheel')">WHEEL MODE</button>
+            <button id="tabG" class="tab-btn" onclick="switchMode('glass')">GLASS MODE</button>
         </div>
 
         <div id="viewWheel">
@@ -121,37 +123,37 @@
 
         <div id="viewGlass" class="glass-view">
             <div id="cupIcon" class="cup">🥤</div>
-            <div id="glassTxt" style="margin-top:20px; font-weight:800; color:var(--accent)">Siap Kocok?</div>
+            <div id="glassTxt" style="margin-top:20px; font-weight:800; color:var(--accent); font-size: 20px;">Ready to Shake?</div>
         </div>
 
-        <button id="actionBtn" class="btn-main" onclick="showUserSelection()">SPIN / KOCOK SEKARANG</button>
-        <p id="progressTxt" style="font-size: 11px; color: #64748b; margin-top: 15px; font-weight: 600;"></p>
+        <button id="actionBtn" class="btn-main" onclick="openSelector()">MULAI SPIN / KOCOK</button>
+        <div id="lockMessage" style="color:var(--danger); font-size: 12px; margin-top: 10px; font-weight: 800; display: none;">🔒 VOTING SUDAH DITUTUP BULAN INI</div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; color:var(--secondary)">📊 Statistik Vote</h3>
+        <h3 style="margin-top:0; color:var(--secondary); border-left: 4px solid var(--secondary); padding-left: 10px;">📊 Hasil Voting Sah</h3>
         <div id="uiStats"></div>
-        <hr style="border:0; border-top:1px solid #334155; margin:20px 0;">
-        <h4 style="margin:0 0 10px 0; color:#94a3b8">Histori Putaran</h4>
-        <div id="uiHistory" style="font-size:12px; max-height: 150px; overflow-y: auto;"></div>
+        <div id="uiHistory" style="font-size:12px; color: #64748b; margin-top: 15px; border-top: 1px solid #334155; padding-top: 10px;"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; color:var(--accent)">🏆 Daftar Peserta & Pemenang</h3>
+        <h3 style="margin-top:0; color:var(--accent); border-left: 4px solid var(--accent); padding-left: 10px;">🏆 Daftar Pemenang</h3>
         <div id="uiWinners"></div>
     </div>
 
     <div class="card">
-        <h3 style="margin:0 0 10px 0;">📜 Aturan Resmi</h3>
-        <div class="rules-text">
-            1. <b>Satu Pemenang Per Bulan:</b> Jika sistem mendeteksi sudah ada pemenang, voting akan dikunci.<br>
-            2. <b>Idam (Ketua):</b> Pemenang otomatis bulan Maret sesuai kesepakatan.<br>
-            3. <b>Multi-Spin:</b> Peserta boleh spin berkali-kali untuk hiburan, tapi <b>hasil pertama</b> adalah yang dihitung sebagai suara sah.<br>
-            4. <b>Transparansi:</b> Hasil pilihan setiap orang tercatat di histori bawah.
+        <h3 style="margin:0 0 15px 0;">📜 Aturan & Kebijakan Resmi</h3>
+        <div class="rules-list">
+            <li><b>Periode Voting:</b> Dimulai tanggal 1 dan ditutup <b>10 hari sebelum akhir bulan</b>.</li>
+            <li><b>Nominal:</b> Iuran <b>Rp500.000</b> per anggota per periode.</li>
+            <li><b>Ketua Arisan:</b> Saudara <b>Idam</b> pemenang sah Maret 2026.</li>
+            <li><b>Sistem Vote:</b> Hasil spin pertama Anda adalah suara mutlak yang tidak bisa diubah.</li>
+            <li><b>Multi-Spin:</b> Setelah melakukan vote, Anda tetap bisa bermain spin untuk seru-seruan tanpa mengubah data asli.</li>
+            <li><b>Pemenang Ganda:</b> Tidak diizinkan. Sistem otomatis mengunci jika bulan ini sudah ada pemenang.</li>
         </div>
     </div>
 
-    <center><div style="color:#1e293b; font-size:10px; cursor:pointer;" onclick="adminReset()">Admin Reset</div></center>
+    <center><div style="color:#1e293b; font-size:10px; cursor:pointer; margin: 20px 0;" onclick="adminReset()">Admin Control</div></center>
 </div>
 
 <script>
@@ -162,34 +164,72 @@
     let voteData = JSON.parse(localStorage.getItem("voteData")) || {};
     let spinResults = JSON.parse(localStorage.getItem("spinResults")) || {};
     
-    let currentMode = 'wheel';
     let isWorking = false;
     let rotation = 0;
+    let currentMode = 'wheel';
 
-    function getMonth() {
-        return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][new Date().getMonth()];
+    function getNow() { return new Date(); }
+    function getMonthName() {
+        return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][getNow().getMonth()];
+    }
+
+    // FUNGSI PENENTU TUTUP VOTING (10 Hari Sebelum Akhir Bulan)
+    function getDeadline() {
+        const now = getNow();
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Hari terakhir bulan ini
+        const deadline = new Date(lastDay);
+        deadline.setDate(lastDay.getDate() - 10); // Mundur 10 hari
+        deadline.setHours(23, 59, 59);
+        return deadline;
+    }
+
+    function isVotingClosed() {
+        // Cek 1: Apakah sudah melewati deadline tanggal?
+        if (getNow() > getDeadline()) return true;
+        // Cek 2: Apakah sudah ada pemenang di bulan ini?
+        if (Object.values(winnerData).includes(getMonthName())) return true;
+        return false;
     }
 
     function init() {
-        document.getElementById("labelBulan").innerText = getMonth() + " " + new Date().getFullYear();
+        document.getElementById("currentBulan").innerText = getMonthName().toUpperCase() + " " + getNow().getFullYear();
         
-        // Proteksi Awal untuk Ketua
+        // Proteksi Idam (Maret)
         if (!winnerData["Idam"]) {
             winnerData["Idam"] = "Maret";
             save();
         }
-        refresh();
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+        refreshUI();
+    }
+
+    function updateTimer() {
+        const deadline = getDeadline();
+        const now = getNow();
+        const diff = deadline - now;
+
+        document.getElementById("deadlineDate").innerText = deadline.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+
+        if (diff <= 0) {
+            document.getElementById("countdownTimer").innerText = "VOTING TELAH BERAKHIR";
+            document.getElementById("periodStatus").innerHTML = "<span style='color:var(--danger)'>CLOSED</span>";
+            document.getElementById("lockMessage").style.display = "block";
+        } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+            document.getElementById("countdownTimer").innerText = `${days} Hari ${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById("periodStatus").innerHTML = "<span style='color:var(--neon)'>VOTING OPEN</span>";
+        }
     }
 
     function save() {
         localStorage.setItem("winnerData", JSON.stringify(winnerData));
         localStorage.setItem("voteData", JSON.stringify(voteData));
         localStorage.setItem("spinResults", JSON.stringify(spinResults));
-    }
-
-    function isLocked() {
-        // Cek apakah ada orang yang memenangkan bulan ini
-        return Object.values(winnerData).includes(getMonth());
     }
 
     function switchMode(m) {
@@ -206,49 +246,40 @@
         const canvas = document.getElementById("canvasWheel");
         const ctx = canvas.getContext("2d");
         const active = NAMES.filter(n => !winnerData[n]);
-        if (active.length === 0) return;
-
         const arc = (2 * Math.PI) / active.length;
         ctx.clearRect(0,0,500,500);
 
         active.forEach((name, i) => {
             ctx.beginPath();
-            ctx.fillStyle = `hsl(${(i * 360 / active.length)}, 70%, 35%)`;
+            ctx.fillStyle = i % 2 === 0 ? "#1e293b" : "#334155";
             ctx.moveTo(250,250);
             ctx.arc(250, 250, 245, i*arc - Math.PI/2, (i+1)*arc - Math.PI/2);
             ctx.fill();
-            
             ctx.save();
             ctx.translate(250,250);
             ctx.rotate(i*arc + arc/2 - Math.PI/2);
-            ctx.fillStyle = "white";
-            ctx.font = "bold 18px Arial";
-            ctx.textAlign = "right";
+            ctx.fillStyle = i % 2 === 0 ? varToHex('--secondary') : 'white';
+            ctx.font = "bold 18px Inter"; ctx.textAlign = "right";
             ctx.fillText(name, 220, 8);
             ctx.restore();
         });
     }
+    function varToHex(v) { return v === '--secondary' ? '#38bdf8' : '#fbbf24'; }
 
-    function showUserSelection() {
+    function openSelector() {
         if (isWorking) return;
         const active = NAMES.filter(n => !winnerData[n]);
-        
         let html = `<div class="name-grid">`;
-        active.forEach(n => {
-            html += `<div class="name-card" onclick="process('${n}')">${n}</div>`;
-        });
+        active.forEach(n => { html += `<div class="name-card" onclick="startSpin('${n}')">${n}</div>`; });
         html += `</div>`;
 
         Swal.fire({
-            title: 'Siapa Anda?',
-            html: html,
-            showConfirmButton: false,
-            background: '#0f172a',
-            color: '#fff'
+            title: 'Konfirmasi Peserta',
+            html: html, showConfirmButton: false, background: '#0f172a', color: '#fff'
         });
     }
 
-    function process(user) {
+    function startSpin(user) {
         Swal.close();
         isWorking = true;
         const active = NAMES.filter(n => !winnerData[n]);
@@ -258,8 +289,8 @@
             result = spinResults[user];
         } else {
             result = active[Math.floor(Math.random() * active.length)];
-            // Catat suara hanya jika bulan ini belum ada pemenang
-            if (!isLocked()) {
+            // HANYA CATAT VOTE JIKA BELUM TUTUP & BELUM ADA PEMENANG
+            if (!isVotingClosed()) {
                 spinResults[user] = result;
                 voteData[result] = (voteData[result] || 0) + 1;
                 save();
@@ -272,17 +303,13 @@
             const stop = 360 - (idx * slice) - (slice / 2);
             rotation += (360 * 8) + (stop - (rotation % 360));
             document.getElementById("canvasWheel").style.transform = `rotate(${rotation}deg)`;
-            
-            setTimeout(() => finish(result), 7000);
+            setTimeout(() => finish(result), 7200);
         } else {
             const cup = document.getElementById("cupIcon");
-            const txt = document.getElementById("glassTxt");
             cup.classList.add("shaking");
-            txt.innerText = "Mengocok...";
-            
             setTimeout(() => {
                 cup.classList.remove("shaking");
-                txt.innerText = "Keluar: " + result;
+                document.getElementById("glassTxt").innerText = "Keluar: " + result;
                 finish(result);
             }, 3000);
         }
@@ -292,84 +319,65 @@
         isWorking = false;
         Swal.fire({
             title: 'Selesai!',
-            html: `Pilihan Anda: <b style="color:var(--accent)">${res}</b>`,
+            html: `Pilihan Anda jatuh pada: <h2 style="color:var(--accent)">${res}</h2>`,
             icon: 'success', background: '#0f172a', color: '#fff'
         });
-        refresh();
-        autoCheckWinner();
+        refreshUI();
+        checkAutomaticWinner();
     }
 
-    function autoCheckWinner() {
+    function checkAutomaticWinner() {
         const active = NAMES.filter(n => !winnerData[n]);
         const voters = Object.keys(spinResults).length;
 
-        if (voters >= active.length && !isLocked()) {
-            let max = -1; let winner = "";
-            for (let n in voteData) {
-                if (voteData[n] > max) { max = voteData[n]; winner = n; }
-            }
+        // Jika semua anggota aktif sudah vote DAN bulan ini belum punya pemenang
+        if (voters >= active.length && !Object.values(winnerData).includes(getMonthName())) {
+            let max = -1; let win = "";
+            for (let n in voteData) { if (voteData[n] > max) { max = voteData[n]; win = n; } }
             
-            winnerData[winner] = getMonth();
+            winnerData[win] = getMonthName();
             save();
-            
             confetti({ particleCount: 300, spread: 80, origin: { y: 0.6 } });
             Swal.fire({
-                title: '🏆 PEMENANG SAH ' + getMonth().toUpperCase(),
-                html: `<h1 style="color:var(--accent)">${winner}</h1>`,
+                title: '🎉 PEMENANG ' + getMonthName().toUpperCase(),
+                html: `<h1 style="color:var(--accent)">${win}</h1>`,
                 background: '#0f172a', color: '#fff'
             });
-            refresh();
+            refreshUI();
         }
     }
 
-    function refresh() {
+    function refreshUI() {
         drawWheel();
-        const locked = isLocked();
         
-        // Badge & Button
-        const badge = document.getElementById("statusBadge");
-        const btn = document.getElementById("actionBtn");
-        if (locked) {
-            badge.innerHTML = `<span class="badge badge-locked">🔒 PEMENANG ${getMonth().toUpperCase()} TERDETEKSI</span>`;
-            btn.innerText = "VOTING SELESAI";
-            btn.disabled = false; // Tetap aktif untuk "seru-seruan" bagi yang mau coba lagi
-        } else {
-            badge.innerHTML = `<span class="badge badge-open">🔓 VOTING AKTIF</span>`;
-            btn.innerText = "SPIN / KOCOK SEKARANG";
-        }
-
-        // Stats
+        // Stats & Bars
         let sHtml = "";
         const sorted = Object.entries(voteData).sort((a,b) => b[1] - a[1]);
         const maxV = sorted.length > 0 ? sorted[0][1] : 1;
         sorted.forEach(([name, count]) => {
-            sHtml += `<div style="display:flex; justify-content:space-between; font-size:12px"><span>${name}</span><b>${count} Suara</b></div>
+            sHtml += `<div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700"><span>${name}</span><span>${count} Suara</span></div>
                       <div class="bar-wrap"><div class="bar-fill" style="width:${(count/maxV)*100}%"></div></div>`;
         });
-        document.getElementById("uiStats").innerHTML = sHtml || "Menunggu vote pertama...";
+        document.getElementById("uiStats").innerHTML = sHtml || "<p style='font-size:12px; color:#475569'>Belum ada suara sah masuk.</p>";
 
-        // History
-        let hHtml = "";
+        // Riwayat
+        let hHtml = "<b>Log Aktivitas:</b><br>";
         Object.keys(spinResults).reverse().forEach(p => {
-            hHtml += `<div style="padding:5px 0; border-bottom:1px dashed #334155;">👤 ${p} ➔ <b>${spinResults[p]}</b></div>`;
+            hHtml += `• ${p} memilih ${spinResults[p]}<br>`;
         });
-        document.getElementById("uiHistory").innerHTML = hHtml || "Belum ada riwayat.";
+        document.getElementById("uiHistory").innerHTML = hHtml;
 
-        // Winners
+        // Winners List
         let wHtml = "";
         NAMES.forEach(n => {
             const isW = winnerData[n];
-            wHtml += `<div class="row ${isW ? 'won' : ''}"><span>${isW ? '👑' : '👤'} ${n}</span><span>${isW ? isW : 'Aktif'}</span></div>`;
+            wHtml += `<div class="row ${isW ? 'won' : ''}"><span>${isW ? '👑' : '👤'} ${n}</span><span>${isW ? isW : '-'}</span></div>`;
         });
         document.getElementById("uiWinners").innerHTML = wHtml;
-
-        const activeCount = NAMES.filter(n => !winnerData[n]).length;
-        const done = Object.keys(spinResults).length;
-        document.getElementById("progressTxt").innerText = `Progres Suara: ${done} / ${activeCount}`;
     }
 
     async function adminReset() {
-        const { value: pin } = await Swal.fire({ title: 'PIN Reset', input: 'password', background: '#0f172a', color: '#fff' });
+        const { value: pin } = await Swal.fire({ title: 'Admin PIN', input: 'password', background: '#0f172a', color: '#fff' });
         if (pin === RESET_PIN) { localStorage.clear(); location.reload(); }
     }
 

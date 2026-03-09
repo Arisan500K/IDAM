@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elite Arisan 500K</title>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#020617;
+color:white;
+margin:0;
+padding:20px;
+text-align:center;
+}
+
+h1{
+color:#fbbf24;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+}
+
+button{
+padding:15px;
+border:none;
+border-radius:12px;
+background:#fbbf24;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:disabled{
+background:#555;
+cursor:not-allowed;
+}
+
+#wheel{
+width:320px;
+height:320px;
+border-radius:50%;
+border:10px solid #111;
+margin:auto;
+transition: transform 6s cubic-bezier(.17,.67,.22,1);
+}
+
+.pointer{
+font-size:40px;
+}
+
+.member{
+display:flex;
+justify-content:space-between;
+background:#111827;
+padding:10px;
+margin:5px;
+border-radius:10px;
+}
+
+.paid{
+color:#22c55e;
+}
+
+.unpaid{
+color:#ef4444;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Elite Arisan 500K</h1>
+
+<div class="card">
+<div id="timer"></div>
+</div>
+
+<div class="card">
+
+<div class="pointer">▼</div>
+<canvas id="wheel" width="600" height="600"></canvas>
+
+<br><br>
+
+<button id="spinBtn" onclick="spin()">PUTAR UNDIAN</button>
+
+</div>
+
+<div class="card">
+<h3>Status Pembayaran</h3>
+<div id="members"></div>
+</div>
+
+<div class="card">
+<h3>Riwayat Undian</h3>
+<table width="100%">
+<thead>
+<tr>
+<th>Waktu</th>
+<th>Operator</th>
+<th>Pemenang</th>
+</tr>
+</thead>
+<tbody id="logs"></tbody>
+</table>
+</div>
+
+<div class="card">
+
+<button onclick="admin()">ADMIN PANEL</button>
+
+</div>
+
+<script>
+
+const ADMIN_PIN="080522"
+
+let state={
+members:["Idam","Aki","Daeli","Ros","Dewi","Septi","Medina","Agus","Elis","Tri"],
+payments:JSON.parse(localStorage.getItem("pay"))||{},
+logs:JSON.parse(localStorage.getItem("logs"))||[],
+rotation:0
+}
+
+function save(){
+localStorage.setItem("pay",JSON.stringify(state.payments))
+localStorage.setItem("logs",JSON.stringify(state.logs))
+}
+
+function getMonthKey(){
+
+let d=new Date()
+
+return d.getFullYear()+"-"+(d.getMonth()+1)
+
+}
+
+function getWinner(){
+
+let key=getMonthKey()
+
+let hash=0
+
+for(let i=0;i<key.length;i++){
+
+hash+=key.charCodeAt(i)
+
+}
+
+let index=hash % state.members.length
+
+return state.members[index]
+
+}
+
+function renderMembers(){
+
+let html=""
+
+state.members.forEach(m=>{
+
+let pay=state.payments[m]||0
+
+html+=`
+
+<div class="member">
+
+<span>${m}</span>
+
+<span class="${pay>=500000?'paid':'unpaid'}">
+
+${pay>=500000?'LUNAS':'BELUM'}
+
+</span>
+
+</div>
+
+`
+
+})
+
+document.getElementById("members").innerHTML=html
+
+}
+
+function renderLogs(){
+
+let html=""
+
+state.logs.forEach(l=>{
+
+html+=`
+
+<tr>
+
+<td>${l.time}</td>
+
+<td>${l.actor}</td>
+
+<td>${l.winner}</td>
+
+</tr>
+
+`
+
+})
+
+document.getElementById("logs").innerHTML=html
+
+}
+
+function drawWheel(){
+
+let canvas=document.getElementById("wheel")
+
+let ctx=canvas.getContext("2d")
+
+let arc=(Math.PI*2)/state.members.length
+
+for(let i=0;i<state.members.length;i++){
+
+ctx.beginPath()
+
+ctx.fillStyle=`hsl(${i*40},80%,60%)`
+
+ctx.moveTo(300,300)
+
+ctx.arc(300,300,280,i*arc,(i+1)*arc)
+
+ctx.fill()
+
+ctx.save()
+
+ctx.translate(300,300)
+
+ctx.rotate(i*arc+arc/2)
+
+ctx.fillStyle="black"
+
+ctx.textAlign="right"
+
+ctx.font="bold 20px Arial"
+
+ctx.fillText(state.members[i],250,5)
+
+ctx.restore()
+
+}
+
+}
+
+async function spin(){
+
+let {value:actor}=await Swal.fire({
+
+title:"Siapa yang memutar?",
+
+input:"select",
+
+inputOptions:state.members.reduce((a,v)=>({...a,[v]:v}),{})
+
+})
+
+if(!actor)return
+
+let pay=state.payments[actor]||0
+
+let demo=false
+
+if(pay<500000){
+
+demo=true
+
+await Swal.fire("MODE DEMO","Anda belum lunas","warning")
+
+}
+
+let winner=getWinner()
+
+let index=state.members.indexOf(winner)
+
+let slice=360/state.members.length
+
+let stop=360-(index*slice)-(slice/2)
+
+state.rotation+=360*5+stop
+
+document.getElementById("wheel").style.transform=`rotate(${state.rotation}deg)`
+
+setTimeout(()=>{
+
+confetti()
+
+let time=new Date().toLocaleTimeString()
+
+state.logs.unshift({time,actor,winner})
+
+save()
+
+renderLogs()
+
+Swal.fire("Pemenang",winner,"success")
+
+},6000)
+
+}
+
+async function admin(){
+
+let {value:pin}=await Swal.fire({
+
+title:"PIN ADMIN",
+
+input:"password"
+
+})
+
+if(pin!==ADMIN_PIN)return
+
+let html=""
+
+state.members.forEach(m=>{
+
+html+=`
+
+<label>${m}</label>
+
+<input id="p-${m}" type="number" value="${state.payments[m]||0}"><br><br>
+
+`
+
+})
+
+await Swal.fire({
+
+title:"Edit Kas",
+
+html:html,
+
+preConfirm:()=>{
+
+state.members.forEach(m=>{
+
+state.payments[m]=parseInt(document.getElementById("p-"+m).value)||0
+
+})
+
+save()
+
+renderMembers()
+
+}
+
+})
+
+}
+
+function timer(){
+
+let now=new Date()
+
+let year=now.getFullYear()
+
+let month=now.getMonth()
+
+let last=new Date(year,month+1,0).getDate()
+
+let close=last-12
+
+if(now.getDate()>close){
+
+document.getElementById("spinBtn").disabled=true
+
+document.getElementById("timer").innerText="UNDIAN DITUTUP"
+
+}else{
+
+document.getElementById("timer").innerText="UNDIAN TERBUKA"
+
+}
+
+}
+
+drawWheel()
+
+renderMembers()
+
+renderLogs()
+
+timer()
+
+</script>
+
+</body>
+</html>

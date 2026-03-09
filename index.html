@@ -1,11 +1,11 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>ARISAN BULANAN 500K</title>
+<title>ARISAN DIGITAL PRO</title>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -14,7 +14,7 @@
 
 body{
 font-family:Segoe UI;
-background:#121212;
+background:#0f172a;
 color:white;
 text-align:center;
 margin:0;
@@ -22,12 +22,16 @@ padding:20px;
 }
 
 h1{
-color:#ffcc00;
+color:#facc15;
 margin-bottom:5px;
 }
 
-.modeBox{
-margin-bottom:10px;
+.card{
+background:#1e293b;
+border-radius:14px;
+padding:15px;
+margin:15px auto;
+max-width:400px;
 }
 
 .modeBtn{
@@ -39,25 +43,25 @@ cursor:pointer;
 font-weight:bold;
 }
 
-.admin{background:#ffcc00;color:black;}
-.peserta{background:#3498db;color:white;}
+.admin{background:#facc15;color:black;}
+.peserta{background:#38bdf8;color:white;}
 
 .wheelBox{
 position:relative;
-width:350px;
+width:320px;
 margin:auto;
 }
 
 canvas{
 width:100%;
 border-radius:50%;
-background:#222;
+background:#111827;
 transition:transform 7s cubic-bezier(.17,.67,.32,.99);
 }
 
 .pointer{
 position:absolute;
-top:-10px;
+top:-12px;
 left:50%;
 transform:translateX(-50%);
 width:0;
@@ -69,64 +73,54 @@ z-index:10;
 }
 
 .spinBtn{
-margin-top:20px;
-padding:15px 40px;
+margin-top:15px;
+padding:14px 40px;
 font-size:18px;
 border:none;
-border-radius:12px;
-background:#27ae60;
+border-radius:10px;
+background:#22c55e;
 color:white;
 cursor:pointer;
-}
-
-.listBox{
-max-width:350px;
-margin:auto;
-margin-top:25px;
-background:#1e1e1e;
-border-radius:10px;
-padding:10px;
 }
 
 .member{
 display:flex;
 justify-content:space-between;
 padding:8px;
-border-bottom:1px solid #333;
+border-bottom:1px solid #334155;
 }
 
 .winner{
-color:#777;
+color:#64748b;
 text-decoration:line-through;
 }
 
 .tag{
-background:#ffcc00;
+background:#facc15;
 color:black;
 font-size:11px;
 padding:2px 6px;
 border-radius:4px;
 }
 
-.stat{
-max-width:350px;
-margin:auto;
-margin-top:20px;
-}
-
 .bar{
-background:#3498db;
+background:#38bdf8;
 height:10px;
 margin-top:3px;
-border-radius:3px;
+border-radius:4px;
+}
+
+.small{
+font-size:12px;
+color:#94a3b8;
 }
 
 .resetBtn{
-margin-top:20px;
+margin-top:10px;
 font-size:12px;
 background:none;
 border:none;
-color:#666;
+color:#94a3b8;
 cursor:pointer;
 }
 
@@ -138,28 +132,42 @@ cursor:pointer;
 <h1>ARISAN DIGITAL</h1>
 <div id="bulanText"></div>
 
-<div class="modeBox">
+<div class="card">
+
 <button class="modeBtn admin" onclick="setMode('admin')">MODE ADMIN</button>
 <button class="modeBtn peserta" onclick="setMode('peserta')">MODE PESERTA</button>
+
+<div id="modeText" class="small">Mode: ADMIN</div>
+
 </div>
 
-<div id="modeText">Mode: ADMIN</div>
+<div class="card">
 
 <div class="wheelBox">
+
 <div class="pointer"></div>
 <canvas id="wheel" width="500" height="500"></canvas>
+
 </div>
 
 <button class="spinBtn" onclick="startSpin()">SPIN</button>
 
-<div class="listBox">
-<h3>Peserta</h3>
-<div id="memberList"></div>
+<div id="progressSpin" class="small"></div>
+
 </div>
 
-<div class="stat">
+<div class="card">
+
+<h3>Peserta</h3>
+<div id="memberList"></div>
+
+</div>
+
+<div class="card">
+
 <h3>Statistik Voting</h3>
 <div id="statList"></div>
+
 </div>
 
 <button class="resetBtn" onclick="resetSystem()">Reset System</button>
@@ -177,7 +185,7 @@ let mode="admin"
 
 let winnerData=JSON.parse(localStorage.getItem("winnerData"))||{}
 let voteData=JSON.parse(localStorage.getItem("voteData"))||{}
-let spinLock=JSON.parse(localStorage.getItem("spinLock"))||{}
+let spinResults=JSON.parse(localStorage.getItem("spinResults"))||{}
 
 const canvas=document.getElementById("wheel")
 const ctx=canvas.getContext("2d")
@@ -186,19 +194,30 @@ let rotation=0
 let spinning=false
 
 function getMonth(){
-const m=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"]
+
+const m=[
+"Januari","Februari","Maret","April",
+"Mei","Juni","Juli","Agustus",
+"September","Oktober","November","Desember"
+]
+
 return m[new Date().getMonth()]
+
 }
 
 document.getElementById("bulanText").innerText="Bulan "+getMonth()
 
 function setMode(m){
+
 mode=m
 document.getElementById("modeText").innerText="Mode: "+m.toUpperCase()
+
 }
 
 function getActiveNames(){
+
 return NAMES.filter(n=>!winnerData[n])
+
 }
 
 function drawWheel(){
@@ -206,12 +225,14 @@ function drawWheel(){
 const names=getActiveNames()
 
 if(names.length===0){
+
 ctx.clearRect(0,0,500,500)
 ctx.fillStyle="white"
-ctx.font="30px Arial"
+ctx.font="28px Arial"
 ctx.textAlign="center"
 ctx.fillText("SEMUA SUDAH MENANG",250,250)
 return
+
 }
 
 const arc=(2*Math.PI)/names.length
@@ -253,8 +274,10 @@ input:"password"
 })
 
 if(pin!==ADMIN_PIN){
+
 Swal.fire("PIN Salah")
 return
+
 }
 
 spinWheel(true)
@@ -269,9 +292,11 @@ input:"select",
 inputOptions:NAMES
 })
 
-if(spinLock[name]){
-Swal.fire("Anda sudah spin bulan ini")
+if(spinResults[name]){
+
+Swal.fire("Hasil Spin Anda Bulan Ini",spinResults[name])
 return
+
 }
 
 spinWheel(false,name)
@@ -312,16 +337,14 @@ showWinner(winner)
 
 else{
 
-spinLock[name]=true
+spinResults[name]=winner
 
 voteData[winner]=(voteData[winner]||0)+1
 
-localStorage.setItem("spinLock",JSON.stringify(spinLock))
+localStorage.setItem("spinResults",JSON.stringify(spinResults))
 localStorage.setItem("voteData",JSON.stringify(voteData))
 
 Swal.fire("Hasil Spin Anda",winner)
-
-renderStats()
 
 }
 
@@ -329,6 +352,8 @@ spinning=false
 
 drawWheel()
 renderMembers()
+renderStats()
+renderProgress()
 
 },7000)
 
@@ -338,13 +363,13 @@ function showWinner(name){
 
 Swal.fire({
 title:"PEMENANG BULAN "+getMonth(),
-html:`<h1 style="color:#ffcc00">${name}</h1>`,
+html:`<h1 style="color:#facc15">${name}</h1>`,
 icon:"success"
 })
 
 confetti({
 particleCount:200,
-spread:90
+spread:100
 })
 
 }
@@ -364,9 +389,7 @@ html+=`
 </div>
 `
 
-}
-
-else{
+}else{
 
 html+=`
 <div class="member">
@@ -395,19 +418,30 @@ if(voteData[n]>max)max=voteData[n]
 for(let n in voteData){
 
 let v=voteData[n]
-
 let w=(v/max)*100
 
 html+=`
+
 <div>
 ${n} (${v})
 <div class="bar" style="width:${w}%"></div>
 </div>
+
 `
 
 }
 
 document.getElementById("statList").innerHTML=html
+
+}
+
+function renderProgress(){
+
+const total=NAMES.length
+const done=Object.keys(spinResults).length
+
+document.getElementById("progressSpin").innerText=
+done+" / "+total+" peserta sudah spin"
 
 }
 
@@ -421,9 +455,9 @@ location.reload()
 drawWheel()
 renderMembers()
 renderStats()
+renderProgress()
 
 </script>
 
 </body>
 </html>
-```

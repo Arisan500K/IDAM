@@ -36,3 +36,28 @@ loadLogs();
 },6000);
 
 }
+
+
+async function loadLogs(){
+
+const logs = await getLogs();
+
+let html="";
+
+logs.forEach(l=>{
+
+html += `
+<div>
+
+${l.actor} memutar roda →
+<b>${l.winner}</b>
+
+</div>
+`;
+
+});
+
+document.getElementById("logs").innerHTML =
+html;
+
+}

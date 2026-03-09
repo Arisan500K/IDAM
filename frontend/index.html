@@ -4,21 +4,37 @@
 
 <meta charset="UTF-8">
 
-<title>Arisan 500K</title>
+<title>Login Arisan 500K</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#0f172a;
+background:#020617;
 color:white;
-text-align:center;
-padding:40px;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+background:#1e293b;
+padding:30px;
+border-radius:15px;
+width:300px;
+}
+
+input,button{
+width:100%;
+padding:10px;
+margin-top:10px;
 }
 
 button{
-padding:15px;
-font-size:18px;
+background:#fbbf24;
+border:none;
+cursor:pointer;
 }
 
 </style>
@@ -27,27 +43,24 @@ font-size:18px;
 
 <body>
 
-<h1>SISTEM ARISAN 500K</h1>
+<div class="card">
 
-<p id="status">Memeriksa server...</p>
+<h2>Masuk Arisan</h2>
 
-<button onclick="cekServer()">Cek Server</button>
+<label>Nama</label>
 
-<script>
+<input id="nama" placeholder="Masukkan nama">
 
-async function cekServer(){
+<label>PIN</label>
 
-const res = await fetch("http://localhost:3000");
-const data = await res.json();
+<input id="pin" type="password">
 
-document.getElementById("status").innerText =
-data.status + " | Versi " + data.versi;
+<button onclick="login()">MASUK</button>
 
-}
+</div>
 
-cekServer();
-
-</script>
+<script src="js/api.js"></script>
+<script src="js/login.js"></script>
 
 </body>
 </html>

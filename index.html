@@ -14,105 +14,133 @@
 
 body{
 font-family:Segoe UI;
-background:#0f172a;
+background:linear-gradient(135deg,#0f172a,#1e293b);
 color:white;
 text-align:center;
 margin:0;
-padding:20px;
+padding:15px;
 }
 
 h1{
 color:#facc15;
+margin-bottom:5px;
 }
 
 .subtitle{
-font-size:14px;
 color:#94a3b8;
+margin-bottom:10px;
 }
 
 .card{
 background:#1e293b;
 border-radius:12px;
 padding:15px;
-margin:15px auto;
-max-width:420px;
+margin:12px auto;
+max-width:450px;
+box-shadow:0 0 15px rgba(0,0,0,0.5);
 }
 
-canvas{
-width:100%;
-border-radius:50%;
-background:#111827;
-transition:transform 7s cubic-bezier(.17,.67,.32,.99);
+.spinModes{
+display:flex;
+justify-content:center;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:10px;
 }
 
-.pointer{
-position:absolute;
-top:-10px;
-left:50%;
-transform:translateX(-50%);
-border-left:14px solid transparent;
-border-right:14px solid transparent;
-border-top:24px solid red;
+.spinModes button{
+
+font-size:18px;
+padding:10px 18px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+color:white;
+font-weight:bold;
+
 }
 
-.wheelBox{
-position:relative;
-width:320px;
-margin:auto;
+.modeWheel{background:#22c55e}
+.modeDice{background:#f97316}
+.modeCup{background:#3b82f6}
+
+.spinVisual{
+
+font-size:60px;
+margin:10px;
+
 }
 
 .spinBtn{
-margin-top:15px;
-padding:14px 40px;
-font-size:18px;
+
+font-size:20px;
+padding:12px 40px;
 border:none;
 border-radius:10px;
-background:#22c55e;
-color:white;
+background:#eab308;
 cursor:pointer;
-}
+font-weight:bold;
 
-.member{
-display:flex;
-justify-content:space-between;
-padding:8px;
-border-bottom:1px solid #334155;
 }
 
 .bar{
+
 background:#38bdf8;
 height:10px;
-margin-top:3px;
+margin-top:4px;
 border-radius:4px;
+
 }
 
-.small{
-font-size:12px;
-color:#94a3b8;
+.member{
+
+display:flex;
+justify-content:space-between;
+padding:7px;
+border-bottom:1px solid #334155;
+
 }
 
-.resetBtn{
-margin-top:10px;
-font-size:12px;
-background:none;
-border:none;
-color:#94a3b8;
-cursor:pointer;
+.leader{
+
+font-size:14px;
+padding:6px;
+
 }
 
 .winnerBox{
-font-size:30px;
+
+font-size:34px;
 font-weight:bold;
-margin:15px;
 animation:blink 1s infinite;
+
 }
 
 @keyframes blink{
+
 0%{color:red}
 25%{color:yellow}
 50%{color:lime}
 75%{color:cyan}
 100%{color:magenta}
+
+}
+
+.resetBtn{
+
+margin-top:15px;
+font-size:12px;
+background:none;
+border:none;
+color:#94a3b8;
+cursor:pointer;
+
+}
+
+@media(max-width:500px){
+
+.spinVisual{font-size:70px}
+
 }
 
 </style>
@@ -124,68 +152,95 @@ animation:blink 1s infinite;
 <div class="subtitle">Ketua: Idam</div>
 
 <div id="bulanText"></div>
-
-<div id="spinTimer" style="margin:8px;color:#38bdf8"></div>
-
-<div id="winnerBox" class="winnerBox"></div>
+<div id="spinTimer"></div>
 
 <div class="card">
 
-<div class="wheelBox">
-<div class="pointer"></div>
-<canvas id="wheel" width="500" height="500"></canvas>
+<h3>Mode Spin</h3>
+
+<div class="spinModes">
+
+<button class="modeWheel" onclick="setMode('wheel')">🎡 Wheel</button>
+<button class="modeDice" onclick="setMode('dice')">🎲 Dadu</button>
+<button class="modeCup" onclick="setMode('cup')">🥤 Gelas</button>
+
 </div>
 
-<button class="spinBtn" onclick="startSpin()">SPIN / PUTAR</button>
+<div id="spinVisual" class="spinVisual">🎡</div>
 
-<div id="progressSpin" class="small"></div>
+<button class="spinBtn" onclick="startSpin()">SPIN</button>
+
+<div id="progressSpin"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Leaderboard</h3>
+<div id="leaderboard"></div>
 
 </div>
 
 <div class="card">
-<h3>Pembayaran Bulan Ini</h3>
-<div id="payList"></div>
-<button onclick="adminMode()">Edit Pembayaran (Admin)</button>
-</div>
 
-<div class="card">
-<h3>Daftar Peserta</h3>
-<div id="memberList"></div>
-</div>
-
-<div class="card">
 <h3>Statistik Voting</h3>
 <div id="statList"></div>
+
 </div>
 
 <div class="card">
+
 <h3>Riwayat Spin</h3>
 <div id="spinHistory"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Pemenang Bulan Ini</h3>
+<div id="winnerBox" class="winnerBox"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Daftar Peserta</h3>
+<div id="memberList"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Pembayaran Bulan Ini</h3>
+<div id="payList"></div>
+<button onclick="adminMode()">Edit Pembayaran</button>
+
 </div>
 
 <button class="resetBtn" onclick="resetSystem()">Reset Sistem</button>
 
+<audio id="spinSound" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3"></audio>
+
 <script>
 
-const RESET_PIN="080522"
 const ADMIN_PIN="080522"
+const RESET_PIN="080522"
 
 const NAMES=[
 "Idam","Aki","Daeli","Ros","Dewi",
 "Septi","Medina","Agus","Elis","Tri"
 ]
 
-const canvas=document.getElementById("wheel")
-const ctx=canvas.getContext("2d")
+let mode="wheel"
 
-let rotation=0
-let spinning=false
-let admin=false
-
-let winnerData=JSON.parse(localStorage.getItem("winnerData"))||{}
 let voteData=JSON.parse(localStorage.getItem("voteData"))||{}
 let spinResults=JSON.parse(localStorage.getItem("spinResults"))||{}
+let winnerData=JSON.parse(localStorage.getItem("winnerData"))||{}
 let payData=JSON.parse(localStorage.getItem("payData"))||{}
+
+let admin=false
+
+document.getElementById("bulanText").innerText="Bulan "+getMonth()
 
 function getMonth(){
 
@@ -199,171 +254,134 @@ return m[new Date().getMonth()]
 
 }
 
-document.getElementById("bulanText").innerText="Bulan "+getMonth()
+function setMode(m){
 
-function getSpinDeadline(){
+mode=m
 
-let now=new Date()
-let year=now.getFullYear()
-let month=now.getMonth()
+let icon="🎡"
 
-let lastDay=new Date(year,month+1,0).getDate()
-let deadlineDay=lastDay-12
+if(m=="dice")icon="🎲"
+if(m=="cup")icon="🥤"
 
-return new Date(year,month,deadlineDay,23,59,59)
+document.getElementById("spinVisual").innerText=icon
 
 }
 
-function updateTimer(){
+function animateSpin(){
 
-let now=new Date()
-let deadline=getSpinDeadline()
+let v=document.getElementById("spinVisual")
 
-let diff=deadline-now
+if(mode=="wheel"){
 
-if(diff<=0){
-
-document.getElementById("spinTimer").innerHTML=
-"⚠️ Pengumpulan suara bulan ini telah ditutup"
-
-return
+v.style.transition="transform 4s"
+v.style.transform="rotate(1440deg)"
 
 }
 
-let days=Math.floor(diff/86400000)
-let hours=Math.floor(diff%86400000/3600000)
+if(mode=="dice"){
 
-document.getElementById("spinTimer").innerHTML=
-"⏳ Batas pengumpulan suara: "+days+" hari "+hours+" jam"
+let i=0
+
+let roll=setInterval(()=>{
+
+v.innerText=["⚀","⚁","⚂","⚃","⚄","⚅"][Math.floor(Math.random()*6)]
+
+i++
+
+if(i>20)clearInterval(roll)
+
+},100)
 
 }
 
-if(getMonth()=="Maret" && !winnerData["Idam"]){
+if(mode=="cup"){
 
-winnerData["Idam"]="Maret"
-localStorage.setItem("winnerData",JSON.stringify(winnerData))
+let i=0
+
+let shake=setInterval(()=>{
+
+v.style.transform="rotate("+((Math.random()*40)-20)+"deg)"
+
+i++
+
+if(i>20){
+
+clearInterval(shake)
+v.style.transform="rotate(0)"
 
 }
 
-function getActiveNames(){
-return NAMES.filter(n=>!winnerData[n])
+},100)
+
 }
 
-function drawWheel(){
+}
 
-const names=getActiveNames()
+function randomName(){
 
-const arc=(2*Math.PI)/names.length
+let active=NAMES.filter(n=>!winnerData[n])
 
-ctx.clearRect(0,0,500,500)
-
-names.forEach((name,i)=>{
-
-let angle=i*arc
-
-ctx.beginPath()
-ctx.fillStyle=`hsl(${i*40},70%,50%)`
-ctx.moveTo(250,250)
-ctx.arc(250,250,250,angle-Math.PI/2,(angle+arc)-Math.PI/2)
-ctx.fill()
-
-ctx.save()
-
-ctx.translate(250,250)
-ctx.rotate(angle+arc/2-Math.PI/2)
-
-ctx.fillStyle="white"
-ctx.font="18px Arial"
-ctx.textAlign="right"
-
-ctx.fillText(name,210,5)
-
-ctx.restore()
-
-})
+return active[Math.floor(Math.random()*active.length)]
 
 }
 
 async function startSpin(){
 
-if(spinning)return
-
 const {value:name}=await Swal.fire({
+
 title:"Pilih Nama Anda",
 input:"select",
 inputOptions:NAMES
+
 })
 
-if(spinResults[name]){
-Swal.fire("Anda sudah spin",spinResults[name])
-return
-}
+if(!name)return
 
-spinWheel(name)
+document.getElementById("spinSound").play()
 
-}
-
-function spinWheel(name){
-
-spinning=true
-
-const names=getActiveNames()
-
-let random=Math.floor(Math.random()*360)
-
-rotation+=360*10+random
-
-canvas.style.transform=`rotate(${rotation}deg)`
+animateSpin()
 
 setTimeout(()=>{
 
-const slice=360/names.length
-const stop=rotation%360
-const index=Math.floor((360-stop)/slice)%names.length
-
-const winner=names[index]
+let winner=randomName()
 
 spinResults[name]=winner
 
-if(new Date()<=getSpinDeadline()){
+let demo=false
+
+if(getWinnerMonth()) demo=true
+
+if(!demo){
+
 voteData[winner]=(voteData[winner]||0)+1
+
 }
 
 localStorage.setItem("spinResults",JSON.stringify(spinResults))
 localStorage.setItem("voteData",JSON.stringify(voteData))
 
-if(new Date()>getSpinDeadline()){
+let text=winner
 
-Swal.fire({
-title:"Hasil Spin Anda",
-text:winner+" (Spin hiburan, vote sudah ditutup)"
-})
+if(demo) text+=" (DEMO)"
 
-}else{
+Swal.fire("Hasil Spin",text)
 
-Swal.fire("Hasil Spin Anda",winner)
-
-}
-
-spinning=false
-
-drawWheel()
 renderAll()
 
 checkWinner()
 
-},7000)
+},4000)
 
 }
 
 function checkWinner(){
 
-if(new Date()>getSpinDeadline()) return
+if(getWinnerMonth())return
 
 const total=NAMES.length-1
 const done=Object.keys(spinResults).length
 
-if(done===total && !getWinnerMonth()){
+if(done===total){
 
 let max=0
 let winner=""
@@ -371,8 +389,10 @@ let winner=""
 for(let n in voteData){
 
 if(voteData[n]>max){
+
 max=voteData[n]
 winner=n
+
 }
 
 }
@@ -381,10 +401,7 @@ winnerData[winner]=getMonth()
 
 localStorage.setItem("winnerData",JSON.stringify(winnerData))
 
-confetti({
-particleCount:200,
-spread:100
-})
+confetti({particleCount:200,spread:120})
 
 renderWinner()
 
@@ -395,7 +412,9 @@ renderWinner()
 function getWinnerMonth(){
 
 for(let n in winnerData){
-if(winnerData[n]==getMonth()) return n
+
+if(winnerData[n]==getMonth())return n
+
 }
 
 return null
@@ -404,34 +423,13 @@ return null
 
 function renderWinner(){
 
-const w=getWinnerMonth()
+let w=getWinnerMonth()
 
 if(w){
-document.getElementById("winnerBox").innerHTML=
-"PEMENANG BULAN INI<br>"+w
-}
+
+document.getElementById("winnerBox").innerHTML=w
 
 }
-
-function renderMembers(){
-
-let html=""
-
-NAMES.forEach(n=>{
-
-if(winnerData[n]){
-
-html+=`<div class="member">${n} ✔ (${winnerData[n]})</div>`
-
-}else{
-
-html+=`<div class="member">${n}</div>`
-
-}
-
-})
-
-document.getElementById("memberList").innerHTML=html
 
 }
 
@@ -441,12 +439,15 @@ let html=""
 let max=0
 
 for(let n in voteData){
+
 if(voteData[n]>max)max=voteData[n]
+
 }
 
 for(let n in voteData){
 
 let v=voteData[n]
+
 let w=(v/max)*100
 
 html+=`
@@ -462,15 +463,65 @@ document.getElementById("statList").innerHTML=html
 
 }
 
+function renderLeaderboard(){
+
+let arr=[]
+
+for(let n in voteData){
+
+arr.push({name:n,v:voteData[n]})
+
+}
+
+arr.sort((a,b)=>b.v-a.v)
+
+let html=""
+
+arr.forEach((a,i)=>{
+
+html+=`<div class="leader">${i+1}. ${a.name} (${a.v})</div>`
+
+})
+
+document.getElementById("leaderboard").innerHTML=html
+
+}
+
 function renderHistory(){
 
 let html=""
 
 for(let n in spinResults){
+
 html+=`<div>${n} → ${spinResults[n]}</div>`
+
 }
 
 document.getElementById("spinHistory").innerHTML=html
+
+}
+
+function renderMembers(){
+
+let html=""
+
+NAMES.forEach(n=>{
+
+let w=winnerData[n]
+
+if(w){
+
+html+=`<div class="member">${n} ✔ (${w})</div>`
+
+}else{
+
+html+=`<div class="member">${n}</div>`
+
+}
+
+})
+
+document.getElementById("memberList").innerHTML=html
 
 }
 
@@ -480,13 +531,18 @@ let html=""
 
 NAMES.forEach(n=>{
 
-let checked=payData[n]?"✔":"❌"
+let c=payData[n]?"✔":"❌"
 
 html+=`
+
 <div class="member">
+
 <span>${n}</span>
-<span onclick="togglePay('${n}')">${checked}</span>
+
+<span onclick="togglePay('${n}')">${c}</span>
+
 </div>
+
 `
 
 })
@@ -510,15 +566,21 @@ renderPay()
 async function adminMode(){
 
 const {value:pin}=await Swal.fire({
+
 title:"PIN Admin",
 input:"password"
+
 })
 
 if(pin===ADMIN_PIN){
+
 admin=true
 Swal.fire("Mode Admin Aktif")
+
 }else{
+
 Swal.fire("PIN Salah")
+
 }
 
 }
@@ -533,39 +595,39 @@ done+" / "+total+" peserta sudah spin"
 
 }
 
-async function resetSystem(){
+function resetSystem(){
 
-const {value:pin}=await Swal.fire({
-title:"Masukkan PIN Reset",
+Swal.fire({
+
+title:"PIN Reset",
 input:"password"
-})
 
-if(pin!==RESET_PIN){
-Swal.fire("PIN Salah")
-return
-}
+}).then(r=>{
+
+if(r.value===RESET_PIN){
 
 localStorage.clear()
 location.reload()
 
 }
 
+})
+
+}
+
 function renderAll(){
 
-renderMembers()
 renderStats()
 renderHistory()
-renderProgress()
+renderMembers()
 renderPay()
+renderLeaderboard()
+renderProgress()
 renderWinner()
 
 }
 
-drawWheel()
 renderAll()
-
-updateTimer()
-setInterval(updateTimer,60000)
 
 </script>
 

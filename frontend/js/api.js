@@ -34,3 +34,29 @@ body:JSON.stringify({nama,jumlah})
 return res.json();
 
 }
+
+async function spinAPI(actor){
+
+const res = await fetch(API_URL+"/spin",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({actor})
+
+});
+
+return res.json();
+
+}
+
+async function getLogs(){
+
+const res = await fetch(API_URL+"/logs");
+
+return res.json();
+
+}

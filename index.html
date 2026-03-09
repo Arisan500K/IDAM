@@ -3,143 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arisan Jam Pro Akurat</title>
+    <title>Arisan Bulanan 500K</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --gold: #ffcc00; --dark: #121212; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-x: hidden; }
+        :root { --gold: #ffcc00; --dark: #121212; --glass: rgba(255, 255, 255, 0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; padding: 20px; min-height: 100vh; }
         
-        /* Bingkai Jam Dinding */
-        .clock-outer { position: relative; width: 360px; height: 360px; border: 15px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 50px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.5); margin: 30px 0; }
-        
-        /* Canvas Roda */
-        #canvas { width: 100%; height: 100%; border-radius: 50%; transform: rotate(0deg); transition: transform 8s cubic-bezier(0.2, 0, 0.1, 1); }
+        .clock-outer { position: relative; width: 340px; height: 340px; border: 12px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 40px rgba(0,0,0,0.8); margin: 20px 0; }
+        #canvas { width: 100%; height: 100%; border-radius: 50%; transition: transform 8s cubic-bezier(0.15, 0, 0.1, 1); }
+        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 40px; height: 50px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; }
 
-        /* Jarum Penunjuk dengan Animasi Goyang */
-        .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 45px; height: 55px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5)); transition: 0.1s; }
-        .pointer.tick { transform: translateX(-50%) rotate(-15deg); }
+        .panel { background: #1e1e1e; padding: 20px; border-radius: 20px; width: 100%; max-width: 450px; border: 1px solid #333; }
+        .member-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; text-align: left; }
+        .member-item { padding: 8px; background: var(--glass); border-radius: 8px; font-size: 14px; display: flex; align-items: center; }
+        .member-item.winner { text-decoration: line-through; color: #666; background: rgba(255,0,0,0.1); }
+        .member-item input { margin-right: 10px; }
 
-        .admin-panel { background: #1e1e1e; padding: 25px; border-radius: 20px; width: 100%; max-width: 450px; border: 1px solid #333; }
-        textarea { width: 100%; height: 100px; background: #2a2a2a; color: #fff; border: 1px solid #444; border-radius: 10px; padding: 12px; font-size: 16px; margin-bottom: 15px; resize: none; }
-        button { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 18px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
-        button:hover { filter: brightness(1.1); }
+        button { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
+        .btn-reset { background: #444; color: #ccc; margin-top: 10px; padding: 8px; font-size: 12px; }
     </style>
 </head>
 <body>
 
-    <h1 style="color: var(--gold); margin-bottom: 0;">PRECISION SPIN WHEEL</h1>
-    <p style="color: #666; margin-top: 5px;">Admin Only & High Accuracy</p>
-
+    <h2 id="monthTitle" style="color: var(--gold); margin-bottom: 5px;">Arisan Bulan ...</h2>
+    
     <div class="clock-outer">
-        <div class="pointer" id="pointer"></div>
+        <div class="pointer"></div>
         <canvas id="canvas" width="800" height="800"></canvas>
     </div>
 
-    <div class="admin-panel">
-        <textarea id="names" oninput="drawWheel()" placeholder="Input Nama Peserta...">Budi&#10;Ani&#10;Siti&#10;Iwan&#10;Dewi&#10;Jaka&#10;Rina</textarea>
-        <button onclick="authAdmin()">MULAI KOCOK (8 DETIK)</button>
+    <div class="panel">
+        <div id="memberContainer" class="member-list"></div>
+        <button onclick="authAdmin()">KOCOK PEMENANG</button>
+        <button class="btn-reset" onclick="resetData()">Reset Semua Data Pemenang</button>
     </div>
 
 <script>
+    const KODE_ADMIN = "1234"; 
+    const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "medina", "Agus", "Elis", "Tri"];
+    
+    let winners = JSON.parse(localStorage.getItem('arisan_winners')) || [];
+    let currentRotation = 0;
+
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
-    const nameInput = document.getElementById('names');
-    const pointer = document.getElementById('pointer');
-    
-    const KODE_ADMIN = "1234"; // GANTI DISINI
-    let currentRotation = 0;
     const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#1abc9c', '#2ecc71', '#d35400'];
 
-    function drawWheel() {
-        const names = nameInput.value.split('\n').filter(n => n.trim() !== "");
-        if (names.length === 0) return;
+    function getMonthName() {
+        const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+        const d = new Date();
+        return months[d.getMonth()];
+    }
 
-        const arc = (2 * Math.PI) / names.length;
+    function init() {
+        document.getElementById('monthTitle').innerText = "Arisan Bulan " + getMonthName();
+        renderMembers();
+        drawWheel();
+    }
+
+    function renderMembers() {
+        const container = document.getElementById('memberContainer');
+        container.innerHTML = "";
+        MASTER_NAMES.forEach(name => {
+            const isWinner = winners.includes(name);
+            container.innerHTML += `
+                <div class="member-item ${isWinner ? 'winner' : ''}">
+                    <input type="checkbox" ${isWinner ? 'checked' : ''} disabled> ${name}
+                </div>`;
+        });
+    }
+
+    function drawWheel() {
+        const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
+        if (activeNames.length === 0) {
+            ctx.clearRect(0, 0, 800, 800);
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.font = "30px Arial";
+            ctx.fillText("Semua Sudah Menang!", 400, 400);
+            return;
+        }
+
+        const arc = (2 * Math.PI) / activeNames.length;
         ctx.clearRect(0, 0, 800, 800);
 
-        names.forEach((name, i) => {
+        activeNames.forEach((name, i) => {
             const angle = i * arc;
-            
-            // Gambar Slice
             ctx.beginPath();
             ctx.fillStyle = colors[i % colors.length];
             ctx.moveTo(400, 400);
-            // Kita kurangi 90 derajat (Math.PI/2) agar index 0 berada di atas
             ctx.arc(400, 400, 400, angle - Math.PI/2, (angle + arc) - Math.PI/2);
             ctx.fill();
-            ctx.strokeStyle = "rgba(255,255,255,0.2)";
-            ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Gambar Nama
             ctx.save();
             ctx.translate(400, 400);
             ctx.rotate(angle + arc / 2 - Math.PI/2);
             ctx.textAlign = "right";
             ctx.fillStyle = "#fff";
-            ctx.font = "bold 32px Arial";
-            ctx.shadowColor = "black";
-            ctx.shadowBlur = 5;
-            ctx.fillText(name, 370, 12);
+            ctx.font = "bold 40px Arial";
+            ctx.fillText(name, 350, 15);
             ctx.restore();
         });
     }
 
     async function authAdmin() {
+        const activeNames = MASTER_NAMES.filter(n => !winners.includes(n));
+        if (activeNames.length === 0) return Swal.fire("Habis!", "Semua peserta sudah menang.", "info");
+
         const { value: pass } = await Swal.fire({
-            title: 'Verifikasi Admin',
+            title: 'Admin Only',
             input: 'password',
-            inputPlaceholder: 'Masukkan Kode...',
-            confirmButtonColor: '#ffcc00',
-            confirmButtonText: 'Buka Kunci'
+            inputPlaceholder: 'Kode Admin'
         });
 
         if (pass === KODE_ADMIN) {
-            putarRoda();
+            putarRoda(activeNames);
         } else if (pass) {
-            Swal.fire('Akses Ditolak', 'Kode Salah!', 'error');
+            Swal.fire('Salah!', '', 'error');
         }
     }
 
-    function putarRoda() {
-        const names = nameInput.value.split('\n').filter(n => n.trim() !== "");
-        if (names.length < 2) return;
-
-        // Reset rotasi visual ke 0 jika sudah terlalu besar (opsional)
+    function putarRoda(activeNames) {
         const putaranAcak = Math.floor(Math.random() * 360);
-        const totalDerajat = (360 * 15) + putaranAcak; // 15 Putaran penuh + acak
+        const totalDerajat = (360 * 10) + putaranAcak; 
         currentRotation += totalDerajat;
 
         canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-        // Efek jarum "Tik-Tik" saat berputar
-        const tickInterval = setInterval(() => {
-            pointer.classList.toggle('tick');
-        }, 150);
-
         setTimeout(() => {
-            clearInterval(tickInterval);
-            pointer.classList.remove('tick');
-
-            // RUMUS AKURASI 100%:
-            // Kita hitung posisi berhenti relatif terhadap jarum di atas (0 derajat)
             const stopAngle = currentRotation % 360;
-            const sliceSize = 360 / names.length;
-            const winningIndex = Math.floor((360 - stopAngle) / sliceSize) % names.length;
-            
-            const pemenang = names[winningIndex];
+            const sliceSize = 360 / activeNames.length;
+            const winningIndex = Math.floor((360 - stopAngle) / sliceSize) % activeNames.length;
+            const pemenang = activeNames[winningIndex];
+
+            // Simpan pemenang
+            winners.push(pemenang);
+            localStorage.setItem('arisan_winners', JSON.stringify(winners));
 
             Swal.fire({
-                title: '🎉 PEMENANG 🎉',
-                html: `<h2 style="color:#ffcc00">${pemenang}</h2>`,
-                icon: 'success',
-                backdrop: `rgba(0,0,0,0.8)`
+                title: `Pemenang Arisan Bulan ${getMonthName()}`,
+                html: `<h1 style="color:#ffcc00">${pemenang}</h1>`,
+                icon: 'success'
+            }).then(() => {
+                init(); // Refresh tampilan
             });
         }, 8000);
     }
 
-    drawWheel();
-</script>
+    function resetData() {
+        Swal.fire({
+            title: 'Reset Data?',
+            text: "Semua riwayat pemenang akan dihapus!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Reset!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                localStorage.clear();
+                winners = [];
+                init();
+            }
+        });
+    }
 
+    init();
+</script>
 </body>
 </html>

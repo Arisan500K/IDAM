@@ -2,9 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ELITE ARISAN V5 - PREMIUM</title>
-
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>ARISAN BULANAN Rp500.000</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
@@ -12,168 +12,245 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
         :root {
-            --primary: #fbbf24;
-            --gold-grad: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            --gold: #fbbf24;
+            --gold-dark: #d97706;
             --bg: #020617;
-            --card-bg: rgba(30, 41, 59, 0.6);
+            --card: rgba(30, 41, 59, 0.7);
             --accent: #38bdf8;
             --danger: #ef4444;
             --success: #22c55e;
+            --gold-grad: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
         }
 
-        * { box-sizing: border-box; transition: all 0.3s ease; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: var(--bg);
-            background-image: radial-gradient(circle at top right, #1e293b, #020617);
-            color: #f1f5f9; margin: 0; padding: 20px;
+            background-image: radial-gradient(circle at 50% -20%, #1e293b, #020617);
+            color: #f8fafc; margin: 0; padding: 15px;
             display: flex; justify-content: center; min-height: 100vh;
         }
 
-        .container { width: 100%; max-width: 500px; }
+        .app-container { width: 100%; max-width: 500px; animation: fadeIn 1s ease; }
 
         /* HEADER */
-        .header { text-align: center; margin-bottom: 30px; animation: fadeIn 1s; }
-        .title { font-size: 28px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 3px; margin: 0; }
-        .subtitle { font-size: 12px; opacity: 0.7; letter-spacing: 1px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { 
+            font-size: 32px; font-weight: 800; margin: 0; 
+            background: var(--gold-grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-transform: uppercase; letter-spacing: 3px;
+        }
+        .timer-badge { 
+            display: inline-block; margin-top: 15px; padding: 8px 20px; 
+            background: rgba(0,0,0,0.5); color: var(--gold);
+            border-radius: 50px; font-size: 13px; font-weight: 700; 
+            border: 1px solid var(--gold-dark); box-shadow: 0 0 15px rgba(251,191,36,0.2);
+        }
 
         /* CARD STYLE */
         .card {
-            background: var(--card-bg); backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 32px;
-            padding: 25px; margin-bottom: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            background: var(--card); backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 35px;
+            padding: 25px; margin-bottom: 25px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
 
-        /* NAVIGATION TABS */
-        .tabs { display: flex; gap: 8px; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 20px; margin-bottom: 25px; }
-        .tab { flex: 1; padding: 12px 5px; border: none; background: none; color: #64748b; font-weight: 700; font-size: 11px; cursor: pointer; border-radius: 15px; text-transform: uppercase; }
-        .tab.active { background: var(--gold-grad); color: #000; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); }
+        /* TABS */
+        .tabs { display: flex; gap: 10px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 20px; margin-bottom: 25px; }
+        .tab { 
+            flex: 1; padding: 12px; border: none; background: none; color: #64748b; 
+            font-weight: 700; font-size: 12px; cursor: pointer; border-radius: 15px; transition: 0.4s;
+        }
+        .tab.active { background: var(--gold-grad); color: #000; box-shadow: 0 5px 15px rgba(217,119,6,0.4); }
 
-        /* ANIMATION AREA */
-        .view-box { min-height: 350px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        /* VISUAL STAGE */
+        .stage { min-height: 350px; display: flex; align-items: center; justify-content: center; position: relative; }
         
-        #wheelCanvas { width: 320px; height: 320px; border-radius: 50%; border: 10px solid #1e293b; transition: transform 5s cubic-bezier(0.1, 0, 0.1, 1); }
-        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; width: 35px; filter: drop-shadow(0 4px 10px #000); }
+        #wheelCanvas { width: 320px; height: 320px; border-radius: 50%; border: 12px solid #0f172a; transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1); }
+        .pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; width: 40px; }
 
-        .glass-box { display: none; flex-direction: column; align-items: center; }
-        .glass-img { width: 130px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
-        .shaking { animation: shake 0.15s infinite; }
+        .bottle-mode { display: none; text-align: center; }
+        .bottle-img { width: 160px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)); }
+        
+        .dice-mode { 
+            display: none; width: 140px; height: 140px; background: #fff; border-radius: 30px;
+            color: #000; font-size: 60px; font-weight: 800; align-items: center; justify-content: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6), inset 0 -10px rgba(0,0,0,0.1);
+        }
 
-        .dice-box { display: none; width: 120px; height: 120px; background: #fff; border-radius: 25px; font-size: 50px; color: #000; font-weight: 800; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
-        .dice-rolling { animation: roll 0.2s infinite; background: var(--gold-grad); }
+        /* ACTION BUTTON */
+        .btn-main {
+            width: 100%; padding: 22px; border-radius: 25px; border: none;
+            background: var(--gold-grad); color: #000; font-weight: 800; font-size: 18px;
+            cursor: pointer; transition: 0.4s; box-shadow: 0 15px 35px rgba(217, 119, 6, 0.4);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-main:disabled { background: #1e293b; color: #475569; box-shadow: none; cursor: not-allowed; }
+        .btn-main:active { transform: scale(0.96); }
 
-        /* LIST & TABLE */
-        .section-title { font-size: 14px; font-weight: 800; color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        .scroll-area { max-height: 250px; overflow-y: auto; padding-right: 5px; }
-        .scroll-area::-webkit-scrollbar { width: 4px; }
-        .scroll-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        /* LISTS */
+        .list-container { max-height: 300px; overflow-y: auto; margin: 15px 0; padding-right: 5px; }
+        .list-container::-webkit-scrollbar { width: 4px; }
+        .list-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .badge { padding: 5px 12px; border-radius: 10px; font-size: 10px; font-weight: 800; }
-        .b-win { background: var(--gold-grad); color: #000; }
-        .b-pay { border: 1px solid var(--success); color: var(--success); }
+        .member-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px; background: rgba(255,255,255,0.03); border-radius: 20px;
+            margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .status-pill { padding: 6px 14px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .win { background: var(--gold-grad); color: #000; }
+        .paid { color: var(--success); border: 1px solid var(--success); }
+        .unpaid { color: var(--danger); border: 1px solid var(--danger); }
 
-        .log-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-        .log-table th { text-align: left; padding: 10px; color: #64748b; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        /* RULES SECTION */
+        .rules-title { color: var(--gold); font-size: 16px; font-weight: 800; margin-bottom: 15px; border-left: 4px solid var(--gold); padding-left: 10px; }
+        .rules-text { font-size: 12px; line-height: 1.8; color: #94a3b8; padding: 0; list-style: none; }
+        .rules-text li { margin-bottom: 8px; display: flex; gap: 10px; }
+        .rules-text li::before { content: "•"; color: var(--gold); font-weight: bold; }
+
+        /* LOG TABLE */
+        .log-table { width: 100%; font-size: 11px; border-collapse: collapse; }
+        .log-table th { text-align: left; padding: 10px; color: #64748b; border-bottom: 1px solid #334155; }
         .log-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.02); }
 
-        .rules-list { font-size: 12px; line-height: 1.6; color: #94a3b8; padding-left: 18px; }
-
-        /* BUTTON */
-        .btn-draw { width: 100%; padding: 20px; border-radius: 20px; border: none; background: var(--gold-grad); color: #000; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3); }
-        .btn-draw:disabled { background: #334155; color: #64748b; cursor: not-allowed; box-shadow: none; }
-
-        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
-        @keyframes roll { 0% { transform: rotateX(0deg); } 100% { transform: rotateX(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ANIMATIONS */
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
+        .shaking { animation: shake 0.1s infinite; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="app-container">
     <div class="header">
-        <h1 class="title">Elite Arisan</h1>
-        <div class="subtitle">PREMIUM MONTHLY SYSTEM V5.2</div>
+        <h1>Elite Arisan</h1>
+        <div id="timerDisplay" class="timer-badge">MENGHITUNG DEADLINE...</div>
     </div>
 
     <div class="card">
         <div class="tabs">
-            <button class="tab active" onclick="setMode('spin', this)">🎡 Roda</button>
-            <button class="tab" onclick="setMode('bottle', this)">🥛 Gelas</button>
-            <button class="tab" onclick="setMode('dice', this)">🎲 Dadu</button>
+            <button class="tab active" onclick="setMode('spin', this)">🎡 RODA</button>
+            <button class="tab" onclick="setMode('bottle', this)">🍾 BOTOL</button>
+            <button class="tab" onclick="setMode('dice', this)">🎲 DADU</button>
         </div>
 
-        <div class="view-box">
+        <div class="stage">
             <div id="v-spin">
                 <svg class="pointer" viewBox="0 0 100 100"><path d="M50 100 L10 0 L90 0 Z" fill="#ef4444"/></svg>
                 <canvas id="wheelCanvas" width="600" height="600"></canvas>
             </div>
-            <div id="v-bottle" class="glass-box">
-                <img src="https://cdn-icons-png.flaticon.com/512/3105/3105807.png" id="glassImg" class="glass-img">
+            <div id="v-bottle" class="bottle-mode">
+                <img src="https://www.pngplay.com/wp-content/uploads/12/Champagne-Bottle-PNG-Clipart-Background.png" id="bottleImg" class="bottle-img">
+                <p style="color: var(--gold); font-weight: 800; margin-top: 20px;">READY TO SHAKE</p>
             </div>
-            <div id="v-dice" class="dice-box" id="diceDisplay">?</div>
+            <div id="v-dice" class="dice-mode">?</div>
         </div>
 
-        <button id="drawBtn" class="btn-draw" onclick="startAction()">SPIN / VOTE SEKARANG</button>
-        <p style="text-align: center; font-size: 10px; opacity: 0.5; margin-top: 15px;">Hasil bulan Maret dikunci: <b>IDAM (KETUA)</b></p>
+        <button id="drawBtn" class="btn-main" onclick="startOfficialDraw()">UNDI PEMENANG</button>
     </div>
 
     <div class="card">
-        <div class="section-title">📊 LOG SPIN & HASIL VOTE</div>
-        <div class="scroll-area">
+        <div class="rules-title">📊 RIWAYAT UNDIAN</div>
+        <div class="list-container">
             <table class="log-table">
-                <thead>
-                    <tr>
-                        <th>WAKTU</th>
-                        <th>PESERTA</th>
-                        <th>MODE</th>
-                        <th>HASIL</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>WAKTU</th><th>OPERATOR</th><th>HASIL</th></tr></thead>
                 <tbody id="logBody"></tbody>
             </table>
         </div>
     </div>
 
     <div class="card">
-        <div class="section-title">👥 STATUS ANGGOTA</div>
-        <div id="memberList" class="scroll-area"></div>
+        <div class="rules-title">👥 STATUS PEMBAYARAN</div>
+        <div id="memberList" class="list-container"></div>
     </div>
 
     <div class="card">
-        <div class="section-title">📜 ATURAN RESMI</div>
-        <ul class="rules-list">
-            <li>Iuran wajib <b>Rp500.000</b> per periode.</li>
-            <li>Undian dilakukan setiap awal bulan.</li>
-            <li>Hanya anggota yang <b>LUNAS</b> yang masuk sistem undian.</li>
-            <li>Pemenang bulan pertama (Maret) adalah <b>Ketua Idam</b>.</li>
-            <li>Hasil spin "seru-seruan" akan tercatat di Log Aktivitas.</li>
+        <div class="rules-title">📜 ATURAN RESMI V5</div>
+        <ul class="rules-text">
+            <li><b>Iuran:</b> Wajib lunas Rp500.000 sebelum tanggal 20 setiap bulannya.</li>
+            <li><b>Keadilan:</b> Sistem hanya memperbolehkan anggota berstatus LUNAS untuk melakukan spin.</li>
+            <li><b>Deadline:</b> Tombol undian hanya terbuka 10 hari sebelum akhir bulan.</li>
+            <li><b>Lock System:</b> Hasil undian pertama di setiap bulan bersifat mutlak dan otomatis terkunci.</li>
+            <li><b>Maret 2026:</b> Pemenang telah disepakati bersama yaitu Ketua Idam.</li>
         </ul>
-        <div style="margin-top:20px; display:flex; justify-content:space-between;">
-            <span onclick="openAdmin()" style="font-size:11px; color:var(--accent); cursor:pointer;">⚙️ ADMIN PANEL</span>
-            <span onclick="secureReset()" style="font-size:11px; color:var(--danger); cursor:pointer;">♻️ RESET SYSTEM</span>
+        <div style="display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <span onclick="openAdmin()" style="font-size: 11px; color: var(--accent); cursor: pointer; font-weight: 800;">⚙️ ADMIN PANEL</span>
+            <span onclick="resetSystem()" style="font-size: 11px; color: var(--danger); cursor: pointer; font-weight: 800;">♻️ RESET DATA</span>
         </div>
     </div>
 </div>
 
 <script>
-    const MEMBERS = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
     const COLORS = ["#fbbf24", "#38bdf8", "#f472b6", "#a78bfa", "#4ade80", "#fb7185", "#2dd4bf", "#fb923c", "#818cf8", "#94a3b8"];
     const ADMIN_PIN = "080522";
-
+    
     let state = {
         mode: 'spin',
         isRolling: false,
-        winners: JSON.parse(localStorage.getItem('ar_winners')) || {"Idam": "Maret 2026"},
-        payments: JSON.parse(localStorage.getItem('ar_pay')) || {"Idam": 500000},
-        spinLogs: JSON.parse(localStorage.getItem('ar_logs')) || [],
+        members: JSON.parse(localStorage.getItem('ar5_names')) || ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"],
+        winners: JSON.parse(localStorage.getItem('ar5_winners')) || {},
+        payments: JSON.parse(localStorage.getItem('ar5_pay')) || {},
+        logs: JSON.parse(localStorage.getItem('ar5_logs')) || [],
         rotation: 0
     };
 
     function init() {
+        updateTimer();
+        setInterval(updateTimer, 1000);
+
+        const curMonth = new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+        if (curMonth.includes("Maret 2026")) {
+            state.winners["Idam"] = "Maret 2026";
+            state.payments["Idam"] = 500000;
+        }
+
         renderMembers();
         renderLogs();
         drawWheel();
+        checkEligibility();
+    }
+
+    // --- LOGIKA TIMER (10 HARI SEBELUM AKHIR BULAN) ---
+    function updateTimer() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const lastDay = new Date(year, month + 1, 0);
+        const deadlineDate = new Date(year, month + 1, -9); // 10 hari sebelum akhir
+
+        const diff = deadlineDate - now;
+        const display = document.getElementById('timerDisplay');
+
+        if (diff > 0) {
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / (1000 * 60)) % 60);
+            display.innerText = `UNDIAN DIBUKA DALAM: ${d}H ${h}J ${m}M`;
+            state.drawLocked = true;
+        } else {
+            display.innerText = `UNDIAN PERIODE INI: TERBUKA ✅`;
+            state.drawLocked = false;
+        }
+        checkEligibility();
+    }
+
+    function checkEligibility() {
+        const btn = document.getElementById('drawBtn');
+        const curMonth = new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+        
+        // Cek apakah sudah ada pemenang bulan ini
+        let monthWinner = null;
+        for(let n in state.winners) if(state.winners[n] === curMonth) monthWinner = n;
+
+        if (monthWinner) {
+            btn.innerText = `PEMENANG: ${monthWinner}`;
+            btn.disabled = true;
+        } else if (state.drawLocked) {
+            btn.disabled = true;
+        } else {
+            btn.innerText = "UNDI PEMENANG";
+            btn.disabled = false;
+        }
     }
 
     function setMode(m, el) {
@@ -189,9 +266,9 @@
     function drawWheel() {
         const canvas = document.getElementById("wheelCanvas");
         const ctx = canvas.getContext("2d");
-        const arc = (Math.PI * 2) / MEMBERS.length;
+        const arc = (Math.PI * 2) / state.members.length;
         ctx.clearRect(0,0,600,600);
-        MEMBERS.forEach((name, i) => {
+        state.members.forEach((name, i) => {
             ctx.beginPath();
             ctx.fillStyle = COLORS[i % COLORS.length];
             ctx.moveTo(300, 300);
@@ -199,82 +276,111 @@
             ctx.fill();
             ctx.save();
             ctx.translate(300, 300); ctx.rotate(i * arc + arc/2);
-            ctx.fillStyle = "#000"; ctx.font = "bold 22px Sans"; ctx.textAlign = "right";
+            ctx.fillStyle = "#000"; ctx.font = "bold 20px Sans"; ctx.textAlign = "right";
             ctx.fillText(name.toUpperCase(), 250, 8);
             ctx.restore();
         });
     }
 
-    async function startAction() {
+    async function startOfficialDraw() {
         if(state.isRolling) return;
 
-        // Siapa yang melakukan spin? (Simulasi Vote)
-        const { value: participant } = await Swal.fire({
-            title: 'Siapa Anda?',
+        // 1. Pilih Siapa yang memutar
+        const { value: actor } = await Swal.fire({
+            title: 'AUTENTIKASI PESERTA',
+            text: 'Hanya anggota LUNAS yang bisa memutar.',
             input: 'select',
-            inputOptions: MEMBERS.reduce((a,v) => ({...a, [v]:v}), {}),
+            inputOptions: state.members.reduce((a,v) => ({...a, [v]:v}), {}),
             background: '#1e293b', color: '#fff', confirmButtonColor: '#fbbf24'
         });
 
-        if(!participant) return;
+        if(!actor) return;
 
+        // 2. CEK STATUS LUNAS
+        if ((state.payments[actor] || 0) < 500000) {
+            return Swal.fire({
+                icon: 'error',
+                title: 'AKSES DITOLAK',
+                text: 'Anda belum melunasi iuran Rp500.000 bulan ini.',
+                background: '#1e293b', color: '#fff'
+            });
+        }
+
+        // 3. Tentukan Pemenang
+        const curMonth = new Date().toLocaleString('id-ID', { month: 'long', year: 'numeric' });
+        let finalWinner = null;
+        for(let n in state.winners) if(state.winners[n] === curMonth) finalWinner = n;
+
+        if(!finalWinner) {
+            const lunas = state.members.filter(m => (state.payments[m]||0) >= 500000 && !state.winners[m]);
+            finalWinner = lunas[Math.floor(Math.random() * lunas.length)];
+            state.winners[finalWinner] = curMonth;
+            save();
+        }
+
+        // 4. Jalankan Animasi
+        runAnimation(actor, finalWinner);
+    }
+
+    function runAnimation(actor, winner) {
         state.isRolling = true;
         document.getElementById('drawBtn').disabled = true;
 
-        // Hasil dikunci ke Pemenang Resmi Bulan ini (Idam untuk Maret)
-        const resultWinner = "Idam"; 
-
         if(state.mode === 'spin') {
-            const idx = MEMBERS.indexOf(resultWinner);
-            const slice = 360 / MEMBERS.length;
+            const idx = state.members.indexOf(winner);
+            const slice = 360 / state.members.length;
             const stopAt = 360 - (idx * slice) - (slice/2);
             state.rotation += (360 * 5) + stopAt;
             document.getElementById('wheelCanvas').style.transform = `rotate(${state.rotation}deg)`;
-            setTimeout(() => finalize(participant, resultWinner), 5500);
+            setTimeout(() => finalize(actor, winner), 6000);
         } else if(state.mode === 'bottle') {
-            document.getElementById('glassImg').classList.add('shaking');
-            setTimeout(() => { document.getElementById('glassImg').classList.remove('shaking'); finalize(participant, resultWinner); }, 3000);
+            document.getElementById('bottleImg').classList.add('shaking');
+            setTimeout(() => { 
+                document.getElementById('bottleImg').classList.remove('shaking'); 
+                finalize(actor, winner); 
+            }, 4000);
         } else {
             const d = document.getElementById('v-dice');
-            d.classList.add('dice-rolling');
+            d.style.display = 'flex';
             let c = 0;
             let iv = setInterval(() => {
-                d.innerText = MEMBERS[Math.floor(Math.random()*MEMBERS.length)].substring(0,1);
-                if(++c > 20) { clearInterval(iv); d.classList.remove('dice-rolling'); d.innerText = resultWinner.substring(0,1); finalize(participant, resultWinner); }
+                d.innerText = state.members[Math.floor(Math.random()*state.members.length)].substring(0,1);
+                if(++c > 25) { clearInterval(iv); d.innerText = winner.substring(0,1); finalize(actor, winner); }
             }, 100);
         }
     }
 
-    function finalize(user, result) {
+    function finalize(actor, winner) {
         state.isRolling = false;
-        document.getElementById('drawBtn').disabled = false;
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
 
-        // Simpan ke Log
-        const now = new Date();
-        const timeStr = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0');
-        state.spinLogs.unshift({ time: timeStr, user: user, mode: state.mode, result: result });
-        if(state.spinLogs.length > 20) state.spinLogs.pop();
-        
+        const time = new Date().toLocaleTimeString('id-ID');
+        state.logs.unshift({ time, actor, winner });
         save();
         renderLogs();
+        renderMembers();
+        checkEligibility();
 
         Swal.fire({
-            title: 'HASIL SPIN!',
-            html: `Peserta <b>${user}</b> melakukan spin.<br>Hasil tetap mengacu pada pemenang resmi:<br><h2 style="color:var(--primary)">${result}</h2>`,
-            background: '#1e293b', color: '#fff', confirmButtonColor: '#fbbf24'
+            title: '🎉 SELAMAT!',
+            html: `Peserta <b>${actor}</b> telah memutar roda.<br><br>Pemenang Sah Periode Ini:<br><h1 style="color:var(--gold); font-size:40px; margin:10px 0">${winner}</h1>`,
+            background: '#0f172a',
+            color: '#fff',
+            confirmButtonText: 'ALHAMDULILLAH',
+            confirmButtonColor: '#fbbf24',
+            backdrop: `rgba(0,0,123,0.4) url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZ4bmZ4bmZ4bmZ4bmZ4bmZ4bmZ4bmZ4bmZ4bmZ4bmZ4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/26tPplGWjC0StZeYK/giphy.gif") center top no-repeat`
         });
     }
 
     function renderMembers() {
         let h = "";
-        MEMBERS.forEach(m => {
+        state.members.forEach(m => {
             const won = state.winners[m];
             const pay = state.payments[m] || 0;
-            h += `<div class="item">
-                <div><b>${m}</b><br><small style="opacity:0.5">Kas: Rp ${pay.toLocaleString()}</small></div>
-                <div class="badge ${won ? 'b-win' : (pay>=500000 ? 'b-pay':'')}">
-                    ${won ? 'PEMENANG ('+won+')' : (pay>=500000 ? 'LUNAS':'BELUM LUNAS')}
+            h += `<div class="member-item">
+                <div><b>${m}</b><br><small style="opacity:0.6">Kas: Rp ${pay.toLocaleString()}</small></div>
+                <div class="status-pill ${won ? 'win' : (pay>=500000 ? 'paid':'unpaid')}">
+                    ${won ? 'Pemenang' : (pay>=500000 ? 'Lunas':'Belum')}
                 </div>
             </div>`;
         });
@@ -283,44 +389,42 @@
 
     function renderLogs() {
         let h = "";
-        state.spinLogs.forEach(l => {
-            h += `<tr>
-                <td>${l.time}</td>
-                <td style="color:var(--accent)">${l.user}</td>
-                <td>${l.mode.toUpperCase()}</td>
-                <td style="font-weight:bold; color:var(--primary)">${l.result}</td>
-            </tr>`;
+        state.logs.forEach(l => {
+            h += `<tr><td>${l.time}</td><td style="color:var(--accent)">${l.actor}</td><td style="color:var(--gold); font-weight:800">${l.winner}</td></tr>`;
         });
-        document.getElementById('logBody').innerHTML = h || '<tr><td colspan="4" style="text-align:center; opacity:0.5">Belum ada aktivitas spin.</td></tr>';
+        document.getElementById('logBody').innerHTML = h || '<tr><td colspan="3" style="text-align:center; opacity:0.5">Belum ada riwayat undian.</td></tr>';
     }
 
     function save() {
-        localStorage.setItem('ar_winners', JSON.stringify(state.winners));
-        localStorage.setItem('ar_pay', JSON.stringify(state.payments));
-        localStorage.setItem('ar_logs', JSON.stringify(state.spinLogs));
+        localStorage.setItem('ar5_winners', JSON.stringify(state.winners));
+        localStorage.setItem('ar5_pay', JSON.stringify(state.payments));
+        localStorage.setItem('ar5_logs', JSON.stringify(state.logs));
     }
 
     async function openAdmin() {
         const { value: pin } = await Swal.fire({ title: 'PIN ADMIN', input: 'password', background: '#1e293b', color: '#fff' });
         if(pin !== ADMIN_PIN) return;
         
-        let inputs = MEMBERS.map(m => `
+        let inputs = state.members.map(m => `
             <div style="margin-bottom:10px; text-align:left">
-                <label style="font-size:12px">${m}</label>
-                <input type="number" id="pay-${m}" value="${state.payments[m]||0}" style="width:100%; padding:10px; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:10px;">
+                <label style="font-size:12px; color:var(--gold)">${m}</label>
+                <input type="number" id="p-${m}" value="${state.payments[m]||0}" style="width:100%; padding:10px; background:#0f172a; color:#fff; border:1px solid #334155; border-radius:10px">
             </div>
         `).join('');
 
-        const { value: formValues } = await Swal.fire({
-            title: 'Update Kas Anggota',
+        await Swal.fire({
+            title: 'KAS ANGGOTA',
             html: `<div style="max-height:300px; overflow-y:auto">${inputs}</div>`,
-            preConfirm: () => MEMBERS.forEach(m => state.payments[m] = parseInt(document.getElementById(`pay-${m}`).value) || 0)
+            background: '#1e293b', color: '#fff',
+            preConfirm: () => {
+                state.members.forEach(m => state.payments[m] = parseInt(document.getElementById(`p-${m}`).value) || 0);
+                save(); renderMembers(); checkEligibility();
+            }
         });
-        if(formValues) { save(); renderMembers(); }
     }
 
-    async function secureReset() {
-        const { value: pin } = await Swal.fire({ title: 'RESET SEMUA DATA?', input: 'password', background: '#1e293b', color: '#fff', confirmButtonColor: '#ef4444' });
+    async function resetSystem() {
+        const { value: pin } = await Swal.fire({ title: 'RESET TOTAL?', text: 'Data akan kembali ke pengaturan awal!', input: 'password', background: '#1e293b', color: '#fff', confirmButtonColor: '#ef4444' });
         if(pin === ADMIN_PIN) { localStorage.clear(); location.reload(); }
     }
 

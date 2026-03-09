@@ -8,29 +8,19 @@
     <style>
         :root { --gold: #ffcc00; --dark: #121212; --glass: rgba(255, 255, 255, 0.05); --blue: #3498db; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--dark); color: white; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; margin: 0; }
-        
-        /* Kontainer Utama */
         .main-card { width: 95%; max-width: 450px; display: flex; flex-direction: column; align-items: center; }
-
-        /* Jam Raksasa */
         .clock-outer { position: relative; width: 300px; height: 300px; border: 10px solid #333; border-radius: 50%; background: #222; box-shadow: 0 0 30px rgba(0,0,0,0.5); margin: 15px 0; }
         #canvas { width: 100%; height: 100%; border-radius: 50%; transition: transform 7s cubic-bezier(0.15, 0, 0.1, 1); }
         .pointer { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); width: 35px; height: 45px; clip-path: polygon(50% 100%, 0 0, 100% 0); background: #ff3e3e; z-index: 100; }
-
-        /* Tombol-Tombol */
         .btn-container { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px; }
         .btn-admin { background: linear-gradient(145deg, #ffcc00, #d4ac00); color: #000; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
         .btn-demo { background: transparent; color: var(--blue); border: 1px solid var(--blue); padding: 10px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; }
-        
-        /* Daftar Pemenang (Di Bawah Tombol) */
         .list-section { width: 100%; background: #1a1a1a; border-radius: 15px; border: 1px solid #333; padding: 15px; box-sizing: border-box; }
         .list-header { font-size: 14px; color: var(--gold); border-bottom: 1px solid #333; padding-bottom: 8px; margin-bottom: 10px; font-weight: bold; text-align: center; }
         .member-list { display: flex; flex-direction: column; gap: 6px; }
         .member-item { padding: 10px; background: var(--glass); border-radius: 8px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent; }
         .member-item.winner { border-color: rgba(255, 204, 0, 0.3); background: rgba(255, 204, 0, 0.03); color: #888; text-decoration: line-through; }
         .win-tag { font-size: 10px; background: var(--gold); color: black; padding: 2px 8px; border-radius: 4px; font-weight: 800; text-decoration: none !important; }
-
-        /* Footer */
         footer { margin-top: 30px; padding: 15px; color: #555; font-size: 12px; text-align: center; border-top: 1px solid #222; width: 100%; }
         .btn-reset { background: none; border: none; color: #333; font-size: 10px; cursor: pointer; margin-top: 5px; }
     </style>
@@ -39,7 +29,7 @@
 
     <div class="main-card">
         <h2 id="monthTitle" style="color: var(--gold); margin: 15px 0 0 0; font-size: 22px;">ARISAN DIGITAL</h2>
-        <div id="statusBadge" style="font-size: 11px; color: #666; margin-bottom: 5px;">Siap Untuk Diputar</div>
+        <div id="statusBadge" style="font-size: 11px; color: #666; margin-bottom: 5px;">Siap untuk Diputar</div>
 
         <div class="clock-outer">
             <div class="pointer"></div>
@@ -47,12 +37,12 @@
         </div>
 
         <div class="btn-container">
-            <button class="btn-admin" onclick="authAdmin()">🔒 SPIN RESMI (ADMIN)</button>
+            <button class="btn-admin" onclick="authAdmin()">🔒 SPIN RESMI (ADMIN/IDAM)</button>
             <button class="btn-demo" onclick="executeDemo()">🎮 COBA PUTAR (DEMO)</button>
         </div>
 
         <div class="list-section">
-            <div class="list-header">RIWAYAT & DAFTAR PESERTA</div>
+            <div class="list-header">RIWAYAT & DAFTAR PEMENANG</div>
             <div id="memberContainer" class="member-list"></div>
         </div>
 
@@ -61,17 +51,22 @@
 
     <footer>
         by A. S Daeli &copy; 2026<br>
-        Digital Arisan System v2.0
+        Digital Arisan System v2.1 (Chairman Edition)
     </footer>
 
 <script>
     const KODE_ADMIN = "080522"; 
-    const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+    const MASTER_NAMES = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "medina", "Agus", "Elis", "Tri"];
     
-    let winnerData = JSON.parse(localStorage.getItem('arisan_history')) || {};
+    // Inisialisasi data: Jika kosong, otomatis set Daeli sebagai pemenang pertama
+    let winnerData = JSON.parse(localStorage.getItem('arisan_history'));
+    if (!winnerData) {
+        winnerData = { "Idam": "KETUA" };
+        localStorage.setItem('arisan_history', JSON.stringify(winnerData));
+    }
+
     let currentRotation = 0;
     let isSpinning = false;
-
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#1abc9c', '#2ecc71', '#d35400'];
@@ -139,14 +134,13 @@
             Swal.fire({
                 title: `Hasil ${currentMonth} Terkunci`,
                 html: `Pemenang: <b style="color:var(--gold)">${existingWinnerThisMonth}</b>`,
-                icon: 'info',
-                confirmButtonColor: '#ffcc00'
+                icon: 'info'
             });
             return;
         }
 
         const { value: pass } = await Swal.fire({
-            title: 'Verifikasi PIN Admin',
+            title: 'PIN Admin Diperlukan',
             input: 'password',
             confirmButtonColor: '#ffcc00'
         });
@@ -175,7 +169,6 @@
         const putaranAcak = Math.floor(Math.random() * 360);
         const totalDerajat = (360 * 12) + putaranAcak; 
         currentRotation += totalDerajat;
-
         canvas.style.transform = `rotate(${currentRotation}deg)`;
 
         setTimeout(() => {
@@ -217,10 +210,11 @@
         });
 
         if (pass === KODE_ADMIN) {
-            localStorage.clear();
-            winnerData = {};
+            // Reset ke kondisi awal: Daeli sebagai Ketua
+            winnerData = { "Daeli": "KETUA" };
+            localStorage.setItem('arisan_history', JSON.stringify(winnerData));
             init();
-            Swal.fire('Bersih!', 'Data telah di-reset.', 'success');
+            Swal.fire('Bersih!', 'Sistem di-reset (Daeli tetap Ketua).', 'success');
         }
     }
 

@@ -3,352 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ARISAN DIGITAL PREMIUM</title>
+    <title>ARISAN BULANAN Rp500.000</title>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
 
         :root {
-            --bg: #0f172a; 
-            --card: rgba(30, 41, 59, 0.7);
-            --aksen-emas: #fbbf24; 
-            --biru-muda: #38bdf8;
-            --hijau-cerah: #4ade80; 
-            --merah-jambu: #f43f5e;
-            --border-glass: rgba(255, 255, 255, 0.1);
+            --bg-dark: #05070a;
+            --glass: rgba(15, 23, 42, 0.8);
+            --neon-gold: #f59e0b;
+            --neon-blue: #0ea5e9;
+            --neon-green: #10b981;
+            --neon-pink: #f43f5e;
+            --text-main: #f8fafc;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
-            color: #f1f5f9; margin: 0; padding: 15px; min-height: 100vh;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(14, 165, 233, 0.15) 0%, transparent 35%),
+                radial-gradient(circle at 100% 100%, rgba(245, 158, 11, 0.1) 0%, transparent 35%);
+            color: var(--text-main);
+            margin: 0; padding: 20px; min-height: 100vh;
         }
 
-        .container { max-width: 500px; margin: auto; }
+        .container { max-width: 480px; margin: auto; }
 
-        header { text-align: center; margin-bottom: 25px; padding-top: 10px; }
-        .logo-text { font-size: 28px; font-weight: 800; color: var(--aksen-emas); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
-
-        .card {
-            background: var(--card); backdrop-filter: blur(15px);
-            border: 1px solid var(--border-glass); border-radius: 24px;
-            padding: 22px; margin-bottom: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        /* HEADER SECTION */
+        header { text-align: center; margin-bottom: 30px; }
+        .logo-container { position: relative; display: inline-block; }
+        .logo-text { 
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 32px; font-weight: 700; 
+            background: linear-gradient(to right, #f59e0b, #fbbf24);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
-        /* WAKTU MUNDUR */
-        .kotak-waktu { border-left: 4px solid var(--merah-jambu); background: rgba(244, 63, 94, 0.1); padding: 15px; border-radius: 15px; }
-        .teks-waktu { font-weight: 800; color: var(--merah-jambu); font-size: 22px; }
-
-        /* TAB MENU */
-        .grup-tab { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 16px; }
-        .btn-tab { 
-            flex: 1; padding: 12px 5px; border-radius: 12px; border: none;
-            background: transparent; color: #94a3b8; cursor: pointer; font-weight: 700; font-size: 11px; transition: 0.3s;
-        }
-        .btn-tab.aktif { background: linear-gradient(135deg, var(--biru-muda), #818cf8); color: white; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3); }
-
-        /* RODA KEBERUNTUNGAN */
-        .box-roda { position: relative; width: 280px; margin: 20px auto; }
-        canvas { 
-            width: 100%; border-radius: 50%; border: 8px solid #334155;
-            transition: transform 6s cubic-bezier(0.1, 0, 0.1, 1);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-        .jarum {
-            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-            width: 30px; height: 40px; z-index: 10;
-            background: var(--merah-jambu); clip-path: polygon(50% 100%, 0 0, 100% 0);
+        /* CARD STYLE */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px; margin-bottom: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        /* MODE SLOT */
-        .slot-container {
-            display: flex; justify-content: center; gap: 10px; margin: 30px 0;
+        /* TIMER AREA */
+        .timer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+        .timer-unit { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
+        .timer-num { display: block; font-size: 20px; font-weight: 800; color: var(--neon-pink); }
+        .timer-label { font-size: 9px; text-transform: uppercase; opacity: 0.6; }
+
+        /* MODE SELECTION */
+        .mode-tabs { 
+            display: flex; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 16px; margin-bottom: 25px; 
+            border: 1px solid var(--border);
         }
-        .slot-box {
-            width: 100%; height: 100px; background: #020617; border-radius: 15px;
+        .tab { 
+            flex: 1; padding: 12px; border: none; background: none; color: #64748b; 
+            font-weight: 600; cursor: pointer; transition: 0.4s; border-radius: 12px; font-size: 11px;
+        }
+        .tab.active { background: var(--neon-blue); color: white; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4); }
+
+        /* SLOT MACHINE ANIMATION */
+        .slot-machine {
+            height: 120px; background: #000; border-radius: 20px; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: 800; color: var(--aksen-emas);
-            border: 2px solid var(--border-glass); overflow: hidden;
-            position: relative;
+            border: 2px solid var(--neon-gold); position: relative;
+            margin: 20px 0;
         }
-        .animasi-rolling { animation: roll 0.1s infinite; }
-        @keyframes roll { 0% { transform: translateY(-10px); } 50% { transform: translateY(10px); } 100% { transform: translateY(-10px); } }
+        .slot-strip { transition: transform 0.1s linear; }
+        .slot-name { font-size: 32px; font-weight: 800; color: var(--neon-gold); text-shadow: 0 0 15px var(--neon-gold); }
+        .blur-effect { filter: blur(4px); }
 
-        /* TOMBOL UTAMA */
-        .btn-utama {
-            width: 100%; padding: 18px; border-radius: 18px; border: none;
-            background: linear-gradient(135deg, var(--hijau-cerah) 0%, #166534 100%);
-            color: white; font-weight: 800; font-size: 16px; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(74, 222, 128, 0.3); transition: 0.3s;
+        /* ACTION BUTTONS */
+        .btn-action {
+            width: 100%; padding: 20px; border-radius: 16px; border: none;
+            font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s;
+            background: linear-gradient(135deg, var(--neon-green), #065f46);
+            color: white; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
         }
-        .btn-utama:hover { filter: brightness(1.1); transform: translateY(-2px); }
-        .btn-utama:active { transform: scale(0.98); }
+        .btn-action:hover { transform: scale(1.02); filter: brightness(1.1); }
 
-        /* STATISTIK & DAFTAR */
-        .bar-wadah { background: rgba(0,0,0,0.3); height: 10px; border-radius: 10px; margin: 8px 0 15px 0; }
-        .bar-isi { height: 100%; background: linear-gradient(90deg, var(--biru-muda), var(--hijau-cerah)); border-radius: 10px; transition: 1s; }
-        .baris-anggota { display: flex; justify-content: space-between; padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .tag-pemenang { background: var(--aksen-emas); color: #000; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
+        /* LISTS & TABLES */
+        .member-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px; border-bottom: 1px solid var(--border);
+        }
+        .status-pill {
+            padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;
+        }
+        .paid { background: rgba(16, 185, 129, 0.1); color: var(--neon-green); border: 1px solid var(--neon-green); }
+        .unpaid { background: rgba(244, 63, 94, 0.1); color: var(--neon-pink); border: 1px solid var(--neon-pink); }
 
-        /* PEMILIH NAMA */
-        .grid-nama { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .kartu-nama { background: #1e293b; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; border: 1px solid var(--border-glass); }
-        .kartu-nama:hover { background: var(--biru-muda); }
+        /* ADMIN DRAWER */
+        .admin-panel {
+            margin-top: 10px; padding: 10px; border-radius: 12px;
+            background: rgba(245, 158, 11, 0.05); border: 1px dashed var(--neon-gold);
+            text-align: center; font-size: 12px; cursor: pointer; color: var(--neon-gold);
+        }
+
+        .bar-container { background: #1e293b; height: 8px; border-radius: 10px; margin-top: 8px; overflow: hidden; }
+        .bar-fill { height: 100%; background: var(--neon-blue); transition: width 1s ease-out; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div class="logo-text">🌟 ARISAN KELUARGA</div>
-        <div id="labelBulan" style="font-weight: 700; color: #94a3b8; margin-top: 5px;">BULAN - TAHUN</div>
+        <div class="logo-container">
+            <div class="logo-text">ARISAN ELITE</div>
+            <div id="currentMonth" style="font-size: 12px; color: #64748b; font-weight: 700; margin-top: 5px;">MARET 2026</div>
+        </div>
     </header>
 
-    <div class="card kotak-waktu">
-        <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Batas Waktu Pemilihan:</div>
-        <div class="teks-waktu" id="timer">00H 00:00:00</div>
+    <div class="glass-card">
+        <div style="font-size: 11px; font-weight: 700; margin-bottom: 15px; color: #94a3b8; text-align: center;">HITUNG MUNDUR PENGUNDIAN</div>
+        <div class="timer-grid">
+            <div class="timer-unit"><span class="timer-num" id="d-days">00</span><span class="timer-label">Hari</span></div>
+            <div class="timer-unit"><span class="timer-num" id="d-hours">00</span><span class="timer-label">Jam</span></div>
+            <div class="timer-unit"><span class="timer-num" id="d-mins">00</span><span class="timer-label">Menit</span></div>
+            <div class="timer-unit"><span class="timer-num" id="d-secs">00</span><span class="timer-label">Detik</span></div>
+        </div>
     </div>
 
-    <div class="card" style="text-align:center;">
-        <div class="grup-tab">
-            <button id="b1" class="btn-tab aktif" onclick="gantiMode('roda')">🎡 RODA SELEKSI</button>
-            <button id="b2" class="btn-tab" onclick="gantiMode('kocok')">🏺 KOCOK BOTOL</button>
-            <button id="b3" class="btn-tab" onclick="gantiMode('slot')">🎰 MESIN SLOT</button>
+    <div class="glass-card">
+        <div class="mode-tabs">
+            <button class="tab active" onclick="changeMode('slot', this)">🎰 MODE SLOT</button>
+            <button class="tab" onclick="changeMode('dadu', this)">🎲 MODE DADU</button>
         </div>
 
-        <div id="m-roda" class="tampilan-mode" style="display:block;">
-            <div class="box-roda">
-                <div class="jarum"></div>
-                <canvas id="canvasRoda" width="500" height="500"></canvas>
+        <div id="visual-area">
+            <div class="slot-machine">
+                <div id="slotDisplay" class="slot-name">Mulai Spin</div>
             </div>
         </div>
 
-        <div id="m-kocok" class="tampilan-mode" style="display:none; padding: 40px 0;">
-            <div id="botol" style="font-size: 80px;">🏺</div>
-            <div id="statusKocok" style="margin-top:20px; font-weight:800; color:var(--aksen-emas);">Siap mengguncang?</div>
-        </div>
+        <button id="btnSpin" class="btn-action" onclick="checkIdentity()">MULAI UNDI SEKARANG</button>
+        <p id="lockMessage" style="display:none; text-align:center; color: var(--neon-pink); font-size: 12px; font-weight: 700;">Periode voting telah dikunci!</p>
+    </div>
 
-        <div id="m-slot" class="tampilan-mode" style="display:none;">
-            <div class="slot-container">
-                <div id="slotBox" class="slot-box">JACKPOT</div>
+    <div class="glass-card">
+        <h3 style="margin:0 0 20px 0; font-size: 16px; color: var(--neon-gold); display: flex; justify-content: space-between;">
+            <span>💰 Status Kas Anggota</span>
+            <span id="totalKas" style="color: #fff; font-size: 14px;">Rp 0</span>
+        </h3>
+        <div id="paymentList">
             </div>
-            <div style="color:#64748b; font-size:11px; margin-bottom: 15px;">Tekan tombol di bawah untuk putar slot</div>
-        </div>
-
-        <button id="btnMain" class="btn-utama" onclick="pilihIdentitas()">IKUTI PEMILIHAN</button>
-        <div id="pesanTutup" style="color:var(--merah-jambu); font-size: 13px; margin-top: 15px; font-weight: 800; display:none;">🔒 PERIODE INI TELAH BERAKHIR</div>
+        <div class="admin-panel" onclick="openAdminSettings()">⚙️ MODE ADMIN (KELOLA KAS)</div>
     </div>
 
-    <div class="card">
-        <h3 style="margin:0 0 15px 0; color:var(--biru-muda); font-size: 16px;">📊 Perolehan Suara Terkini</h3>
-        <div id="areaStatistik"></div>
+    <div class="glass-card">
+        <h3 style="margin:0 0 15px 0; font-size: 16px; color: var(--neon-blue);">📊 Polling Pemenang</h3>
+        <div id="voteStats"></div>
     </div>
 
-    <div class="card">
-        <h3 style="margin:0 0 15px 0; color:var(--aksen-emas); font-size: 16px;">🏆 Daftar Penerima Arisan</h3>
-        <div id="areaPemenang"></div>
+    <div class="glass-card" style="font-size: 12px; line-height: 1.8; color: #94a3b8;">
+        <h3 style="color: #fff; margin-top: 0; font-size: 14px;">📜 Aturan Resmi Arisan</h3>
+        <ol style="padding-left: 15px; margin: 0;">
+            <li>Iuran: <b>Rp 500.000</b> per bulan (Wajib lunas sebelum undian).</li>
+            <li>Denda keterlambatan: <b>Rp 25.000</b> jika lewat tanggal 5.</li>
+            <li>Pemenang ditentukan berdasarkan <b>Suara Terbanyak</b> (Hasil Spin).</li>
+            <li>Anggota yang sudah menang tidak masuk dalam daftar Spin bulan depan.</li>
+            <li>Admin berhak membatalkan kemenangan jika iuran belum lunas.</li>
+        </ol>
     </div>
 
-    <div class="card" style="font-size: 13px; line-height: 1.6;">
-        <h3 style="margin:0 0 10px 0;">📝 Peraturan Resmi</h3>
-        <ul style="padding-left: 18px; color: #94a3b8; margin: 0;">
-            <li>Iuran wajib <b style="color:white">Rp 500.000</b> per bulan.</li>
-            <li>Pemilihan ditutup otomatis <b>10 hari</b> sebelum akhir bulan.</li>
-            <li>Hasil suara terbanyak akan disahkan sebagai pemenang bulan ini.</li>
-            <li>Satu orang hanya memiliki <b>1 kali kesempatan</b> pilih per periode.</li>
-        </ul>
-    </div>
-
-    <center><div style="color:#334155; font-size:10px; cursor:pointer; margin: 20px 0;" onclick="resetSistem()">Pengaturan Admin</div></center>
+    <center style="font-size: 10px; color: #334155; margin-bottom: 40px;" onclick="forceReset()">RESET SYSTEM (ADMIN ONLY)</center>
 </div>
 
 <script>
-    const ANGGOTA = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
-    const PIN_ADMIN = "080522";
+    const MEMBERS_DATA = ["Idam", "Aki", "Daeli", "Ros", "Dewi", "Septi", "Medina", "Agus", "Elis", "Tri"];
+    const ADMIN_PIN = "080522";
 
-    let dataPemenang = JSON.parse(localStorage.getItem("arisan_pemenang")) || {"Idam": "Maret"};
-    let dataSuara = JSON.parse(localStorage.getItem("arisan_suara")) || {};
-    let dataLogUser = JSON.parse(localStorage.getItem("arisan_log_user")) || {};
+    // Global State
+    let winners = JSON.parse(localStorage.getItem("el_winners")) || {"Idam": "Maret"};
+    let votes = JSON.parse(localStorage.getItem("el_votes")) || {};
+    let logs = JSON.parse(localStorage.getItem("el_logs")) || {};
+    let payments = JSON.parse(localStorage.getItem("el_payments")) || {};
     
-    let sedangProses = false;
-    let rotasiRoda = 0;
-    let modeAktif = 'roda';
+    let isSpinning = false;
+    let activeMode = 'slot';
 
-    function dapatkanBulanIni() {
-        return ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][new Date().getMonth()];
+    function init() {
+        updateClock();
+        setInterval(updateClock, 1000);
+        renderAll();
     }
 
-    function dapatkanDeadline() {
-        const tgl = new Date();
-        const hariTerakhir = new Date(tgl.getFullYear(), tgl.getMonth() + 1, 0);
-        hariTerakhir.setDate(hariTerakhir.getDate() - 10);
-        hariTerakhir.setHours(23, 59, 59);
-        return hariTerakhir;
-    }
+    function updateClock() {
+        const now = new Date();
+        const deadline = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        deadline.setDate(deadline.getDate() - 10);
+        deadline.setHours(23, 59, 59);
 
-    function cekTerkunci() {
-        return (new Date() > dapatkanDeadline()) || Object.values(dataPemenang).includes(dapatkanBulanIni());
-    }
-
-    function mulai() {
-        document.getElementById("labelBulan").innerText = dapatkanBulanIni().toUpperCase() + " " + new Date().getFullYear();
-        setInterval(updateTimer, 1000);
-        updateTimer();
-        gambarRoda();
-        renderData();
-    }
-
-    function updateTimer() {
-        const selisih = dapatkanDeadline() - new Date();
-        const el = document.getElementById("timer");
-        if (selisih <= 0) {
-            el.innerText = "DITUTUP";
-            document.getElementById("btnMain").disabled = true;
-            document.getElementById("pesanTutup").style.display = "block";
-        } else {
-            const d = Math.floor(selisih / 86400000);
-            const h = Math.floor((selisih % 86400000) / 3600000);
-            const m = Math.floor((selisih % 3600000) / 60000);
-            const s = Math.floor((selisih % 60000) / 1000);
-            el.innerText = `${d}H ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        const diff = deadline - now;
+        if (diff > 0) {
+            document.getElementById("d-days").innerText = Math.floor(diff / 86400000).toString().padStart(2,'0');
+            document.getElementById("d-hours").innerText = Math.floor((diff % 86400000) / 3600000).toString().padStart(2,'0');
+            document.getElementById("d-mins").innerText = Math.floor((diff % 3600000) / 60000).toString().padStart(2,'0');
+            document.getElementById("d-secs").innerText = Math.floor((diff % 60000) / 1000).toString().padStart(2,'0');
         }
     }
 
-    function gantiMode(m) {
-        if (sedangProses) return;
-        modeAktif = m;
-        ['roda','kocok','slot'].forEach(v => document.getElementById('m-'+v).style.display = (v === m ? 'block' : 'none'));
-        ['b1','b2','b3'].forEach((t, i) => document.getElementById(t).classList.toggle('aktif', ['roda','kocok','slot'][i] === m));
-        if (m === 'roda') gambarRoda();
+    function changeMode(mode, el) {
+        if(isSpinning) return;
+        activeMode = mode;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('slotDisplay').innerText = mode === 'slot' ? 'Mulai Spin' : 'Kocok Dadu';
     }
 
-    function gambarRoda() {
-        const canvas = document.getElementById("canvasRoda");
-        const ctx = canvas.getContext("2d");
-        const sisa = ANGGOTA.filter(n => !dataPemenang[n]);
-        const arc = (Math.PI * 2) / sisa.length;
-        ctx.clearRect(0,0,500,500);
+    function renderAll() {
+        // Render Kas
+        let payHtml = "";
+        let totalVal = 0;
+        MEMBERS_DATA.forEach(m => {
+            const isPaid = payments[m] && payments[m] >= 500000;
+            const amount = payments[m] || 0;
+            totalVal += amount;
+            payHtml += `
+                <div class="member-row">
+                    <div>
+                        <span style="font-weight:600; font-size:13px">${m}</span><br>
+                        <span style="font-size:10px; opacity:0.5">Rp ${amount.toLocaleString('id-ID')}</span>
+                    </div>
+                    <span class="status-pill ${isPaid ? 'paid' : 'unpaid'}">${isPaid ? 'LUNAS' : 'BELUM'}</span>
+                </div>`;
+        });
+        document.getElementById("paymentList").innerHTML = payHtml;
+        document.getElementById("totalKas").innerText = "Rp " + totalVal.toLocaleString('id-ID');
 
-        sisa.forEach((nama, i) => {
-            ctx.beginPath();
-            ctx.fillStyle = `hsl(${(i * 360 / sisa.length)}, 70%, 50%)`;
-            ctx.moveTo(250, 250);
-            ctx.arc(250, 250, 240, i*arc - Math.PI/2, (i+1)*arc - Math.PI/2);
-            ctx.fill();
-            ctx.stroke();
+        // Render Votes
+        let voteHtml = "";
+        const activeMembers = MEMBERS_DATA.filter(m => !winners[m]);
+        const sortedVotes = Object.entries(votes).sort((a,b) => b[1] - a[1]);
+        const maxVote = sortedVotes.length > 0 ? sortedVotes[0][1] : 1;
 
-            ctx.save();
-            ctx.translate(250,250);
-            ctx.rotate(i*arc + arc/2 - Math.PI/2);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 18px sans-serif";
-            ctx.textAlign = "right";
-            ctx.fillText(nama, 220, 10);
-            ctx.restore();
+        sortedVotes.forEach(([name, count]) => {
+            const perc = (count / maxVote) * 100;
+            voteHtml += `
+                <div style="margin-bottom:12px">
+                    <div style="display:flex; justify-content:space-between; font-size:11px"><span>${name}</span><span>${count} Suara</span></div>
+                    <div class="bar-container"><div class="bar-fill" style="width:${perc}%"></div></div>
+                </div>`;
+        });
+        document.getElementById("voteStats").innerHTML = voteHtml || "<p style='font-size:11px; opacity:0.5'>Belum ada suara masuk.</p>";
+    }
+
+    async function checkIdentity() {
+        if(isSpinning) return;
+        const sisa = MEMBERS_DATA.filter(n => !winners[n]);
+        let h = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">`;
+        sisa.forEach(n => h += `<button class="tab" style="border:1px solid var(--border); padding:15px" onclick="startSpin('${n}')">${n}</button>`);
+        h += `</div>`;
+
+        Swal.fire({
+            title: 'Siapa Anda?',
+            html: h,
+            showConfirmButton: false,
+            background: 'var(--glass)',
+            color: '#fff'
         });
     }
 
-    function pilihIdentitas() {
-        if (sedangProses) return;
-        const sisa = ANGGOTA.filter(n => !dataPemenang[n]);
-        let html = `<div class="grid-nama">`;
-        sisa.forEach(n => html += `<div class="kartu-nama" onclick="eksekusiPilih('${n}')">${n}</div>`);
-        html += `</div>`;
-        Swal.fire({ title: 'Konfirmasi Nama Anda', html: html, showConfirmButton: false, background: '#1e293b', color: '#fff' });
-    }
-
-    function eksekusiPilih(user) {
+    function startSpin(user) {
         Swal.close();
-        sedangProses = true;
-        const sisa = ANGGOTA.filter(n => !dataPemenang[n]);
+        if(isSpinning) return;
         
-        // Adil: Hasil ditentukan di awal, animasi hanya visual
-        let hasil = dataLogUser[user] || sisa[Math.floor(Math.random() * sisa.length)];
-        
-        if (!dataLogUser[user] && !cekTerkunci()) {
-            dataLogUser[user] = hasil;
-            dataSuara[hasil] = (dataSuara[hasil] || 0) + 1;
-            localStorage.setItem("arisan_suara", JSON.stringify(dataSuara));
-            localStorage.setItem("arisan_log_user", JSON.stringify(dataLogUser));
+        isSpinning = true;
+        const sisa = MEMBERS_DATA.filter(n => !winners[n]);
+        let result = logs[user] || sisa[Math.floor(Math.random() * sisa.length)];
+
+        // Simpan log secara adil (hanya sekali vote per orang)
+        if(!logs[user]) {
+            logs[user] = result;
+            votes[result] = (votes[result] || 0) + 1;
+            saveData();
         }
 
-        if (modeAktif === 'roda') {
-            const idx = sisa.indexOf(hasil);
-            const slice = 360 / sisa.length;
-            const stopAt = 360 - (idx * slice) - (slice / 2);
-            rotasiRoda += (360 * 5) + (stopAt - (rotasiRoda % 360));
-            document.getElementById("canvasRoda").style.transform = `rotate(${rotasiRoda}deg)`;
-            setTimeout(() => selesai(hasil), 6000);
-        } else if (modeAktif === 'kocok') {
-            document.getElementById("botol").style.animation = "roll 0.1s infinite";
-            setTimeout(() => {
-                document.getElementById("botol").style.animation = "none";
-                selesai(hasil);
-            }, 3000);
-        } else {
-            const slot = document.getElementById("slotBox");
-            slot.classList.add("animasi-rolling");
-            setTimeout(() => {
-                slot.classList.remove("animasi-rolling");
-                slot.innerText = hasil;
-                selesai(hasil);
-            }, 3000);
+        const display = document.getElementById('slotDisplay');
+        let counter = 0;
+        const spinDuration = 3000;
+        const interval = setInterval(() => {
+            display.innerText = sisa[Math.floor(Math.random() * sisa.length)];
+            display.classList.add('blur-effect');
+            counter += 100;
+            if(counter >= spinDuration) {
+                clearInterval(interval);
+                display.classList.remove('blur-effect');
+                display.innerText = result;
+                finalize(result);
+            }
+        }, 100);
+    }
+
+    function finalize(res) {
+        isSpinning = false;
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        Swal.fire({
+            icon: 'success',
+            title: 'HASIL UNDIAN',
+            text: 'Pilihan suara jatuh kepada: ' + res,
+            background: 'var(--glass)',
+            color: '#fff'
+        });
+        renderAll();
+        checkFinalWinner();
+    }
+
+    function checkFinalWinner() {
+        const sisa = MEMBERS_DATA.filter(n => !winners[n]);
+        if(Object.keys(logs).length >= sisa.length) {
+            let win = ""; let max = -1;
+            for(let n in votes) { if(votes[n] > max) { max = votes[n]; win = n; } }
+            
+            // Kunci pemenang
+            const curBulan = "Maret 2026";
+            if(!Object.values(winners).includes(curBulan)) {
+                winners[win] = curBulan;
+                saveData();
+                Swal.fire({
+                    title: '🏆 PEMENANG SAH!',
+                    html: `<h2 style="color:var(--neon-gold)">${win}</h2><p>Selamat kepada pemenang periode ini!</p>`,
+                    background: 'var(--glass)',
+                    color: '#fff'
+                });
+                renderAll();
+            }
         }
     }
 
-    function selesai(res) {
-        sedangProses = false;
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        Swal.fire({ title: 'Berhasil!', html: `Anda memilih: <b style="color:var(--aksen-emas)">${res}</b>`, icon: 'success', background: '#1e293b', color: '#fff' });
-        renderData();
-        cekPemenangAkhir();
-    }
+    async function openAdminSettings() {
+        const { value: pin } = await Swal.fire({
+            title: 'PIN Admin',
+            input: 'password',
+            background: 'var(--glass)',
+            color: '#fff'
+        });
 
-    function cekPemenangAkhir() {
-        const sisaAnggota = ANGGOTA.filter(n => !dataPemenang[n]);
-        // Jika semua sudah vote
-        if (Object.keys(dataLogUser).length >= sisaAnggota.length && !Object.values(dataPemenang).includes(dapatkanBulanIni())) {
-            let suaraTerbanyak = -1; let pemenangBulanIni = "";
-            for (let n in dataSuara) { if (dataSuara[n] > suaraTerbanyak) { suaraTerbanyak = dataSuara[n]; pemenangBulanIni = n; } }
-            
-            dataPemenang[pemenangBulanIni] = dapatkanBulanIni();
-            localStorage.setItem("arisan_pemenang", JSON.stringify(dataPemenang));
-            
-            Swal.fire({ 
-                title: '🏆 PEMENANG ' + dapatkanBulanIni().toUpperCase(), 
-                html: `<h1 style="color:var(--aksen-emas)">${pemenangBulanIni}</h1><p>Dengan total ${suaraTerbanyak} suara!</p>`, 
-                background: '#1e293b', color: '#fff' 
+        if(pin === ADMIN_PIN) {
+            let h = `<div style="max-height:300px; overflow-y:auto">`;
+            MEMBERS_DATA.forEach(m => {
+                h += `
+                <div style="margin-bottom:15px; text-align:left">
+                    <label style="font-size:12px">${m}</label>
+                    <input type="number" id="input-${m}" value="${payments[m] || 0}" style="width:100%; padding:8px; border-radius:5px; border:none; margin-top:5px">
+                </div>`;
             });
-            renderData();
+            h += `</div>`;
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Update Kas Anggota',
+                html: h,
+                focusConfirm: false,
+                background: 'var(--glass)',
+                color: '#fff',
+                preConfirm: () => {
+                    let obj = {};
+                    MEMBERS_DATA.forEach(m => {
+                        obj[m] = parseInt(document.getElementById(`input-${m}`).value);
+                    });
+                    return obj;
+                }
+            });
+
+            if(formValues) {
+                payments = formValues;
+                saveData();
+                renderAll();
+            }
         }
     }
 
-    function renderData() {
-        let hStat = "";
-        const urut = Object.entries(dataSuara).sort((a,b) => b[1] - a[1]);
-        const max = urut.length > 0 ? urut[0][1] : 1;
-        urut.forEach(([n, c]) => {
-            hStat += `<div style="display:flex; justify-content:space-between; font-size:12px"><span>${n}</span><b>${c} Suara</b></div>
-                      <div class="bar-wadah"><div class="bar-isi" style="width:${(c/max)*100}%"></div></div>`;
-        });
-        document.getElementById("areaStatistik").innerHTML = hStat || "Menunggu suara masuk...";
-
-        let hWin = "";
-        ANGGOTA.forEach(n => {
-            hWin += `<div class="baris-anggota"><span>${dataPemenang[n] ? '👑' : '👤'} ${n}</span> ${dataPemenang[n] ? `<span class="tag-pemenang">${dataPemenang[n]}</span>` : '<span style="color:#475569">Belum</span>'}</div>`;
-        });
-        document.getElementById("areaPemenang").innerHTML = hWin;
+    function saveData() {
+        localStorage.setItem("el_winners", JSON.stringify(winners));
+        localStorage.setItem("el_votes", JSON.stringify(votes));
+        localStorage.setItem("el_logs", JSON.stringify(logs));
+        localStorage.setItem("el_payments", JSON.stringify(payments));
     }
 
-    async function resetSistem() {
-        const { value: pin } = await Swal.fire({ title: 'PIN Admin', input: 'password', background: '#1e293b', color: '#fff' });
-        if (pin === PIN_ADMIN) { localStorage.clear(); location.reload(); }
+    function forceReset() {
+        if(confirm("Hapus semua data?")) {
+            localStorage.clear();
+            location.reload();
+        }
     }
 
-    mulai();
+    init();
 </script>
 </body>
 </html>

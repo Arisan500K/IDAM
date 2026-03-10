@@ -4,8 +4,13 @@ font-family:Segoe UI;
 background:linear-gradient(135deg,#0f172a,#1e293b);
 color:white;
 text-align:center;
-margin:0;
 padding:20px;
+
+}
+
+h1{
+
+color:#facc15;
 
 }
 
@@ -16,16 +21,47 @@ border-radius:12px;
 padding:15px;
 margin:15px auto;
 max-width:420px;
-box-shadow:0 0 15px rgba(0,0,0,0.5);
+box-shadow:0 5px 15px rgba(0,0,0,0.6);
+
+}
+
+.spinModes{
+
+display:flex;
+justify-content:center;
+gap:8px;
+margin-bottom:10px;
+
+}
+
+.mode{
+
+padding:10px 15px;
+border:none;
+border-radius:10px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+
+}
+
+.wheel{background:#22c55e}
+.dice{background:#f97316}
+.cup{background:#3b82f6}
+
+#spinVisual{
+
+font-size:120px;
+margin:20px auto;
 
 }
 
 .spinBtn{
 
-font-size:20px;
-padding:12px 40px;
+font-size:26px;
+padding:14px 50px;
 border:none;
-border-radius:10px;
+border-radius:14px;
 background:#facc15;
 cursor:pointer;
 
@@ -35,6 +71,35 @@ cursor:pointer;
 
 background:#38bdf8;
 height:10px;
-border-radius:4px;
+border-radius:5px;
+
+}
+
+.member{
+
+display:flex;
+justify-content:space-between;
+padding:8px;
+background:#0f172a;
+border-radius:6px;
+margin:4px;
+
+}
+
+#winner{
+
+font-size:36px;
+font-weight:bold;
+animation:blink 1s infinite;
+
+}
+
+@keyframes blink{
+
+0%{color:red}
+25%{color:yellow}
+50%{color:lime}
+75%{color:cyan}
+100%{color:magenta}
 
 }

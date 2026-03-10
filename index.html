@@ -1,149 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>ARISAN BULANAN 500K</title>
+
+<link rel="stylesheet" href="css/style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-<style>
-
-body{
-font-family:Segoe UI;
-background:linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
-text-align:center;
-margin:0;
-padding:15px;
-}
-
-h1{
-color:#facc15;
-margin-bottom:5px;
-}
-
-.subtitle{
-color:#94a3b8;
-margin-bottom:10px;
-}
-
-.card{
-background:#1e293b;
-border-radius:12px;
-padding:15px;
-margin:12px auto;
-max-width:450px;
-box-shadow:0 0 15px rgba(0,0,0,0.5);
-}
-
-.spinModes{
-display:flex;
-justify-content:center;
-gap:8px;
-flex-wrap:wrap;
-margin-bottom:10px;
-}
-
-.spinModes button{
-
-font-size:18px;
-padding:10px 18px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-color:white;
-font-weight:bold;
-
-}
-
-.modeWheel{background:#22c55e}
-.modeDice{background:#f97316}
-.modeCup{background:#3b82f6}
-
-.spinVisual{
-
-font-size:60px;
-margin:10px;
-
-}
-
-.spinBtn{
-
-font-size:20px;
-padding:12px 40px;
-border:none;
-border-radius:10px;
-background:#eab308;
-cursor:pointer;
-font-weight:bold;
-
-}
-
-.bar{
-
-background:#38bdf8;
-height:10px;
-margin-top:4px;
-border-radius:4px;
-
-}
-
-.member{
-
-display:flex;
-justify-content:space-between;
-padding:7px;
-border-bottom:1px solid #334155;
-
-}
-
-.leader{
-
-font-size:14px;
-padding:6px;
-
-}
-
-.winnerBox{
-
-font-size:34px;
-font-weight:bold;
-animation:blink 1s infinite;
-
-}
-
-@keyframes blink{
-
-0%{color:red}
-25%{color:yellow}
-50%{color:lime}
-75%{color:cyan}
-100%{color:magenta}
-
-}
-
-.resetBtn{
-
-margin-top:15px;
-font-size:12px;
-background:none;
-border:none;
-color:#94a3b8;
-cursor:pointer;
-
-}
-
-@media(max-width:500px){
-
-.spinVisual{font-size:70px}
-
-}
-
-</style>
 </head>
 
 <body>
@@ -151,8 +20,7 @@ cursor:pointer;
 <h1>ARISAN BULANAN 500K</h1>
 <div class="subtitle">Ketua: Idam</div>
 
-<div id="bulanText"></div>
-<div id="spinTimer"></div>
+<div id="bulan"></div>
 
 <div class="card">
 
@@ -160,17 +28,17 @@ cursor:pointer;
 
 <div class="spinModes">
 
-<button class="modeWheel" onclick="setMode('wheel')">🎡 Wheel</button>
-<button class="modeDice" onclick="setMode('dice')">🎲 Dadu</button>
-<button class="modeCup" onclick="setMode('cup')">🥤 Gelas</button>
+<button onclick="setMode('wheel')" class="modeWheel">🎡 Wheel</button>
+<button onclick="setMode('dice')" class="modeDice">🎲 Dadu</button>
+<button onclick="setMode('cup')" class="modeCup">🥤 Gelas</button>
 
 </div>
 
-<div id="spinVisual" class="spinVisual">🎡</div>
+<div id="spinVisual">🎡</div>
 
 <button class="spinBtn" onclick="startSpin()">SPIN</button>
 
-<div id="progressSpin"></div>
+<div id="progress"></div>
 
 </div>
 
@@ -184,452 +52,48 @@ cursor:pointer;
 <div class="card">
 
 <h3>Statistik Voting</h3>
-<div id="statList"></div>
+<div id="stat"></div>
 
 </div>
 
 <div class="card">
 
 <h3>Riwayat Spin</h3>
-<div id="spinHistory"></div>
+<div id="history"></div>
 
 </div>
 
 <div class="card">
 
 <h3>Pemenang Bulan Ini</h3>
-<div id="winnerBox" class="winnerBox"></div>
+<div id="winner"></div>
 
 </div>
 
 <div class="card">
 
 <h3>Daftar Peserta</h3>
-<div id="memberList"></div>
+<div id="members"></div>
 
 </div>
 
 <div class="card">
 
 <h3>Pembayaran Bulan Ini</h3>
-<div id="payList"></div>
+<div id="payment"></div>
 <button onclick="adminMode()">Edit Pembayaran</button>
 
 </div>
 
-<button class="resetBtn" onclick="resetSystem()">Reset Sistem</button>
-
-<audio id="spinSound" src="https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3"></audio>
-
-<script>
-
-const ADMIN_PIN="080522"
-const RESET_PIN="080522"
-
-const NAMES=[
-"Idam","Aki","Daeli","Ros","Dewi",
-"Septi","Medina","Agus","Elis","Tri"
-]
-
-let mode="wheel"
-
-let voteData=JSON.parse(localStorage.getItem("voteData"))||{}
-let spinResults=JSON.parse(localStorage.getItem("spinResults"))||{}
-let winnerData=JSON.parse(localStorage.getItem("winnerData"))||{}
-let payData=JSON.parse(localStorage.getItem("payData"))||{}
-
-let admin=false
-
-document.getElementById("bulanText").innerText="Bulan "+getMonth()
-
-function getMonth(){
-
-const m=[
-"Januari","Februari","Maret","April",
-"Mei","Juni","Juli","Agustus",
-"September","Oktober","November","Desember"
-]
-
-return m[new Date().getMonth()]
-
-}
-
-function setMode(m){
-
-mode=m
-
-let icon="🎡"
-
-if(m=="dice")icon="🎲"
-if(m=="cup")icon="🥤"
-
-document.getElementById("spinVisual").innerText=icon
-
-}
-
-function animateSpin(){
-
-let v=document.getElementById("spinVisual")
-
-if(mode=="wheel"){
-
-v.style.transition="transform 4s"
-v.style.transform="rotate(1440deg)"
-
-}
-
-if(mode=="dice"){
-
-let i=0
-
-let roll=setInterval(()=>{
-
-v.innerText=["⚀","⚁","⚂","⚃","⚄","⚅"][Math.floor(Math.random()*6)]
-
-i++
-
-if(i>20)clearInterval(roll)
-
-},100)
-
-}
-
-if(mode=="cup"){
-
-let i=0
-
-let shake=setInterval(()=>{
-
-v.style.transform="rotate("+((Math.random()*40)-20)+"deg)"
-
-i++
-
-if(i>20){
-
-clearInterval(shake)
-v.style.transform="rotate(0)"
-
-}
-
-},100)
-
-}
-
-}
-
-function randomName(){
-
-let active=NAMES.filter(n=>!winnerData[n])
-
-return active[Math.floor(Math.random()*active.length)]
-
-}
-
-async function startSpin(){
-
-const {value:name}=await Swal.fire({
-
-title:"Pilih Nama Anda",
-input:"select",
-inputOptions:NAMES
-
-})
-
-if(!name)return
-
-document.getElementById("spinSound").play()
-
-animateSpin()
-
-setTimeout(()=>{
-
-let winner=randomName()
-
-spinResults[name]=winner
-
-let demo=false
-
-if(getWinnerMonth()) demo=true
-
-if(!demo){
-
-voteData[winner]=(voteData[winner]||0)+1
-
-}
-
-localStorage.setItem("spinResults",JSON.stringify(spinResults))
-localStorage.setItem("voteData",JSON.stringify(voteData))
-
-let text=winner
-
-if(demo) text+=" (DEMO)"
-
-Swal.fire("Hasil Spin",text)
-
-renderAll()
-
-checkWinner()
-
-},4000)
-
-}
-
-function checkWinner(){
-
-if(getWinnerMonth())return
-
-const total=NAMES.length-1
-const done=Object.keys(spinResults).length
-
-if(done===total){
-
-let max=0
-let winner=""
-
-for(let n in voteData){
-
-if(voteData[n]>max){
-
-max=voteData[n]
-winner=n
-
-}
-
-}
-
-winnerData[winner]=getMonth()
-
-localStorage.setItem("winnerData",JSON.stringify(winnerData))
-
-confetti({particleCount:200,spread:120})
-
-renderWinner()
-
-}
-
-}
-
-function getWinnerMonth(){
-
-for(let n in winnerData){
-
-if(winnerData[n]==getMonth())return n
-
-}
-
-return null
-
-}
-
-function renderWinner(){
-
-let w=getWinnerMonth()
-
-if(w){
-
-document.getElementById("winnerBox").innerHTML=w
-
-}
-
-}
-
-function renderStats(){
-
-let html=""
-let max=0
-
-for(let n in voteData){
-
-if(voteData[n]>max)max=voteData[n]
-
-}
-
-for(let n in voteData){
-
-let v=voteData[n]
-
-let w=(v/max)*100
-
-html+=`
-<div>
-${n} (${v})
-<div class="bar" style="width:${w}%"></div>
-</div>
-`
-
-}
-
-document.getElementById("statList").innerHTML=html
-
-}
-
-function renderLeaderboard(){
-
-let arr=[]
-
-for(let n in voteData){
-
-arr.push({name:n,v:voteData[n]})
-
-}
-
-arr.sort((a,b)=>b.v-a.v)
-
-let html=""
-
-arr.forEach((a,i)=>{
-
-html+=`<div class="leader">${i+1}. ${a.name} (${a.v})</div>`
-
-})
-
-document.getElementById("leaderboard").innerHTML=html
-
-}
-
-function renderHistory(){
-
-let html=""
-
-for(let n in spinResults){
-
-html+=`<div>${n} → ${spinResults[n]}</div>`
-
-}
-
-document.getElementById("spinHistory").innerHTML=html
-
-}
-
-function renderMembers(){
-
-let html=""
-
-NAMES.forEach(n=>{
-
-let w=winnerData[n]
-
-if(w){
-
-html+=`<div class="member">${n} ✔ (${w})</div>`
-
-}else{
-
-html+=`<div class="member">${n}</div>`
-
-}
-
-})
-
-document.getElementById("memberList").innerHTML=html
-
-}
-
-function renderPay(){
-
-let html=""
-
-NAMES.forEach(n=>{
-
-let c=payData[n]?"✔":"❌"
-
-html+=`
-
-<div class="member">
-
-<span>${n}</span>
-
-<span onclick="togglePay('${n}')">${c}</span>
-
-</div>
-
-`
-
-})
-
-document.getElementById("payList").innerHTML=html
-
-}
-
-function togglePay(n){
-
-if(!admin)return
-
-payData[n]=!payData[n]
-
-localStorage.setItem("payData",JSON.stringify(payData))
-
-renderPay()
-
-}
-
-async function adminMode(){
-
-const {value:pin}=await Swal.fire({
-
-title:"PIN Admin",
-input:"password"
-
-})
-
-if(pin===ADMIN_PIN){
-
-admin=true
-Swal.fire("Mode Admin Aktif")
-
-}else{
-
-Swal.fire("PIN Salah")
-
-}
-
-}
-
-function renderProgress(){
-
-const total=NAMES.length-1
-const done=Object.keys(spinResults).length
-
-document.getElementById("progressSpin").innerText=
-done+" / "+total+" peserta sudah spin"
-
-}
-
-function resetSystem(){
-
-Swal.fire({
-
-title:"PIN Reset",
-input:"password"
-
-}).then(r=>{
-
-if(r.value===RESET_PIN){
-
-localStorage.clear()
-location.reload()
-
-}
-
-})
-
-}
-
-function renderAll(){
-
-renderStats()
-renderHistory()
-renderMembers()
-renderPay()
-renderLeaderboard()
-renderProgress()
-renderWinner()
-
-}
-
-renderAll()
-
-</script>
+<button onclick="resetSystem()" class="resetBtn">Reset Sistem</button>
+
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/spinModes.js"></script>
+<script src="js/wheel.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
 
 </body>
+
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arisan IDAM Online</title>
+    <title>ARISAN IDAM 500K</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #facc15; --text: #f8fafc; --primary: #ef4444; }
@@ -11,25 +11,28 @@
         .container { max-width: 500px; width: 100%; }
         .wheel-box { position: relative; width: 300px; height: 300px; margin: 20px auto; }
         #pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 30px solid var(--accent); z-index: 10; }
-        canvas { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #334155; }
+        canvas { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #334155; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .card { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
         .btn { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
         .btn-vote { background: #22c55e; color: white; }
         .btn-iseng { background: #475569; color: white; }
-        .btn-admin { background: var(--accent); color: #000; }
-        select { width: 100%; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155; margin-top: 5px; }
+        .btn-admin { background: var(--accent); color: #000; border: 2px solid #000; }
+        select { width: 100%; padding: 12px; border-radius: 8px; background: #0f172a; color: white; border: 1px solid #334155; margin-top: 5px; font-size: 1rem; }
         .progress-bar { background: #334155; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 5px; }
         .progress-fill { background: var(--accent); height: 100%; transition: 0.8s cubic-bezier(0.1, 0, 0.1, 1); }
         .winner-tag { color: var(--accent); font-weight: bold; font-size: 0.8rem; }
         .status-paid { color: #4ade80; font-size: 0.75rem; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         th, td { padding: 8px; text-align: left; border-bottom: 1px solid #334155; }
+        .loading-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
+<div id="loader" class="loading-overlay">⏳ Memproses Data...</div>
+
 <div class="container">
-    <h1 style="text-align:center; margin-bottom:0;">🎡 ARISAN IDAM</h1>
+    <h1 style="text-align:center; margin-bottom:0; letter-spacing: 2px;">🎡 ARISAN IDAM</h1>
     <p style="text-align:center; color:#94a3b8; margin-top:5px;">Bulan ke-<span id="monthTxt">...</span></p>
     
     <div class="wheel-box">
@@ -38,26 +41,18 @@
     </div>
 
     <div class="card">
-        <label>Pilih Nama Anda:</label>
+        <label style="font-size: 0.8rem; color:#94a3b8;">Siapa yang memutar roda?</label>
         <select id="userSelect" onchange="checkStatus()"></select>
         <p id="userStatus" style="margin-top:8px; font-size:0.85rem;"></p>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="btn btn-iseng" onclick="spin(true)">Putar Iseng</button>
+            <button class="btn btn-iseng" onclick="spin(true)">PUTAR ISENG</button>
             <button id="voteBtn" class="btn btn-vote" onclick="spin(false)">VOTE RESMI</button>
         </div>
     </div>
 
     <div class="card">
-        <h3>📊 Statistik Vote (Real-time)</h3>
-        <div id="statList">Memuat data...</div>
-    </div>
-
-    <div class="card">
-        <h3>📜 Daftar Vote Masuk</h3>
-        <table id="logTable">
-            <thead><tr><th>Pevote</th><th>Pilihan Roda</th></tr></thead>
-            <tbody></tbody>
-        </table>
+        <h3>📊 Statistik Vote Real-time</h3>
+        <div id="statList">Memuat statistik...</div>
     </div>
 
     <div class="card">
@@ -66,15 +61,16 @@
             <thead><tr><th>Bulan</th><th>Nama Pemenang</th></tr></thead>
             <tbody></tbody>
         </table>
-        <div id="adminArea" style="display:none;">
+        <div id="adminArea" style="display:none; margin-top:15px; border-top: 1px dashed #475569; padding-top:15px;">
+            <p style="color:var(--accent); font-weight:bold; font-size:0.8rem;">ADMIN DASHBOARD:</p>
             <button class="btn btn-admin" onclick="determineWinner()">TENTUKAN PEMENANG BULAN INI</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- KONFIGURASI PENTING ---
-const SCRIPT_URL = "GANTI_DENGAN_URL_WEB_APP_ANDA"; 
+// --- KONFIGURASI ---
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnohA1Mt-e11iRDNEUGSN9ACddqAm6pZ510tiZCP4IPEz77HVWtb9ealIMvVELW5NR/exec"; 
 const MEMBERS = ["Idam", "Agus", "Budi", "Citra", "Dedi", "Eko", "Fajar", "Gilang", "Hadi", "Joko"];
 const COLORS = ["#ef4444", "#f59e0b", "#84cc16", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899", "#f97316", "#10b981", "#eab308"];
 
@@ -83,7 +79,7 @@ let angle = 0, isSpinning = false;
 const canvas = document.getElementById("wheel");
 const ctx = canvas.getContext("2d");
 
-// Cek jika buka sebagai admin (tambahkan ?role=admin di link)
+// Deteksi Admin
 if(new URLSearchParams(window.location.search).get('role') === 'admin') {
     document.getElementById('adminArea').style.display = 'block';
 }
@@ -93,7 +89,7 @@ async function loadData() {
         const res = await fetch(SCRIPT_URL);
         db = await res.json();
         renderUI();
-    } catch(e) { console.error("Gagal muat data"); }
+    } catch(e) { console.error("Koneksi Error"); }
 }
 
 function drawWheel() {
@@ -110,7 +106,6 @@ function drawWheel() {
 function renderUI() {
     document.getElementById("monthTxt").innerText = db.month;
     
-    // Dropdown Nama
     const select = document.getElementById("userSelect");
     select.innerHTML = MEMBERS.map(m => {
         const info = db.members.find(x => x[0] === m);
@@ -118,26 +113,20 @@ function renderUI() {
         return `<option value="${m}">${m} ${lunas ? '✅' : '❌'}</option>`;
     }).join("");
 
-    // Statistik Progress Bar
     const statBox = document.getElementById("statList");
     const totalVotes = db.votes.length || 1;
     statBox.innerHTML = MEMBERS.map(m => {
         const count = db.votes.filter(v => v[1] === m).length;
-        const alreadyWon = db.members.find(x => x[0] === m && x[2] !== "");
+        const hasWon = db.members.find(x => x[0] === m && x[2] !== "");
         return `<div style="margin-bottom:10px">
             <div style="display:flex; justify-content:space-between; font-size:0.8rem">
-                <span class="${alreadyWon ? 'winner-tag' : ''}">${m} ${alreadyWon ? '(🏆)' : ''}</span>
+                <span class="${hasWon ? 'winner-tag' : ''}">${m} ${hasWon ? '(🏆)' : ''}</span>
                 <span>${count} Vote</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" style="width:${(count/totalVotes)*100}%"></div></div>
         </div>`;
     }).join("");
 
-    // Log Table
-    document.querySelector("#logTable tbody").innerHTML = db.votes.slice(-5).reverse().map(v => 
-        `<tr><td>${v[0]}</td><td>➡️ <b>${v[1]}</b></td></tr>`).join("");
-
-    // Winner Table
     document.querySelector("#winTable tbody").innerHTML = db.members.filter(m => m[2] !== "").map(m => 
         `<tr><td>Bulan ${m[2]}</td><td><b>${m[0]}</b></td></tr>`).join("");
 
@@ -152,20 +141,20 @@ function checkStatus() {
     const voteBtn = document.getElementById("voteBtn");
 
     if(lunas) {
-        statusTxt.innerHTML = `<span class="status-paid">Status: LUNAS (Silakan Vote)</span>`;
+        statusTxt.innerHTML = `<span class="status-paid">Status: LUNAS (HAK VOTE AKTIF)</span>`;
         voteBtn.disabled = false;
         voteBtn.style.opacity = "1";
     } else {
-        statusTxt.innerHTML = `<span style="color:#f87171; font-size:0.75rem;">Status: BELUM BAYAR (Vote Dikunci)</span>`;
+        statusTxt.innerHTML = `<span style="color:#f87171; font-size:0.75rem;">Status: BELUM BAYAR (VOTE DIKUNCI)</span>`;
         voteBtn.disabled = true;
-        voteBtn.style.opacity = "0.5";
+        voteBtn.style.opacity = "0.4";
     }
 }
 
 function spin(isDemo) {
     if (isSpinning) return;
     isSpinning = true;
-    let speed = Math.random() * 0.2 + 0.4;
+    let speed = Math.random() * 0.2 + 0.45;
     
     function animate() {
         speed *= 0.985; angle += speed; drawWheel();
@@ -174,52 +163,57 @@ function spin(isDemo) {
             isSpinning = false;
             const res = MEMBERS[Math.floor((MEMBERS.length - (angle % (Math.PI*2)) / ((Math.PI*2)/MEMBERS.length)) % MEMBERS.length)];
             if(!isDemo) handleVote(res);
-            else alert("Hasil Iseng: " + res);
+            else alert("🔴 HASIL ISENG: " + res);
         }
     }
     animate();
 }
 
 async function handleVote(res) {
+    document.getElementById('loader').style.display = 'flex';
     const user = document.getElementById("userSelect").value;
-    alert(`Vote Resmi Masuk: ${res}`);
     await fetch(SCRIPT_URL, {
         method: 'POST',
         body: JSON.stringify({ action: 'vote', user: user, result: res })
     });
+    document.getElementById('loader').style.display = 'none';
+    alert(`🟢 VOTE BERHASIL! Anda memilih: ${res}`);
     loadData();
 }
 
 async function determineWinner() {
-    const pin = prompt("PIN Admin:");
-    if(pin !== "1234") return alert("Salah!");
+    const pin = prompt("Masukkan PIN Admin:");
+    if(pin !== "1234") return alert("PIN Salah!");
 
     let winName = "";
+    // KESEPAKATAN:
     if(db.month == 1) winName = "Idam";
     else if(db.month == 10) winName = "Agus";
     else {
-        // Logika vote terbanyak
         let counts = {};
         db.votes.forEach(v => counts[v[1]] = (counts[v[1]] || 0) + 1);
         let sorted = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+        // Ambil yang paling banyak vote-nya dan BELUM PERNAH menang
         winName = sorted.find(n => !db.members.find(m => m[0] === n && m[2] !== ""));
     }
 
-    if(!winName) return alert("Belum ada vote valid!");
+    if(!winName) return alert("Belum ada data vote valid!");
     
-    if(confirm(`Pemenang Bulan ${db.month} adalah ${winName}?`)) {
-        confetti({ particleCount: 150, spread: 70 });
+    if(confirm(`Konfirmasi Pemenang Bulan ${db.month}: ${winName}?`)) {
+        document.getElementById('loader').style.display = 'flex';
+        confetti({ particleCount: 200, spread: 90, origin: { y: 0.7 } });
         await fetch(SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ action: 'set_winner', name: winName, month: db.month })
         });
+        document.getElementById('loader').style.display = 'none';
         loadData();
     }
 }
 
 drawWheel();
 loadData();
-setInterval(loadData, 10000); // Auto update setiap 10 detik
+setInterval(loadData, 15000); // Sinkronisasi otomatis setiap 15 detik
 </script>
 </body>
 </html>

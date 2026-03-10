@@ -3,97 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISAN BULANAN Rp500.000</title>
+    <title>ARISAN PRO - Rp500.000</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #facc15; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --danger: #ef4444; --success: #22c55e; }
+        :root { --primary: #facc15; --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --danger: #ef4444; --success: #22c55e; --accent: #38bdf8; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .container { max-width: 500px; width: 100%; padding-bottom: 50px; }
-        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 15px rgba(0,0,0,0.3); position: relative; }
-        .timer-box { background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%); border-radius: 15px; padding: 15px; text-align: center; margin-bottom: 20px; border: 1px solid #991b1b; }
-        #countdown { font-size: 1.6rem; font-weight: 700; color: #fff; }
+        .container { max-width: 550px; width: 100%; padding-bottom: 50px; }
+        .card { background: var(--card); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
         .month-badge { background: var(--primary); color: #000; padding: 6px 20px; border-radius: 20px; font-weight: 700; font-size: 0.9rem; display: inline-block; margin-bottom: 10px; }
-        .wheel-box { position: relative; width: 300px; height: 300px; margin: 20px auto; }
-        #pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary); z-index: 10; }
-        canvas { width: 100%; height: 100%; border-radius: 50%; border: 6px solid #334155; }
+        .wheel-box { position: relative; width: 320px; height: 320px; margin: 20px auto; }
+        #pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--primary); z-index: 10; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        canvas { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #334155; }
         .btn-main { background: var(--primary); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; transition: 0.3s; margin-bottom: 10px; }
         .btn-main:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; opacity: 0.5; }
         .btn-iseng { background: #334155; color: white; }
         select, input { width: 100%; padding: 12px; border-radius: 12px; background: #0f172a; color: white; border: 1px solid #475569; margin-bottom: 10px; box-sizing: border-box; font-family: 'Poppins'; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         td, th { padding: 12px 8px; text-align: left; border-top: 1px solid #334155; }
-        #loader { position: fixed; inset: 0; background: rgba(15,23,42,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        th { color: var(--accent); text-transform: uppercase; font-size: 0.7rem; }
+        #loader { position: fixed; inset: 0; background: rgba(15,23,42,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
         .spin-loader { width: 40px; height: 40px; border: 4px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: rot 0.8s linear infinite; }
         @keyframes rot { to { transform: rotate(360deg); } }
+        .log-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-<div id="loader"><div class="spin-loader"></div><p>Sinkronisasi Data...</p></div>
+<div id="loader"><div class="spin-loader"></div><p style="margin-top:15px">Sinkronisasi Data...</p></div>
 
 <div class="container">
-    <div class="timer-box">
-        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; opacity:0.8;">VOTING DITUTUP DALAM:</div>
-        <div id="countdown">Memuat...</div>
-    </div>
-
     <center>
-        <h1 style="font-size: 1.2rem; color: var(--primary); margin: 0;">ARISAN BULANAN Rp500.000</h1>
-        <div class="month-badge">PERIODE BULAN <span id="monthTxt">1</span></div>
+        <h1 style="font-size: 1.4rem; color: var(--primary); margin: 10px 0 0 0;">ARISAN KELUARGA GG</h1>
+        <div class="month-badge">BULAN KE-<span id="monthTxt">1</span></div>
     </center>
 
     <div class="wheel-box">
         <div id="pointer"></div>
-        <canvas id="wheel" width="500" height="500"></canvas>
+        <canvas id="wheel" width="600" height="600"></canvas>
     </div>
 
     <div class="card">
-        <h3 style="margin-top:0; font-size:1rem;">👤 Nama Anggota</h3>
+        <h3 style="margin-top:0; font-size:1rem;">🎯 Pilih Nama Anda</h3>
         <select id="userSelect" onchange="checkUserStatus()"></select>
         <div id="userMsg" style="text-align:center; margin-bottom:15px; font-size:0.9rem;"></div>
-        <button id="spinBtn" class="btn-main" onclick="startSpin(false)">SPIN & VOTE SEKARANG</button>
+        <button id="spinBtn" class="btn-main" onclick="startSpin(false)">SPIN & VOTE RESMI</button>
         <button id="isengBtn" class="btn-main btn-iseng" onclick="startSpin(true)">COBA SPIN ISENG</button>
+    </div>
+
+    <div class="card">
+        <h3 style="margin:0 0 15px 0; font-size:1rem; color:var(--accent);">📑 Aktivitas Spin Bulan Ini</h3>
+        <div id="spinLogs">
+            <div style="text-align:center; opacity:0.5; font-size:0.8rem;">Belum ada yang melakukan spin.</div>
+        </div>
     </div>
 
     <div id="winnerCardArea"></div>
 
-    <div class="card">
-        <h3 style="margin-top:0; font-size:1rem;">📊 Perolehan Suara Saat Ini</h3>
-        <div id="statList"></div>
-    </div>
-
     <div class="card" style="overflow-x:auto;">
-        <h3 style="margin-top:0; font-size:1rem;">💰 Status Pembayaran Kas</h3>
+        <h3 style="margin:0 0 15px 0; font-size:1rem; color:var(--success);">💰 Status Kas Anggota</h3>
         <table>
-            <thead><tr><th>Nama</th><th>Status</th><th>Nominal</th></tr></thead>
+            <thead><tr><th>Nama</th><th>Status</th><th>Terakhir Bayar</th></tr></thead>
             <tbody id="payTable"></tbody>
         </table>
     </div>
 
     <div id="adminArea" style="display:none;">
         <div class="card" style="border: 2px solid var(--primary);">
-            <h3 style="color:var(--primary); margin:0 0 15px 0;">🛡️ DASHBOARD KETUA IDAM</h3>
-            <button onclick="addMember()" style="background:#334155; color:white; border:none; padding:10px; border-radius:10px; width:100%; margin-top:10px; cursor:pointer;">+ Tambah Anggota</button>
-            <button onclick="confirmWinner()" class="btn-main" style="background:var(--danger); color:white; margin-top:20px;">SAHKAN PEMENANG & LANJUT BULAN</button>
+            <h3 style="color:var(--primary); margin:0 0 15px 0;">🛡️ DASHBOARD KETUA</h3>
+            
+            <label style="font-size:0.8rem;">Input Pembayaran Untuk:</label>
+            <select id="admTargetUser"></select>
+            
+            <div style="display:grid; grid-template-columns: 1fr 100px; gap:10px;">
+                <input type="number" id="admNominal" placeholder="Nominal (Cth: 500000)">
+                <button onclick="savePayment()" class="btn-main" style="padding:10px; font-size:0.8rem; margin-bottom:0;">SIMPAN</button>
+            </div>
+            
+            <button onclick="addMember()" style="background:#334155; color:white; border:none; padding:10px; border-radius:10px; width:100%; margin-top:10px; cursor:pointer;">+ Tambah Anggota Baru</button>
+            <button onclick="confirmWinner()" class="btn-main" style="background:var(--danger); color:white; margin-top:20px;">SAHKAN PEMENANG & LANJUT PERIODE</button>
         </div>
     </div>
 
-    <div class="card">
-        <h3 style="margin-top:0; font-size:1rem;">🏆 Riwayat Pemenang Arisan</h3>
-        <table id="winTable"></table>
-    </div>
-
-    <button onclick="adminLogin()" style="background:transparent; border:none; color:#475569; width:100%; margin:20px 0; font-size:0.75rem; cursor:pointer;">🔓 Login Ketua (PIN)</button>
+    <button onclick="adminLogin()" style="background:transparent; border:none; color:#475569; width:100%; margin:20px 0; font-size:0.75rem; cursor:pointer;">🔓 Akses Ketua (PIN)</button>
 </div>
 
 <script>
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynwWUGarVJ-W4IH8h3lu0QIUNIMkJCveRVDqgFkpP6DfC4dnT-yFQAzcfydnwtc4Mi/exec"; 
 let db = { members: [], votes: [], month: 1, payments: [] };
-let angle = 0, isSpinning = false, isTimeUp = false;
-
-const PALETTE = ["#ef4444", "#f59e0b", "#84cc16", "#10b981", "#06b6d4", "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef", "#ec4899", "#f43f5e"];
+let angle = 0, isSpinning = false;
+const COLORS = ["#ef4444", "#f59e0b", "#84cc16", "#10b981", "#06b6d4", "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef", "#ec4899", "#f43f5e"];
 
 async function sync() {
     document.getElementById("loader").style.display = "flex";
@@ -101,109 +101,93 @@ async function sync() {
         const res = await fetch(SCRIPT_URL);
         db = await res.json();
         render();
-    } catch(e) { Swal.fire("Eror", "Gagal menghubungkan server.", "error"); }
+    } catch(e) { Swal.fire("Eror", "Gagal terhubung ke database.", "error"); }
     document.getElementById("loader").style.display = "none";
 }
 
 function render() {
     document.getElementById("monthTxt").innerText = db.month;
-    document.getElementById("userSelect").innerHTML = db.members.map(m => `<option value="${m[0]}">${m[0]}</option>`).join("");
     
+    // Update Dropdowns
+    const memberOptions = db.members.map(m => `<option value="${m[0]}">${m[0]}</option>`).join("");
+    document.getElementById("userSelect").innerHTML = memberOptions;
+    document.getElementById("admTargetUser").innerHTML = memberOptions;
+    
+    // Render Payment Table
     document.getElementById("payTable").innerHTML = db.members.map(m => {
         const p = db.payments.filter(x => x[0] === m[0]).pop();
-        return `<tr><td>${m[0]}</td><td><b style="color:${m[1]=='Lunas'?'var(--success)':'var(--danger)'}">${m[1].toUpperCase()}</b></td><td>${p?p[2]:'-'}</td></tr>`;
+        const statusColor = m[1] === 'Lunas' ? 'var(--success)' : 'var(--danger)';
+        return `<tr><td><b>${m[0]}</b></td><td><span style="color:${statusColor}">${m[1].toUpperCase()}</span></td><td>${p ? p[2] : '-'}</td></tr>`;
     }).join("");
 
-    const total = db.votes.length || 1;
-    document.getElementById("statList").innerHTML = db.members.map(m => {
-        const count = db.votes.filter(v => v[1] === m[0]).length;
-        const isAlreadyWon = m[2] !== "";
-        return `<div style="margin-bottom:12px; ${isAlreadyWon ? 'opacity:0.3' : ''}">
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:4px;">
-                <span>${m[0]} ${isAlreadyWon ? '🏆' : ''}</span>
-                <span>${count} Suara</span>
+    // Render Spin Logs (Audit Trail)
+    const logs = db.votes;
+    if (logs.length > 0) {
+        document.getElementById("spinLogs").innerHTML = logs.map(v => `
+            <div class="log-item">
+                <span>👤 <b>${v[0]}</b></span>
+                <span style="color:var(--primary)">➡ dapat: <b>${v[1]}</b></span>
             </div>
-            <div style="background:#334155; height:8px; border-radius:4px; overflow:hidden;"><div style="background:var(--primary); width:${(count/total)*100}%; height:100%; transition:1s;"></div></div>
-        </div>`;
-    }).join("");
+        `).join("");
+    }
 
-    document.getElementById("winTable").innerHTML = db.members.filter(m => m[2] !== "").map(m => `<tr><td>Bulan ${m[2]}</td><td style="text-align:right"><b>${m[0]}</b> 🏆</td></tr>`).join("");
-    
+    checkStatusPemenang();
     drawWheel();
+    checkUserStatus();
 }
 
 function drawWheel() {
     const ctx = document.getElementById("wheel").getContext("2d");
-    const allMembers = db.members; // Gambar SEMUA anggota
-    if(allMembers.length == 0) return;
+    if(db.members.length == 0) return;
+    const arc = (Math.PI * 2) / db.members.length;
+    ctx.clearRect(0,0,600,600);
     
-    const arc = (Math.PI * 2) / allMembers.length;
-    ctx.clearRect(0,0,500,500);
-    
-    allMembers.forEach((m, i) => {
+    db.members.forEach((m, i) => {
         const start = angle + i * arc - Math.PI/2;
-        const isAlreadyWon = m[2] !== "";
-        
+        const isWon = m[2] !== "";
         ctx.beginPath(); 
-        // Jika sudah menang, warnanya dibuat pudar (transparan)
-        ctx.fillStyle = isAlreadyWon ? "rgba(71, 85, 105, 0.3)" : PALETTE[i % PALETTE.length]; 
-        ctx.moveTo(250,250);
-        ctx.arc(250,250,250,start, start+arc); 
+        ctx.fillStyle = isWon ? "rgba(71, 85, 105, 0.4)" : COLORS[i % COLORS.length]; 
+        ctx.moveTo(300,300);
+        ctx.arc(300,300,300,start, start+arc); 
         ctx.fill();
-        
-        ctx.strokeStyle = "rgba(255,255,255,0.1)";
-        ctx.stroke();
-
-        ctx.save(); 
-        ctx.translate(250,250); 
-        ctx.rotate(start + arc/2);
-        ctx.fillStyle = isAlreadyWon ? "rgba(255,255,255,0.2)" : "white"; 
-        ctx.font = "bold 14px Poppins"; 
-        ctx.textAlign = "right";
-        ctx.fillText(m[0], 230, 8); 
-        ctx.restore();
+        ctx.save(); ctx.translate(300,300); ctx.rotate(start + arc/2);
+        ctx.fillStyle = isWon ? "rgba(255,255,255,0.3)" : "white"; 
+        ctx.font = "bold 18px Poppins"; ctx.textAlign = "right";
+        ctx.fillText(m[0] + (isWon ? " 🏆" : ""), 280, 10); ctx.restore();
     });
 }
 
 function startSpin(isIseng) {
     if(isSpinning) return;
-    
     const candidates = db.members.filter(m => m[2] === "").map(m => m[0]);
-    if(candidates.length === 0) return Swal.fire("Info", "Semua sudah menang.", "info");
+    if(candidates.length === 0) return Swal.fire("Selesai", "Semua anggota sudah menang!", "info");
 
     isSpinning = true;
-    let speed = Math.random() * 0.15 + 0.45;
+    let speed = Math.random() * 0.15 + 0.5;
     
     function anim() {
         speed *= 0.985; angle += speed; drawWheel();
         if(speed > 0.002) requestAnimationFrame(anim);
         else {
             isSpinning = false;
+            // Hitung index berhenti
+            const total = db.members.length;
+            let stopIdx = Math.floor((total - (angle % (Math.PI*2)) / ((Math.PI*2)/total)) % total);
             
-            // 1. Tentukan hasil murni berdasarkan posisi jarum (untuk visual)
-            const allNames = db.members.map(m => m[0]);
-            const total = allNames.length;
-            const stopIdx = Math.floor((total - (angle % (Math.PI*2)) / ((Math.PI*2)/total)) % total);
-            let visualRes = allNames[stopIdx];
-
-            // 2. Logika "Saringan" agar tidak dapat orang yang sudah menang
             let finalRes;
-            if(db.month == 1) {
-                finalRes = "Idam";
-            } else if(db.month == db.members.length) {
-                finalRes = "Samu";
-            } else {
-                // Jika jarum berhenti di orang yang sudah menang, 
-                // ambil orang terdekat yang BELUM menang
-                if (db.members[stopIdx][2] !== "") {
-                    finalRes = candidates[Math.floor(Math.random() * candidates.length)];
-                } else {
-                    finalRes = visualRes;
+            // LOGIKA GG: Pemenang Titipan
+            if(!isIseng && db.month == 1) finalRes = "Idam";
+            else if(!isIseng && db.month == db.members.length) finalRes = "Samu";
+            else {
+                // Jika kena orang yang sudah menang, cari orang berikutnya yang belum menang
+                while(db.members[stopIdx][2] !== "") {
+                    stopIdx = (stopIdx + 1) % total;
                 }
+                finalRes = db.members[stopIdx][0];
             }
 
-            if(!isIseng) saveVote(finalRes);
-            else Swal.fire("Hasil Iseng", "Hasil: " + finalRes, "info");
+            if(isIseng) Swal.fire("Hasil Iseng", "Anda mendapat: " + finalRes, "info");
+            else saveVote(finalRes);
         }
     }
     anim();
@@ -211,16 +195,11 @@ function startSpin(isIseng) {
 
 async function saveVote(res) {
     document.getElementById("loader").style.display = "flex";
-    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'vote', user: document.getElementById("userSelect").value, result: res }) });
+    const user = document.getElementById("userSelect").value;
+    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'vote', user: user, result: res }) });
     document.getElementById("loader").style.display = "none";
-    Swal.fire("Berhasil", "Suara terekam untuk: " + res, "success");
+    Swal.fire("Berhasil!", "Anda men-vote: " + res, "success");
     sync();
-}
-
-function adminLogin() {
-    Swal.fire({ title: 'PIN KETUA', input: 'password' }).then(r => {
-        if(r.value === "280498") document.getElementById("adminArea").style.display = "block";
-    });
 }
 
 function checkUserStatus() {
@@ -231,39 +210,81 @@ function checkUserStatus() {
     const btn = document.getElementById("spinBtn");
     const msg = document.getElementById("userMsg");
 
-    if (m[1] !== "Lunas") { msg.innerHTML = "⚠️ <b>Belum Bayar Kas.</b>"; btn.disabled = true; }
-    else if (v) { msg.innerHTML = `✅ Hasil Spin: <b style="color:var(--primary)">${v[1]}</b>`; btn.disabled = true; }
-    else { msg.innerHTML = "🟢 Silakan Spin!"; btn.disabled = false; }
+    if (m[1] !== "Lunas") { msg.innerHTML = "❌ <b>Belum bayar kas bulan ini!</b>"; btn.disabled = true; }
+    else if (v) { msg.innerHTML = `✅ Anda sudah spin: <b style="color:var(--primary)">${v[1]}</b>`; btn.disabled = true; }
+    else { msg.innerHTML = "🟢 Status aman. Silakan Spin!"; btn.disabled = false; }
+}
+
+async function savePayment() {
+    const target = document.getElementById("admTargetUser").value;
+    const amt = document.getElementById("admNominal").value;
+    if(!amt) return Swal.fire("Eror", "Masukkan nominal uang!", "error");
+    
+    document.getElementById("loader").style.display = "flex";
+    await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ 
+        action: 'record_payment', 
+        name: target, 
+        amount: "Rp "+parseInt(amt).toLocaleString(), 
+        month: db.month 
+    }) });
+    document.getElementById("loader").style.display = "none";
+    Swal.fire("Berhasil", "Pembayaran " + target + " dicatat.", "success");
+    sync();
+}
+
+function checkStatusPemenang() {
+    const area = document.getElementById("winnerCardArea");
+    if(db.votes.length >= db.members.length && db.members.length > 0) {
+        // Logika penentuan pemenang dari suara terbanyak
+        const candidates = db.members.filter(m => m[2] === "").map(m => m[0]);
+        let counts = {};
+        db.votes.forEach(v => { if(candidates.includes(v[1])) counts[v[1]] = (counts[v[1]] || 0) + 1; });
+        let max = 0; let winner = "";
+        for(let n in counts) { if(counts[n] > max) { max = counts[n]; winner = n; } }
+
+        area.innerHTML = `<div class="card" style="text-align:center; border:2px solid var(--success);">
+            <h2 style="margin:0; color:var(--success)">CALON PEMENANG</h2>
+            <div style="font-size:1.8rem; font-weight:700; color:var(--primary); margin:10px 0;">🏆 ${winner || 'Menghitung...'} 🏆</div>
+            <small>Silakan Ketua sahkan di Dashboard.</small>
+        </div>`;
+    } else { area.innerHTML = ""; }
+}
+
+function adminLogin() {
+    Swal.fire({ title: 'PIN KETUA', input: 'password' }).then(r => {
+        if(r.value === "280498") document.getElementById("adminArea").style.display = "block";
+    });
 }
 
 async function confirmWinner() {
-    const winData = getWinnerCandidate();
-    if(!winData) return Swal.fire("Gagal", "Belum ada suara!", "error");
-    
-    Swal.fire({ title: "Sahkan Pemenang?", text: winData.name, icon: "warning", showCancelButton: true }).then(async (r) => {
+    // Logika pengesahan sama dengan sebelumnya namun lebih stabil
+    const candidates = db.members.filter(m => m[2] === "").map(m => m[0]);
+    let counts = {};
+    db.votes.forEach(v => { if(candidates.includes(v[1])) counts[v[1]] = (counts[v[1]] || 0) + 1; });
+    let max = 0; let winner = "";
+    for(let n in counts) { if(counts[n] > max) { max = counts[n]; winner = n; } }
+
+    if(!winner) return Swal.fire("Gagal", "Belum ada suara masuk!", "error");
+
+    Swal.fire({ title: "Sahkan Pemenang?", text: winner, icon: "warning", showCancelButton: true }).then(async (r) => {
         if(r.isConfirmed) {
             document.getElementById("loader").style.display = "flex";
             confetti({ particleCount: 300, spread: 100 });
-            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'set_winner', name: winData.name, month: db.month }) });
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'set_winner', name: winner, month: db.month }) });
             document.getElementById("loader").style.display = "none";
             sync();
         }
     });
 }
 
-function getWinnerCandidate() {
-    if(db.month == 1) return { name: "Idam" };
-    if(db.month == db.members.length) return { name: "Samu" };
-    
-    let candidates = db.members.filter(m => m[2] === "").map(m => m[0]);
-    let counts = {};
-    db.votes.forEach(v => { if(candidates.includes(v[1])) counts[v[1]] = (counts[v[1]] || 0) + 1; });
-    
-    let maxSuara = 0;
-    for(let name in counts) { if(counts[name] > maxSuara) maxSuara = counts[name]; }
-    let winName = Object.keys(counts).find(name => counts[name] === maxSuara);
-    
-    return winName ? { name: winName } : null;
+async function addMember() {
+    const { value: n } = await Swal.fire({ title: "Nama Anggota Baru", input: "text" });
+    if(n) {
+        document.getElementById("loader").style.display = "flex";
+        await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'add_member', name: n }) });
+        document.getElementById("loader").style.display = "none";
+        sync();
+    }
 }
 
 sync();

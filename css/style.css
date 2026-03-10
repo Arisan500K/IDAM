@@ -1,1 +1,40 @@
+body{
 
+font-family:Segoe UI;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+text-align:center;
+margin:0;
+padding:20px;
+
+}
+
+.card{
+
+background:#1e293b;
+border-radius:12px;
+padding:15px;
+margin:15px auto;
+max-width:420px;
+box-shadow:0 0 15px rgba(0,0,0,0.5);
+
+}
+
+.spinBtn{
+
+font-size:20px;
+padding:12px 40px;
+border:none;
+border-radius:10px;
+background:#facc15;
+cursor:pointer;
+
+}
+
+.bar{
+
+background:#38bdf8;
+height:10px;
+border-radius:4px;
+
+}

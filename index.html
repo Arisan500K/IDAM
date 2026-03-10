@@ -209,17 +209,26 @@ async function saveVote(res) {
 // TIMER LOGIC H-12 WIB
 function updateTimer() {
     const now = new Date();
-    const lastDay = new Date(now.getFullYear(), now.getMonth()+1, 0);
-    const deadline = new Date(now.getFullYear(), now.getMonth(), lastDay.getDate()-11, 23, 59, 59);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Tanggal terakhir (30/31)
+    const deadlineDate = lastDay.getDate() - 12; // Misal 30 - 12 = Tanggal 18
+    const deadline = new Date(now.getFullYear(), now.getMonth(), deadlineDate, 23, 59, 59);
+    
     const diff = deadline - now;
-    if(diff <= 0) { isTimeUp = true; document.getElementById("countdown").innerText = "DITUTUP"; }
-    else {
-        const d = Math.floor(diff/(1000*60*60*24));
-        const h = Math.floor((diff/(1000*60*60))%24);
-        const m = Math.floor((diff/(1000*60))%60);
-        const s = Math.floor((diff/1000)%60);
-        document.getElementById("countdown").innerText = `${d} Hari ${h}:${m}:${s}`;
+    const cd = document.getElementById("countdown");
+
+    if (diff <= 0) {
+        cd.innerText = "VOTING DITUTUP";
+        cd.style.color = "#ef4444";
+        isTimeUp = true;
+    } else {
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / (1000 * 60)) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        cd.innerText = `${d} Hari ${h}:${m}:${s}`;
+        isTimeUp = false;
     }
+    checkUserStatus();
 }
 
 // ADMIN ACTIONS

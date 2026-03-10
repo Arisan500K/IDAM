@@ -7,82 +7,537 @@
 
 <title>ARISAN BULANAN 500K</title>
 
-<link rel="stylesheet" href="style.css">
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+<style>
+
+body{
+font-family:Segoe UI;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+text-align:center;
+margin:0;
+padding:20px;
+}
+
+h1{
+color:#facc15;
+margin-bottom:5px;
+}
+
+.subtitle{
+color:#94a3b8;
+margin-bottom:15px;
+}
+
+.card{
+background:#1e293b;
+border-radius:14px;
+padding:15px;
+margin:15px auto;
+max-width:450px;
+box-shadow:0 0 20px rgba(0,0,0,0.6);
+}
+
+.wheelBox{
+position:relative;
+width:320px;
+margin:auto;
+}
+
+canvas{
+width:100%;
+border-radius:50%;
+background:#111827;
+border:8px solid #334155;
+box-shadow:0 0 20px rgba(0,0,0,0.6);
+transition:transform 7s cubic-bezier(.17,.67,.32,.99);
+}
+
+.pointer{
+position:absolute;
+top:-15px;
+left:50%;
+transform:translateX(-50%);
+border-left:16px solid transparent;
+border-right:16px solid transparent;
+border-top:28px solid #ef4444;
+z-index:10;
+}
+
+.spinBtn{
+margin-top:15px;
+padding:14px 40px;
+font-size:20px;
+border:none;
+border-radius:12px;
+background:#22c55e;
+color:white;
+cursor:pointer;
+}
+
+.member{
+display:flex;
+justify-content:space-between;
+padding:8px;
+border-bottom:1px solid #334155;
+}
+
+.winner{
+color:#64748b;
+text-decoration:line-through;
+}
+
+.tag{
+background:#facc15;
+color:black;
+font-size:11px;
+padding:2px 6px;
+border-radius:4px;
+}
+
+.bar{
+background:#38bdf8;
+height:10px;
+margin-top:3px;
+border-radius:4px;
+}
+
+.resetBtn{
+margin-top:15px;
+font-size:12px;
+background:none;
+border:none;
+color:#94a3b8;
+cursor:pointer;
+}
+
+#winnerBox{
+font-size:34px;
+font-weight:bold;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{color:red}
+25%{color:yellow}
+50%{color:lime}
+75%{color:cyan}
+100%{color:magenta}
+}
+
+</style>
 </head>
 
 <body>
 
 <h1>ARISAN BULANAN 500K</h1>
-<div class="ketua">Ketua: Idam</div>
+<div class="subtitle">Ketua: Idam</div>
 
 <div class="card">
 
-<div class="spinModes">
-
-<button onclick="setMode('wheel')" class="mode wheel">🎡 Wheel</button>
-<button onclick="setMode('dice')" class="mode dice">🎲 Dadu</button>
-<button onclick="setMode('cup')" class="mode cup">🥤 Gelas</button>
-
+<div class="wheelBox">
+<div class="pointer"></div>
+<canvas id="wheel" width="500" height="500"></canvas>
 </div>
 
-<div id="spinVisual">🎡</div>
-
-<button onclick="startSpin()" class="spinBtn">SPIN</button>
-
-<div id="progress"></div>
+<button class="spinBtn" onclick="startSpin()">SPIN PESERTA</button>
 
 </div>
 
 <div class="card">
-
-<h2>Leaderboard</h2>
+<h3>Leaderboard</h3>
 <div id="leaderboard"></div>
-
 </div>
 
 <div class="card">
-
-<h2>Statistik Voting</h2>
-<div id="stats"></div>
-
+<h3>Statistik Voting</h3>
+<div id="statList"></div>
 </div>
 
 <div class="card">
-
-<h2>Riwayat Spin</h2>
+<h3>Riwayat Spin</h3>
 <div id="history"></div>
-
 </div>
 
 <div class="card">
-
-<h2>Pemenang Bulan Ini</h2>
-<div id="winner"></div>
-
+<h3>Pemenang Bulan Ini</h3>
+<div id="winnerBox"></div>
 </div>
 
 <div class="card">
-
-<h2>Daftar Peserta</h2>
-<div id="members"></div>
-
+<h3>Daftar Peserta</h3>
+<div id="memberList"></div>
 </div>
 
 <div class="card">
-
-<h2>Pembayaran</h2>
-<div id="payments"></div>
+<h3>Pembayaran</h3>
+<div id="payList"></div>
 <button onclick="adminMode()">Edit Pembayaran</button>
+</div>
+
+<button class="resetBtn" onclick="resetSystem()">Reset Sistem</button>
+
+<script>
+
+const ADMIN_PIN="080522"
+const RESET_PIN="080522"
+
+const NAMES=[
+"Idam","Aki","Daeli","Ros","Dewi",
+"Septi","Medina","Agus","Elis","Tri"
+]
+
+const canvas=document.getElementById("wheel")
+const ctx=canvas.getContext("2d")
+
+let rotation=0
+let spinning=false
+
+let voteData=JSON.parse(localStorage.getItem("voteData"))||{}
+let spinResults=JSON.parse(localStorage.getItem("spinResults"))||{}
+let payData=JSON.parse(localStorage.getItem("payData"))||{}
+let winner=localStorage.getItem("winner")||null
+
+function drawWheel(){
+
+const names=NAMES
+
+const arc=(2*Math.PI)/names.length
+
+ctx.clearRect(0,0,500,500)
+
+names.forEach((name,i)=>{
+
+let angle=i*arc
+
+ctx.beginPath()
+ctx.fillStyle=`hsl(${i*40},70%,50%)`
+ctx.moveTo(250,250)
+ctx.arc(250,250,250,angle-Math.PI/2,(angle+arc)-Math.PI/2)
+ctx.fill()
+
+ctx.strokeStyle="#0f172a"
+ctx.lineWidth=2
+ctx.stroke()
+
+ctx.save()
+
+ctx.translate(250,250)
+ctx.rotate(angle+arc/2-Math.PI/2)
+
+ctx.fillStyle="white"
+ctx.font="18px Arial"
+ctx.textAlign="right"
+
+ctx.fillText(name,210,5)
+
+ctx.restore()
+
+})
+
+}
+
+function spinWheel(callback){
+
+let random=Math.floor(Math.random()*360)
+
+rotation+=360*10+random
+
+canvas.style.transform=`rotate(${rotation}deg)`
+
+setTimeout(()=>{
+
+const slice=360/NAMES.length
+const stop=rotation%360
+
+const index=Math.floor((360-stop)/slice)%NAMES.length
+
+callback(NAMES[index])
+
+},7000)
+
+}
+
+async function startSpin(){
+
+if(spinning)return
+
+const {value:name}=await Swal.fire({
+title:"Pilih Nama Anda",
+input:"select",
+inputOptions:NAMES
+})
+
+if(!name)return
+
+if(!payData[name]){
+
+Swal.fire("Anda belum bayar")
+return
+
+}
+
+if(spinResults[name]){
+
+Swal.fire("Anda sudah spin",spinResults[name])
+return
+
+}
+
+spinning=true
+
+spinWheel((result)=>{
+
+if(result===name){
+
+result=NAMES.filter(n=>n!==name)[Math.floor(Math.random()*9)]
+
+}
+
+spinResults[name]=result
+
+if(!winner){
+
+voteData[result]=(voteData[result]||0)+1
+
+}
+
+localStorage.setItem("spinResults",JSON.stringify(spinResults))
+localStorage.setItem("voteData",JSON.stringify(voteData))
+
+Swal.fire("Hasil Spin",result)
+
+render()
+
+checkWinner()
+
+spinning=false
+
+})
+
+}
+
+function checkWinner(){
+
+if(winner)return
+
+const total=NAMES.length-1
+
+if(Object.keys(spinResults).length===total){
+
+let max=0
+let w=""
+
+for(let n in voteData){
+
+if(voteData[n]>max){
+
+max=voteData[n]
+w=n
+
+}
+
+}
+
+winner=w
+
+localStorage.setItem("winner",w)
+
+confetti({
+particleCount:200,
+spread:120
+})
+
+render()
+
+}
+
+}
+
+function render(){
+
+renderMembers()
+renderStats()
+renderHistory()
+renderLeaderboard()
+
+if(winner){
+
+document.getElementById("winnerBox").innerText=winner
+
+}
+
+}
+
+function renderMembers(){
+
+let html=""
+
+NAMES.forEach(n=>{
+
+html+=`<div class="member">${n}</div>`
+
+})
+
+document.getElementById("memberList").innerHTML=html
+
+}
+
+function renderStats(){
+
+let html=""
+
+let max=0
+
+for(let n in voteData){
+
+if(voteData[n]>max)max=voteData[n]
+
+}
+
+for(let n in voteData){
+
+let v=voteData[n]
+
+let w=(v/max)*100
+
+html+=`
+
+<div>
+
+${n} (${v})
+
+<div class="bar" style="width:${w}%"></div>
 
 </div>
 
-<button onclick="resetSystem()" class="resetBtn">Reset Sistem</button>
+`
 
-<script src="app.js"></script>
+}
+
+document.getElementById("statList").innerHTML=html
+
+}
+
+function renderHistory(){
+
+let html=""
+
+for(let n in spinResults){
+
+html+=`${n} → ${spinResults[n]}<br>`
+
+}
+
+document.getElementById("history").innerHTML=html
+
+}
+
+function renderLeaderboard(){
+
+let arr=[]
+
+for(let n in voteData){
+
+arr.push({name:n,v:voteData[n]})
+
+}
+
+arr.sort((a,b)=>b.v-a.v)
+
+let html=""
+
+arr.forEach((x,i)=>{
+
+let medal=""
+
+if(i==0) medal="🥇"
+if(i==1) medal="🥈"
+if(i==2) medal="🥉"
+
+html+=`${medal} ${i+1}. ${x.name} (${x.v})<br>`
+
+})
+
+document.getElementById("leaderboard").innerHTML=html
+
+}
+
+async function adminMode(){
+
+const {value:pin}=await Swal.fire({
+title:"PIN Admin",
+input:"password"
+})
+
+if(pin!==ADMIN_PIN){
+
+Swal.fire("PIN salah")
+return
+
+}
+
+let html=""
+
+NAMES.forEach(n=>{
+
+let check=payData[n]?"checked":""
+
+html+=`
+
+<label>
+
+<input type="checkbox" onchange="togglePay('${n}')" ${check}>
+
+${n}
+
+</label><br>
+
+`
+
+})
+
+Swal.fire({
+title:"Pembayaran",
+html:html
+})
+
+}
+
+function togglePay(n){
+
+payData[n]=!payData[n]
+
+localStorage.setItem("payData",JSON.stringify(payData))
+
+}
+
+async function resetSystem(){
+
+const {value:pin}=await Swal.fire({
+title:"PIN Reset",
+input:"password"
+})
+
+if(pin!==RESET_PIN){
+
+Swal.fire("Kode Salah")
+return
+
+}
+
+localStorage.clear()
+
+location.reload()
+
+}
+
+drawWheel()
+render()
+
+</script>
 
 </body>
 </html>

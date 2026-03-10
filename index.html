@@ -96,7 +96,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynwWUGarVJ-W4IH8h3lu0QIUNIMkJCveRVDqgFkpP6DfC4dnT-yFQAzcfydnwtc4Mi/exec"; // <--- GANTI INI DENGAN URL APPS SCRIPT ANDA
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbynwWUGarVJ-W4IH8h3lu0QIUNIMkJCveRVDqgFkpP6DfC4dnT-yFQAzcfydnwtc4Mi/exec"; 
 
 let db = { members: [], votes: [], month: 1, payments: [] };
 let angle = 0, isSpinning = false, isTimeUp = false;
@@ -162,8 +162,8 @@ function render() {
     drawWheel();
 }
 
-// LOGIKA PENENTUAN PEMENANG & CEK SERI
 function getWinnerCandidate() {
+    // Logika pengesahan tetap mengikuti database
     if(db.month == 1) return { name: "Idam", isTie: false };
     if(db.month == db.members.length) return { name: "Samu", isTie: false };
 
@@ -188,6 +188,7 @@ function checkStatusPemenang() {
     const area = document.getElementById("winnerCardArea");
     if(db.votes.length >= db.members.length && db.members.length > 0) {
         const winData = getWinnerCandidate();
+        if(!winData) return;
         if(winData.isTie) {
             area.innerHTML = `<div class="card winner-notif" style="text-align:center; border-color: var(--danger) !important;">
                 <h2 style="margin:0; color:var(--danger)">HASIL SERI TERDETEKSI!</h2>
@@ -214,15 +215,14 @@ async function penentuanSeri(namesStr) {
             inputOptions: names.reduce((obj, name) => ({ ...obj, [name]: name }), {}),
             showCancelButton: true
         });
-        if(chosen) {
-            confirmWinnerManual(chosen);
-        }
+        if(chosen) { confirmWinnerManual(chosen); }
     } else { Swal.fire("Eror", "PIN Salah!", "error"); }
 }
 
 function checkUserStatus() {
     const name = document.getElementById("userSelect").value;
     const m = db.members.find(x => x[0] === name);
+    if(!m) return;
     const v = db.votes.find(x => x[0] === name);
     const btn = document.getElementById("spinBtn");
     const msg = document.getElementById("userMsg");
@@ -244,8 +244,10 @@ function checkUserStatus() {
 
 function drawWheel() {
     const ctx = document.getElementById("wheel").getContext("2d");
+    // FILTER: HANYA YANG BELUM PERNAH MENANG
     const list = db.members.filter(m => m[2] === "").map(m => m[0]);
     if(list.length == 0) return;
+    
     const arc = (Math.PI * 2) / list.length;
     const colors = ["#ef4444", "#f59e0b", "#84cc16", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899", "#10b981"];
     ctx.clearRect(0,0,500,500);
@@ -261,17 +263,34 @@ function drawWheel() {
 
 function startSpin(isIseng) {
     if(isSpinning) return;
+    
+    const list = db.members.filter(m => m[2] === "").map(m => m[0]);
+    if(list.length === 0) return Swal.fire("Info", "Semua anggota sudah menang.", "info");
+
     isSpinning = true;
     let speed = Math.random() * 0.15 + 0.45;
+    
     function anim() {
         speed *= 0.985; angle += speed; drawWheel();
         if(speed > 0.002) requestAnimationFrame(anim);
         else {
             isSpinning = false;
-            const list = db.members.filter(m => m[2] === "").map(m => m[0]);
-            const res = list[Math.floor((list.length - (angle % (Math.PI*2)) / ((Math.PI*2)/list.length)) % list.length)];
-            if(isIseng) Swal.fire("Hasil Iseng", "Bukan vote resmi: " + res, "info");
-            else saveVote(res);
+            let res;
+            
+            // LOGIKA PEMENANG KESEPAKATAN
+            if(!isIseng) {
+                if(db.month == 1) {
+                    res = "Idam";
+                } else if(db.month == db.members.length) {
+                    res = "Samu";
+                } else {
+                    res = list[Math.floor((list.length - (angle % (Math.PI*2)) / ((Math.PI*2)/list.length)) % list.length)];
+                }
+                saveVote(res);
+            } else {
+                res = list[Math.floor((list.length - (angle % (Math.PI*2)) / ((Math.PI*2)/list.length)) % list.length)];
+                Swal.fire("Hasil Iseng", "Bukan vote resmi: " + res, "info");
+            }
         }
     }
     anim();

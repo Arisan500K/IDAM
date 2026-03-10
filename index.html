@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARISAN IDAM DIGITAL v5</title>
+    <title>ARISAN BULANAN Rp500.000</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #facc15; --text: #f8fafc; --success: #22c55e; --danger: #ef4444; }
@@ -15,15 +15,7 @@
         .timer-val { font-size: 1.4rem; font-weight: bold; color: white; display: block; }
 
         .wheel-box { position: relative; width: 300px; height: 300px; margin: 20px auto; }
-       Waduh, saya mengerti maksudnya! Ternyata segitiga kuningnya terbalik, jadi bagian runcingnya malah menghadap ke langit, bukan menunjuk ke roda.
-
-Itu karena urutan garis (border) di CSS-nya terbalik. Mari kita perbaiki bagian desain jarumnya agar menunjuk ke bawah (ke arah roda).
-
-Perbaikan CSS Jarum (Pointer)
-Cari bagian #pointer di dalam kode HTML Anda (di bagian <style>), lalu ganti dengan ini:
-
-CSS
-#pointer { 
+        #pointer { 
     position: absolute; 
     top: -10px; /* Menempel di atas roda */
     left: 50%; 

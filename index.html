@@ -15,7 +15,27 @@
         .timer-val { font-size: 1.4rem; font-weight: bold; color: white; display: block; }
 
         .wheel-box { position: relative; width: 300px; height: 300px; margin: 20px auto; }
-        #pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 30px solid var(--accent); z-index: 10; }
+       Waduh, saya mengerti maksudnya! Ternyata segitiga kuningnya terbalik, jadi bagian runcingnya malah menghadap ke langit, bukan menunjuk ke roda.
+
+Itu karena urutan garis (border) di CSS-nya terbalik. Mari kita perbaiki bagian desain jarumnya agar menunjuk ke bawah (ke arah roda).
+
+Perbaikan CSS Jarum (Pointer)
+Cari bagian #pointer di dalam kode HTML Anda (di bagian <style>), lalu ganti dengan ini:
+
+CSS
+#pointer { 
+    position: absolute; 
+    top: -10px; /* Menempel di atas roda */
+    left: 50%; 
+    transform: translateX(-50%); 
+    width: 0; 
+    height: 0; 
+    /* Ini rahasianya: border-top yang diberi warna agar meruncing ke bawah */
+    border-left: 15px solid transparent; 
+    border-right: 15px solid transparent; 
+    border-top: 30px solid var(--accent); 
+    z-index: 10; 
+}
         canvas { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #334155; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
 
         .card { background: var(--card); padding: 18px; border-radius: 16px; margin-bottom: 15px; border: 1px solid #334155; }

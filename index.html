@@ -3,18 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ARISAN PRO</title>
+<title>ARISAN PRO SYSTEM</title>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 :root{
   --bg:#0f172a;
   --card:#1e293b;
   --primary:#facc15;
+  --accent:#38bdf8;
+  --success:#22c55e;
+  --danger:#ef4444;
 }
 
 body{
@@ -22,36 +25,36 @@ body{
   font-family:Poppins;
   background:var(--bg);
   color:white;
-  display:flex;
-  justify-content:center;
 }
 
 .container{
-  max-width:500px;
-  width:100%;
+  max-width:550px;
+  margin:auto;
   padding:15px;
 }
 
 .card{
   background:var(--card);
   padding:20px;
-  border-radius:15px;
+  border-radius:20px;
   margin-bottom:15px;
 }
 
-h1{text-align:center;color:var(--primary)}
+h1{text-align:center;color:var(--primary);}
 
 button{
   width:100%;
   padding:12px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   font-weight:bold;
   cursor:pointer;
   margin-top:10px;
 }
 
 .main{background:var(--primary);color:black}
+.gray{background:#334155;color:white}
+.danger{background:var(--danger);color:white}
 
 #wheelBox{
   position:relative;
@@ -62,12 +65,12 @@ button{
 
 #pointer{
   position:absolute;
-  top:-10px;
+  top:-12px;
   left:50%;
   transform:translateX(-50%);
   border-left:15px solid transparent;
   border-right:15px solid transparent;
-  border-top:25px solid var(--primary);
+  border-top:30px solid var(--primary);
   z-index:10;
 }
 
@@ -75,7 +78,32 @@ canvas{
   width:100%;
   height:100%;
   border-radius:50%;
-  border:6px solid #334155;
+  border:8px solid #334155;
+}
+
+select,input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  background:#020617;
+  color:white;
+  border:1px solid #334155;
+  margin-top:10px;
+}
+
+.log{
+  font-size:0.85rem;
+  border-bottom:1px solid #334155;
+  padding:6px;
+}
+
+.badge{
+  background:var(--primary);
+  color:black;
+  padding:5px 15px;
+  border-radius:20px;
+  display:inline-block;
+  margin-top:10px;
 }
 </style>
 </head>
@@ -85,7 +113,7 @@ canvas{
 <div class="container">
 
 <h1>ARISAN PRO</h1>
-<div style="text-align:center">Bulan <b id="month"></b></div>
+<center><div class="badge">BULAN <span id="month"></span></div></center>
 
 <div id="wheelBox">
 <div id="pointer"></div>
@@ -94,34 +122,53 @@ canvas{
 
 <div class="card">
 
-<button class="main" onclick="login()">LOGIN</button>
+<button class="main" onclick="login()">LOGIN PESERTA</button>
 
 <select id="user"></select>
 
 <div id="status"></div>
 
-<button class="main" onclick="spin()" id="spinBtn">SPIN</button>
+<button id="spinBtn" class="main" onclick="spin()">SPIN & VOTE</button>
+<button class="gray" onclick="spinIseng()">SPIN ISENG</button>
 
 </div>
 
 <div class="card">
-<h3>Log</h3>
+<h3>📑 Aktivitas Spin</h3>
 <div id="log"></div>
 </div>
+
+<div class="card">
+<h3>💰 Status Anggota</h3>
+<div id="members"></div>
+</div>
+
+<div id="admin" style="display:none;" class="card">
+<h3>🛡️ ADMIN PANEL</h3>
+
+<select id="winner"></select>
+<button class="main" onclick="setWinner()">SET PEMENANG</button>
+
+<input type="number" id="monthSet" placeholder="Bulan">
+<button class="main" onclick="setMonth()">SET BULAN</button>
+
+<button class="danger" onclick="resetAll()">RESET SYSTEM</button>
+
+</div>
+
+<button onclick="adminLogin()" style="opacity:0.3;width:100%;">🔓 Admin</button>
 
 </div>
 
 <script>
 
-// ===== API =====
 const API = "https://script.google.com/macros/s/AKfycbz4XdH8Y-7-lHyQH3lH9FixIwsrGoLbbnqfshfS6Ww/exec";
 
-// ===== STATE =====
 let db = {};
-let currentAngle = 0;
+let angle = 0;
 let spinning = false;
 
-// ===== API WRAPPER =====
+// ===== API =====
 async function api(data){
   const res = await fetch(API,{
     method:'POST',
@@ -138,8 +185,18 @@ async function load(){
   month.innerText = db.month;
 
   user.innerHTML = db.members.map(m=>`<option>${m.name}</option>`).join("");
+  winner.innerHTML = user.innerHTML;
 
-  log.innerHTML = db.votes.map(v=>`${v.user} → ${v.result}<br>`).join("");
+  log.innerHTML = db.votes.map(v=>`<div class="log">${v.user} → ${v.result}</div>`).join("");
+
+  members.innerHTML = db.members.map(m=>`
+    <div class="log">
+      <b>${m.name}</b> - 
+      <span style="color:${m.status=="Lunas"?"#22c55e":"#ef4444"}">
+      ${m.status}
+      </span>
+    </div>
+  `).join("");
 
   drawWheel();
   updateStatus();
@@ -153,22 +210,22 @@ function updateStatus(){
   if(!m) return;
 
   if(m.status !== "Lunas"){
-    status.innerText = "❌ Belum bayar";
+    status.innerHTML = "❌ Belum bayar";
     spinBtn.disabled = true;
   }
   else if(v){
-    status.innerText = "✅ Sudah spin: "+v.result;
+    status.innerHTML = "✅ Sudah spin: "+v.result;
     spinBtn.disabled = true;
   }
   else{
-    status.innerText = "🟢 Bisa spin";
+    status.innerHTML = "🟢 Siap spin";
     spinBtn.disabled = false;
   }
 }
 
 user.onchange = updateStatus;
 
-// ===== DRAW WHEEL =====
+// ===== WHEEL =====
 function drawWheel(){
   const ctx = wheel.getContext("2d");
   const total = db.members.length;
@@ -194,27 +251,40 @@ function drawWheel(){
 
 // ===== LOGIN =====
 async function login(){
-  const n = prompt("Nama");
-  const p = prompt("PIN");
 
-  const r = await api({action:"login",n,p});
+  const options = db.members.map(m=>`<option>${m.name}</option>`).join("");
+
+  const {value:form} = await Swal.fire({
+    title:"Login",
+    html:`
+      <select id="n" class="swal2-input">${options}</select>
+      <input id="p" type="password" class="swal2-input" placeholder="PIN">
+    `,
+    preConfirm:()=>({
+      n:document.getElementById("n").value,
+      p:document.getElementById("p").value
+    })
+  });
+
+  if(!form) return;
+
+  const r = await api({action:"login",...form});
 
   if(r.status==="ok"){
-    user.value = n;
-    alert("Login sukses");
+    user.value = form.n;
     updateStatus();
+    Swal.fire("Berhasil","","success");
   }else{
-    alert("Login gagal");
+    Swal.fire("Gagal PIN","","error");
   }
 }
 
-// ===== SPIN (REAL ANIMATION) =====
+// ===== SPIN =====
 async function spin(){
 
   if(spinning) return;
   spinning = true;
 
-  // ambil hasil dari server
   const r = await api({
     action:"vote",
     user:user.value
@@ -226,52 +296,48 @@ async function spin(){
     return;
   }
 
-  const resultName = r.result;
+  const name = r.result;
+  const index = db.members.findIndex(m=>m.name===name);
+  const arc = 360/db.members.length;
 
-  const index = db.members.findIndex(m=>m.name===resultName);
+  const target = 360*5 + (360 - (index*arc + arc/2));
 
-  const total = db.members.length;
-  const arc = 360/total;
-
-  // target angle
-  const targetAngle = (360 - (index * arc + arc/2));
-
-  // putar beberapa kali + berhenti di target
-  const finalAngle = currentAngle + 360*5 + targetAngle;
-
-  animateSpin(finalAngle, resultName);
+  animate(target,name);
 }
 
-// ===== ANIMATION ENGINE =====
-function animateSpin(target, result){
+// ===== SPIN ISENG =====
+function spinIseng(){
+  const rand = db.members[Math.floor(Math.random()*db.members.length)].name;
+  const index = db.members.findIndex(m=>m.name===rand);
+  const arc = 360/db.members.length;
+  const target = 360*3 + (360 - (index*arc + arc/2));
+  animate(target,rand);
+}
 
-  const duration = 4000;
+// ===== ANIMATION =====
+function animate(target,name){
+
   const start = performance.now();
-  const initial = currentAngle;
+  const initial = angle;
+  const duration = 4000;
 
-  function easeOut(t){
-    return 1 - Math.pow(1-t,3);
-  }
+  function ease(t){ return 1 - Math.pow(1-t,3); }
 
   function frame(now){
-    const progress = (now - start) / duration;
+    const p = (now-start)/duration;
 
-    if(progress < 1){
-      const eased = easeOut(progress);
-      currentAngle = initial + (target - initial) * eased;
-
-      wheel.style.transform = `rotate(${currentAngle}deg)`;
-
+    if(p<1){
+      angle = initial + (target-initial)*ease(p);
+      wheel.style.transform = `rotate(${angle}deg)`;
       requestAnimationFrame(frame);
     }else{
-      currentAngle = target;
-      wheel.style.transform = `rotate(${currentAngle}deg)`;
+      angle = target;
+      wheel.style.transform = `rotate(${angle}deg)`;
 
       confetti();
+      Swal.fire("🎉 Hasil",name,"success");
 
-      Swal.fire("🎉 Hasil", result, "success");
-
-      spinning = false;
+      spinning=false;
       load();
     }
   }
@@ -279,7 +345,29 @@ function animateSpin(target, result){
   requestAnimationFrame(frame);
 }
 
-// ===== INIT =====
+// ===== ADMIN =====
+function adminLogin(){
+  const pin = prompt("PIN ADMIN");
+  if(pin==="280498"){
+    admin.style.display="block";
+  }
+}
+
+async function setWinner(){
+  await api({action:"set_winner_target",name:winner.value});
+  load();
+}
+
+async function setMonth(){
+  await api({action:"set_month",month:parseInt(monthSet.value)});
+  load();
+}
+
+async function resetAll(){
+  await api({action:"reset_all"});
+  load();
+}
+
 load();
 
 </script>

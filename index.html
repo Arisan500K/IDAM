@@ -300,8 +300,6 @@ async function spin(){
   const index = db.members.findIndex(m=>m.name===name);
   const arc = 360 / db.members.length;
 const sliceCenter = index * arc + arc / 2;
-
-// pointer di atas = 270 derajat (canvas)
 const target = 360 * 5 + (270 - sliceCenter);
 
   animate(target,name);
@@ -313,8 +311,6 @@ function spinIseng(){
   const index = db.members.findIndex(m=>m.name===rand);
   const arc = 360 / db.members.length;
 const sliceCenter = index * arc + arc / 2;
-
-// pointer di atas = 270 derajat (canvas)
 const target = 360 * 5 + (270 - sliceCenter);
   animate(target,rand);
 }

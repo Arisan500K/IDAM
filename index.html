@@ -105,7 +105,7 @@ canvas {
   z-index:999;
 }
 
-.spin {
+.spinLoader {
   width:40px;
   height:40px;
   border:4px solid var(--primary);
@@ -126,7 +126,7 @@ canvas {
 
 <body>
 
-<div id="loader"><div class="spin"></div></div>
+<div id="loader"><div class="spinLoader"></div></div>
 
 <div class="container">
 
@@ -144,9 +144,9 @@ canvas {
 
 <select id="user"></select>
 
-<div id="status"></div>
+<div id="status" style="margin-top:10px;"></div>
 
-<button class="btn btn-main" onclick="spin()">SPIN</button>
+<button class="btn btn-main" id="spinBtn" onclick="spin()">SPIN</button>
 
 </div>
 
@@ -157,15 +157,15 @@ canvas {
 
 <div id="admin" style="display:none;" class="card">
 
-<h3>ADMIN</h3>
+<h3>ADMIN PANEL</h3>
 
-<select id="setWinner"></select>
+<select id="winnerSelect"></select>
 <button class="btn btn-main" onclick="setWinner()">SET PEMENANG</button>
 
-<input type="number" id="setMonth" placeholder="Bulan">
+<input type="number" id="monthInput" placeholder="Bulan">
 <button class="btn btn-main" onclick="setMonth()">SET BULAN</button>
 
-<button class="btn btn-danger" onclick="resetAll()">RESET</button>
+<button class="btn btn-danger" onclick="resetAll()">RESET SISTEM</button>
 
 </div>
 
@@ -175,15 +175,15 @@ canvas {
 
 <script>
 
-// ===== CONFIG =====
-const API = "ISI_URL_APPS_SCRIPT_KAMU";
+// ===== API =====
+const API = "https://script.google.com/macros/s/AKfycbz4XdH8Y-7-lHyQH3lH9FixIwsrGoLbbnqfshfS6Ww/dev";
 
 // ===== STATE =====
 let db = {};
 let angle = 0;
 let spinning = false;
 
-// ===== INIT =====
+// ===== LOAD =====
 async function load(){
   showLoad(true);
   const res = await fetch(API);
@@ -194,19 +194,40 @@ async function load(){
 
 // ===== RENDER =====
 function render(){
-  document.getElementById("monthTxt").innerText = db.month;
+  monthTxt.innerText = db.month;
 
-  document.getElementById("user").innerHTML =
-    db.members.map(m=>`<option>${m.name}</option>`).join("");
+  user.innerHTML = db.members.map(m=>`<option>${m.name}</option>`).join("");
+  winnerSelect.innerHTML = user.innerHTML;
 
-  document.getElementById("setWinner").innerHTML =
-    db.members.map(m=>`<option>${m.name}</option>`).join("");
+  logs.innerHTML = db.votes.map(v=>`<div class="log">${v.user} → ${v.result}</div>`).join("");
 
-  document.getElementById("logs").innerHTML =
-    db.votes.map(v=>`<div class="log">${v.user} → ${v.result}</div>`).join("");
-
+  updateStatus();
   drawWheel();
 }
+
+// ===== STATUS =====
+function updateStatus(){
+  const name = user.value;
+  const m = db.members.find(x=>x.name===name);
+  const v = db.votes.find(x=>x.user===name);
+
+  if(!m) return;
+
+  if(m.status !== "Lunas"){
+    status.innerHTML = "❌ Belum bayar";
+    spinBtn.disabled = true;
+  }
+  else if(v){
+    status.innerHTML = "✅ Sudah spin: <b>"+v.result+"</b>";
+    spinBtn.disabled = true;
+  }
+  else{
+    status.innerHTML = "🟢 Siap spin";
+    spinBtn.disabled = false;
+  }
+}
+
+user.onchange = updateStatus;
 
 // ===== WHEEL =====
 function drawWheel(){
@@ -253,21 +274,20 @@ async function login(){
 
   const j = await r.json();
 
-  if(j.status=="ok"){
-    document.getElementById("user").value = form.n;
-    Swal.fire("OK","","success");
+  if(j.status==="ok"){
+    user.value = form.n;
+    Swal.fire("Login berhasil","","success");
+    updateStatus();
   }else{
-    Swal.fire("Gagal","","error");
+    Swal.fire("Login gagal","","error");
   }
 }
 
 // ===== SPIN =====
 async function spin(){
-
   if(spinning) return;
 
   spinning = true;
-
   let speed = 0.5;
 
   function anim(){
@@ -283,14 +303,14 @@ async function spin(){
 
   async function finish(){
     spinning=false;
-
     showLoad(true);
-
-    const user = document.getElementById("user").value;
 
     const r = await fetch(API,{
       method:'POST',
-      body:JSON.stringify({action:'vote',user})
+      body:JSON.stringify({
+        action:'vote',
+        user:user.value
+      })
     });
 
     const j = await r.json();
@@ -299,7 +319,7 @@ async function spin(){
 
     confetti();
 
-    Swal.fire("Hasil", j.result, "success");
+    Swal.fire("Hasil Spin", j.result, "success");
 
     load();
   }
@@ -308,37 +328,31 @@ async function spin(){
 // ===== ADMIN =====
 function adminLogin(){
   Swal.fire({input:'password'}).then(r=>{
-    if(r.value=="280498"){
-      document.getElementById("admin").style.display="block";
+    if(r.value==="280498"){
+      admin.style.display="block";
     }
   });
 }
 
 async function setWinner(){
-  const name = setWinner.value;
-
   await fetch(API,{
     method:'POST',
     body:JSON.stringify({
       action:'set_winner_target',
-      name
+      name:winnerSelect.value
     })
   });
-
   load();
 }
 
 async function setMonth(){
-  const m = setMonth.value;
-
   await fetch(API,{
     method:'POST',
     body:JSON.stringify({
       action:'set_month',
-      month:parseInt(m)
+      month:parseInt(monthInput.value)
     })
   });
-
   load();
 }
 
@@ -347,13 +361,12 @@ async function resetAll(){
     method:'POST',
     body:JSON.stringify({action:'reset_all'})
   });
-
   load();
 }
 
 // ===== UTIL =====
 function showLoad(x){
-  document.getElementById("loader").style.display = x?'flex':'none';
+  loader.style.display = x?'flex':'none';
 }
 
 load();

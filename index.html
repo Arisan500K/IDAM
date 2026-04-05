@@ -3,370 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ARISAN PRO SYSTEM</title>
+<title>ARISAN PRO</title>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-
 <style>
-:root {
-  --primary:#facc15;
-  --bg:#0f172a;
-  --card:#1e293b;
-  --text:#f8fafc;
-  --success:#22c55e;
-  --danger:#ef4444;
-}
-
-body {
-  margin:0;
-  font-family:'Poppins';
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  justify-content:center;
-}
-
-.container {
-  width:100%;
-  max-width:500px;
-  padding:15px;
-}
-
-.card {
-  background:var(--card);
-  padding:20px;
-  border-radius:15px;
-  margin-bottom:15px;
-}
-
-h1 {
-  text-align:center;
-  color:var(--primary);
-}
-
-.btn {
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
-}
-
-.btn-main { background:var(--primary); color:black; }
-.btn-danger { background:var(--danger); color:white; }
-
-select,input {
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #334155;
-  background:#020617;
-  color:white;
-  margin-top:10px;
-}
-
-#wheelBox {
-  position:relative;
-  width:300px;
-  height:300px;
-  margin:20px auto;
-}
-
-#pointer {
-  position:absolute;
-  top:-10px;
-  left:50%;
-  transform:translateX(-50%);
-  border-left:15px solid transparent;
-  border-right:15px solid transparent;
-  border-top:25px solid var(--primary);
-}
-
-canvas {
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  border:6px solid #334155;
-}
-
-#loader {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-.spinLoader {
-  width:40px;
-  height:40px;
-  border:4px solid var(--primary);
-  border-top:transparent;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin { to { transform:rotate(360deg);} }
-
-.log {
-  font-size:0.8rem;
-  border-bottom:1px solid #334155;
-  padding:5px;
-}
+body{font-family:sans-serif;background:#0f172a;color:white;text-align:center}
+.card{background:#1e293b;padding:15px;margin:10px;border-radius:10px}
+button{padding:10px;width:100%;margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<div id="loader"><div class="spinLoader"></div></div>
-
-<div class="container">
-
-<h1>ARISAN PRO</h1>
-<div style="text-align:center;">Bulan ke-<b id="monthTxt">1</b></div>
-
-<div id="wheelBox">
-<div id="pointer"></div>
-<canvas id="wheel" width="600" height="600"></canvas>
-</div>
+<h2>ARISAN PRO</h2>
+<div>Bulan: <b id="month"></b></div>
 
 <div class="card">
-
-<button class="btn btn-main" onclick="login()">LOGIN</button>
-
+<button onclick="login()">LOGIN</button>
 <select id="user"></select>
-
-<div id="status" style="margin-top:10px;"></div>
-
-<button class="btn btn-main" id="spinBtn" onclick="spin()">SPIN</button>
-
+<div id="status"></div>
+<button onclick="spin()" id="spinBtn">SPIN</button>
 </div>
 
 <div class="card">
-<h3>Log Spin</h3>
-<div id="logs"></div>
+<h3>LOG</h3>
+<div id="log"></div>
 </div>
 
-<div id="admin" style="display:none;" class="card">
+<div id="admin" style="display:none" class="card">
+<h3>ADMIN</h3>
+<select id="winner"></select>
+<button onclick="setWinner()">SET PEMENANG</button>
 
-<h3>ADMIN PANEL</h3>
+<input id="monthSet" type="number" placeholder="bulan">
+<button onclick="setMonth()">SET BULAN</button>
 
-<select id="winnerSelect"></select>
-<button class="btn btn-main" onclick="setWinner()">SET PEMENANG</button>
-
-<input type="number" id="monthInput" placeholder="Bulan">
-<button class="btn btn-main" onclick="setMonth()">SET BULAN</button>
-
-<button class="btn btn-danger" onclick="resetAll()">RESET SISTEM</button>
-
+<button onclick="resetAll()">RESET</button>
 </div>
 
-<button onclick="adminLogin()" style="opacity:0.3;">Admin</button>
-
-</div>
+<button onclick="adminLogin()">ADMIN</button>
 
 <script>
 
-// ===== API =====
 const API = "https://script.google.com/macros/s/AKfycbz4XdH8Y-7-lHyQH3lH9FixIwsrGoLbbnqfshfS6Ww/exec";
 
-// ===== STATE =====
 let db = {};
-let angle = 0;
-let spinning = false;
 
-// ===== LOAD =====
-async function load(){
-  showLoad(true);
-  const res = await fetch(API);
-  db = await res.json();
-  render();
-  showLoad(false);
+// ================= CORE FETCH (ANTI CORS) =================
+async function api(data){
+  const res = await fetch(API,{
+    method:'POST',
+    body: JSON.stringify(data),
+    headers:{
+      "Content-Type":"text/plain;charset=utf-8"
+    }
+  });
+  return await res.json();
 }
 
-// ===== RENDER =====
-function render(){
-  monthTxt.innerText = db.month;
+// ================= LOAD =================
+async function load(){
+  db = await api({action:"get"});
+
+  month.innerText = db.month;
 
   user.innerHTML = db.members.map(m=>`<option>${m.name}</option>`).join("");
-  winnerSelect.innerHTML = user.innerHTML;
+  winner.innerHTML = user.innerHTML;
 
-  logs.innerHTML = db.votes.map(v=>`<div class="log">${v.user} → ${v.result}</div>`).join("");
+  log.innerHTML = db.votes.map(v=>`${v.user} → ${v.result}<br>`).join("");
 
   updateStatus();
-  drawWheel();
 }
 
-// ===== STATUS =====
+// ================= STATUS =================
 function updateStatus(){
-  const name = user.value;
-  const m = db.members.find(x=>x.name===name);
-  const v = db.votes.find(x=>x.user===name);
+  const m = db.members.find(x=>x.name===user.value);
+  const v = db.votes.find(x=>x.user===user.value);
 
   if(!m) return;
 
   if(m.status !== "Lunas"){
-    status.innerHTML = "❌ Belum bayar";
+    status.innerText = "❌ Belum bayar";
     spinBtn.disabled = true;
   }
   else if(v){
-    status.innerHTML = "✅ Sudah spin: <b>"+v.result+"</b>";
+    status.innerText = "✅ Sudah spin: "+v.result;
     spinBtn.disabled = true;
   }
   else{
-    status.innerHTML = "🟢 Siap spin";
+    status.innerText = "🟢 Bisa spin";
     spinBtn.disabled = false;
   }
 }
 
 user.onchange = updateStatus;
 
-// ===== WHEEL =====
-function drawWheel(){
-  const ctx = wheel.getContext("2d");
-  const total = db.members.length;
-  const arc = Math.PI*2/total;
-
-  ctx.clearRect(0,0,600,600);
-
-  db.members.forEach((m,i)=>{
-    ctx.beginPath();
-    ctx.fillStyle = `hsl(${i*40},70%,50%)`;
-    ctx.moveTo(300,300);
-    ctx.arc(300,300,300,i*arc,(i+1)*arc);
-    ctx.fill();
-
-    ctx.save();
-    ctx.translate(300,300);
-    ctx.rotate(i*arc+arc/2);
-    ctx.fillStyle="white";
-    ctx.fillText(m.name,250,10);
-    ctx.restore();
-  });
-}
-
-// ===== LOGIN =====
+// ================= LOGIN =================
 async function login(){
-  const {value:form} = await Swal.fire({
-    title:'Login',
-    html:`<input id="n" class="swal2-input" placeholder="Nama">
-          <input id="p" type="password" class="swal2-input" placeholder="PIN">`,
-    preConfirm:()=>{
-      return {
-        n:document.getElementById("n").value,
-        p:document.getElementById("p").value
-      }
-    }
+  const n = prompt("Nama");
+  const p = prompt("PIN");
+
+  const r = await api({
+    action:"login",
+    n,p
   });
 
-  const r = await fetch(API,{
-    method:'POST',
-    body:JSON.stringify({action:'login',...form})
-  });
-
-  const j = await r.json();
-
-  if(j.status==="ok"){
-    user.value = form.n;
-    Swal.fire("Login berhasil","","success");
+  if(r.status==="ok"){
+    user.value = n;
+    alert("Login berhasil");
     updateStatus();
   }else{
-    Swal.fire("Login gagal","","error");
+    alert("Login gagal");
   }
 }
 
-// ===== SPIN =====
+// ================= SPIN =================
 async function spin(){
-  if(spinning) return;
+  const r = await api({
+    action:"vote",
+    user:user.value
+  });
 
-  spinning = true;
-  let speed = 0.5;
-
-  function anim(){
-    speed *=0.97;
-    angle += speed;
-    drawWheel();
-
-    if(speed>0.01) requestAnimationFrame(anim);
-    else finish();
+  if(r.status==="not_paid"){
+    alert("Belum bayar!");
+    return;
   }
 
-  anim();
-
-  async function finish(){
-    spinning=false;
-    showLoad(true);
-
-    const r = await fetch(API,{
-      method:'POST',
-      body:JSON.stringify({
-        action:'vote',
-        user:user.value
-      })
-    });
-
-    const j = await r.json();
-
-    showLoad(false);
-
-    confetti();
-
-    Swal.fire("Hasil Spin", j.result, "success");
-
-    load();
+  if(r.status==="already"){
+    alert("Sudah spin: "+r.result);
+    return;
   }
+
+  confetti();
+  alert("Hasil: "+r.result);
+
+  load();
 }
 
-// ===== ADMIN =====
+// ================= ADMIN =================
 function adminLogin(){
-  Swal.fire({input:'password'}).then(r=>{
-    if(r.value==="280498"){
-      admin.style.display="block";
-    }
-  });
+  const pin = prompt("PIN ADMIN");
+
+  if(pin==="280498"){
+    admin.style.display="block";
+  }
 }
 
 async function setWinner(){
-  await fetch(API,{
-    method:'POST',
-    body:JSON.stringify({
-      action:'set_winner_target',
-      name:winnerSelect.value
-    })
+  await api({
+    action:"set_winner_target",
+    name:winner.value
   });
   load();
 }
 
 async function setMonth(){
-  await fetch(API,{
-    method:'POST',
-    body:JSON.stringify({
-      action:'set_month',
-      month:parseInt(monthInput.value)
-    })
+  await api({
+    action:"set_month",
+    month:parseInt(monthSet.value)
   });
   load();
 }
 
 async function resetAll(){
-  await fetch(API,{
-    method:'POST',
-    body:JSON.stringify({action:'reset_all'})
-  });
+  await api({action:"reset_all"});
   load();
-}
-
-// ===== UTIL =====
-function showLoad(x){
-  loader.style.display = x?'flex':'none';
 }
 
 load();
